@@ -203,15 +203,15 @@ const Contact = () => {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="text-3xl font-bold gradient-text mb-2">< 2hrs</div>
+              <div className="text-3xl font-bold gradient-text mb-2">&lt; 2hrs</div>
               <div className="text-text-secondary">Sales Inquiries</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold gradient-text mb-2">< 4hrs</div>
+              <div className="text-3xl font-bold gradient-text mb-2">&lt; 4hrs</div>
               <div className="text-text-secondary">General Questions</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold gradient-text mb-2">< 24hrs</div>
+              <div className="text-3xl font-bold gradient-text mb-2">&lt; 24hrs</div>
               <div className="text-text-secondary">Technical Support</div>
             </div>
           </div>
