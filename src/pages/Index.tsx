@@ -41,10 +41,10 @@ const Index = () => {
   ];
 
   const clientLogos = [
-    { name: "CoffeeDesk", width: "120px" },
-    { name: "Biscuiteers", width: "140px" },
-    { name: "WebInsight", width: "130px" },
-    { name: "WikiLaps", width: "110px" }
+    { name: "CoffeeDesk", image: "/lovable-uploads/df1e608e-1eaf-400e-a5ff-dcc7b1c2e147.png" },
+    { name: "Biscuiteers", image: "/lovable-uploads/151297f0-c6b5-40a4-8af9-3eee4de77ffc.png" },
+    { name: "WebInsight", image: "/lovable-uploads/75a928ad-e768-4ae4-befd-90a07fca9f8a.png" },
+    { name: "WikiLaps", image: "/lovable-uploads/b3cdf068-a2d8-4b73-bc82-2e33138ede1f.png" }
   ];
 
   const testimonials = [
@@ -157,10 +157,14 @@ const Index = () => {
             </h2>
           </div>
           
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
             {clientLogos.map((logo, index) => (
-              <div key={index} className="text-white text-xl font-semibold" style={{width: logo.width}}>
-                {logo.name}
+              <div key={index} className="flex items-center justify-center h-16 opacity-70 hover:opacity-100 transition-opacity">
+                <img 
+                  src={logo.image} 
+                  alt={logo.name} 
+                  className="max-h-full max-w-32 object-contain filter grayscale hover:grayscale-0 transition-all"
+                />
               </div>
             ))}
           </div>
