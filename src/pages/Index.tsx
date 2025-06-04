@@ -2,203 +2,207 @@
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 const Index = () => {
+  const solutions = [
+    {
+      title: "EngagePerfect",
+      description: "AI-powered content generation for blogs, captions, and product copy",
+      icon: "🎯"
+    },
+    {
+      title: "SkySpark Rules",
+      description: "Custom SkySpark analytics and Axon scripts for building/facility optimization",
+      icon: "⚡"
+    },
+    {
+      title: "Smart Automations",
+      description: "Small, remote-first tools that eliminate bottlenecks and save time",
+      icon: "🤖"
+    }
+  ];
+
+  const coreValues = [
+    {
+      title: "We Respect Your Time",
+      description: "Tools built to free you from repetitive work",
+      icon: "⏰"
+    },
+    {
+      title: "We Keep It Practical",
+      description: "Simple, lean, and scalable—not overbuilt or bloated",
+      icon: "🎯"
+    },
+    {
+      title: "We Build for Impact",
+      description: "Everything we do supports measurable growth",
+      icon: "📈"
+    }
+  ];
+
+  const clientLogos = [
+    { name: "CoffeeDesk", width: "120px" },
+    { name: "Biscuiteers", width: "140px" },
+    { name: "WebInsight", width: "130px" },
+    { name: "WikiLaps", width: "110px" }
+  ];
+
   const testimonials = [
     {
-      quote: "Nodematics transformed our manufacturing efficiency by 40%. Their industrial solutions are game-changing.",
-      author: "Sarah Chen",
-      title: "Operations Director",
-      company: "TechManufacturing Inc."
+      quote: "NodeMatics helped us reduce content creation time by 80%. It's like having a full-time content team.",
+      author: "A.M., Ecommerce Founder"
     },
     {
-      quote: "EngagePerfect helped us scale our content creation while maintaining quality. Our engagement rates doubled.",
-      author: "Marcus Rodriguez",
-      title: "Marketing Manager",
-      company: "GrowthCorp"
+      quote: "Their automation tools eliminated hours of manual work every week. We can finally focus on strategy.",
+      author: "J.K., Operations Manager"
     },
     {
-      quote: "The data insights from Nodematics helped us make decisions that saved millions in operational costs.",
-      author: "Jennifer Walsh",
-      title: "Plant Manager",
-      company: "Industrial Solutions Ltd."
+      quote: "The SkySpark implementation optimized our facility management beyond our expectations.",
+      author: "R.L., Facility Director"
     }
   ];
 
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative py-20 px-6 lg:px-8 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/10 to-accent-purple/10"></div>
-        <div className="relative max-w-7xl mx-auto text-center animate-fade-in">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            <span className="gradient-text">Digital Transformation</span><br />
-            for the Real World
+      <section className="relative py-32 px-6 lg:px-8 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/5 to-accent-purple/5"></div>
+        <div className="relative max-w-4xl mx-auto text-center animate-fade-in">
+          <h1 className="text-6xl md:text-8xl font-bold mb-8">
+            Work Less. <span className="gradient-text">Grow More.</span>
           </h1>
-          <p className="text-xl md:text-2xl text-text-secondary mb-8 max-w-4xl mx-auto">
-            From factory floor to social media feed — Nodematics turns data into decisions.
+          <p className="text-xl md:text-2xl text-text-secondary mb-12 max-w-3xl mx-auto leading-relaxed">
+            NodeMatics helps small teams and creators automate content, operations, and analytics—so they can focus on what really matters.
           </p>
-        </div>
-      </section>
-
-      {/* Dual Focus Feature Cards */}
-      <section className="py-20 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Energy & Facility Intelligence Card */}
-            <Card className="p-12 bg-gradient-to-br from-accent-blue/20 to-accent-blue/5 border-accent-blue/20 card-hover relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-accent-blue/10 rounded-full -translate-y-16 translate-x-16"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-accent-blue/20 rounded-3xl flex items-center justify-center mb-8">
-                  <span className="text-accent-blue text-3xl">⚡</span>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  Energy & Facility <span className="gradient-text">Intelligence</span>
-                </h2>
-                <p className="text-xl text-text-secondary mb-8 leading-relaxed">
-                  Transform your industrial operations with real-time monitoring, 
-                  predictive analytics, and intelligent automation that drives efficiency 
-                  and reduces costs.
-                </p>
-                <Link 
-                  to="/services" 
-                  className="inline-flex items-center px-8 py-4 bg-accent-blue hover:bg-accent-blue/90 text-white rounded-2xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-accent-blue/20"
-                >
-                  Explore Industrial Solutions
-                  <span className="ml-2">→</span>
-                </Link>
-              </div>
-            </Card>
-
-            {/* AI-Powered Content Card */}
-            <Card className="p-12 bg-gradient-to-br from-accent-purple/20 to-accent-purple/5 border-accent-purple/20 card-hover relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-accent-purple/10 rounded-full -translate-y-16 translate-x-16"></div>
-              <div className="relative z-10">
-                <div className="w-16 h-16 bg-accent-purple/20 rounded-3xl flex items-center justify-center mb-8">
-                  <span className="text-accent-purple text-3xl">🎯</span>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                  AI-Powered Content <span className="gradient-text">EngagePerfect</span>
-                </h2>
-                <p className="text-xl text-text-secondary mb-8 leading-relaxed">
-                  Generate EEAT-compliant, SEO-optimized content that drives engagement. 
-                  Perfect for creators, teams, and businesses scaling their content strategy.
-                </p>
-                <Link 
-                  to="/products" 
-                  className="inline-flex items-center px-8 py-4 bg-accent-purple hover:bg-accent-purple/90 text-white rounded-2xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-accent-purple/20"
-                >
-                  Explore EngagePerfect
-                  <span className="ml-2">→</span>
-                </Link>
-              </div>
-            </Card>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link 
+              to="/products" 
+              className="apple-button bg-accent-purple hover:bg-accent-purple/90 hover:shadow-accent-purple/20"
+            >
+              Explore EngagePerfect
+            </Link>
+            <Link 
+              to="/about" 
+              className="apple-button bg-accent-blue hover:bg-accent-blue/90 hover:shadow-accent-blue/20"
+            >
+              Learn About Us
+            </Link>
+            <a 
+              href="#contact" 
+              className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90"
+            >
+              Book Free Strategy Call
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Value Section */}
+      {/* Our Solutions */}
       <section className="py-20 px-6 lg:px-8 bg-dark-surface">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-slide-up">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Our <span className="gradient-text">Core Values</span>
+            <h2 className="text-5xl md:text-6xl font-bold mb-6">
+              Smart Tools for <span className="gradient-text">Real Results</span>
             </h2>
-            <p className="text-xl text-text-secondary max-w-3xl mx-auto">
-              Three principles that guide everything we do at Nodematics.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-scale-in">
-            <Card className="p-8 bg-dark-card border-white/10 card-hover text-center">
-              <div className="w-16 h-16 bg-accent-blue/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
-                <span className="text-accent-blue text-3xl">📊</span>
-              </div>
-              <h3 className="text-2xl font-semibold mb-4">Data-Driven</h3>
-              <p className="text-text-secondary leading-relaxed">
-                Every decision backed by real insights. We turn complex data into 
-                clear, actionable intelligence that drives measurable results.
-              </p>
-            </Card>
-
-            <Card className="p-8 bg-dark-card border-white/10 card-hover text-center">
-              <div className="w-16 h-16 bg-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
-                <span className="text-accent-purple text-3xl">🎯</span>
-              </div>
-              <h3 className="text-2xl font-semibold mb-4">Results-Focused</h3>
-              <p className="text-text-secondary leading-relaxed">
-                We don't just deliver technology — we deliver outcomes. Our solutions 
-                are designed to generate real business value from day one.
-              </p>
-            </Card>
-
-            <Card className="p-8 bg-dark-card border-white/10 card-hover text-center">
-              <div className="w-16 h-16 bg-accent-blue/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
-                <span className="text-accent-blue text-3xl">🤝</span>
-              </div>
-              <h3 className="text-2xl font-semibold mb-4">Human-Centered Automation</h3>
-              <p className="text-text-secondary leading-relaxed">
-                Technology should empower people, not replace them. Our automation 
-                solutions enhance human capability and decision-making.
-              </p>
-            </Card>
+            {solutions.map((solution, index) => (
+              <Card key={index} className="p-8 bg-dark-card border-white/10 card-hover text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
+                  <span className="text-4xl">{solution.icon}</span>
+                </div>
+                <h3 className="text-2xl font-bold mb-4">{solution.title}</h3>
+                <p className="text-text-secondary leading-relaxed">
+                  {solution.description}
+                </p>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonial Carousel */}
+      {/* Core Values */}
+      <section className="py-20 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 animate-slide-up">
+            <h2 className="text-5xl md:text-6xl font-bold mb-6">
+              Why We <span className="gradient-text">Exist</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-scale-in">
+            {coreValues.map((value, index) => (
+              <div key={index} className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
+                  <span className="text-3xl">{value.icon}</span>
+                </div>
+                <h3 className="text-2xl font-bold mb-4">{value.title}</h3>
+                <p className="text-text-secondary leading-relaxed">
+                  {value.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Client Logo Bar */}
+      <section className="py-16 px-6 lg:px-8 bg-dark-surface">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-2">
+              Trusted by Teams <span className="gradient-text">Like...</span>
+            </h2>
+          </div>
+          
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-60">
+            {clientLogos.map((logo, index) => (
+              <div key={index} className="text-white text-xl font-semibold" style={{width: logo.width}}>
+                {logo.name}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Client Testimonials */}
       <section className="py-20 px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-5xl md:text-6xl font-bold mb-6">
               What Our <span className="gradient-text">Clients Say</span>
             </h2>
-            <p className="text-xl text-text-secondary">
-              Real results from real businesses transforming with Nodematics.
-            </p>
           </div>
 
-          <Carousel className="w-full">
-            <CarouselContent>
-              {testimonials.map((testimonial, index) => (
-                <CarouselItem key={index}>
-                  <Card className="p-12 bg-dark-card border-white/10 text-center">
-                    <blockquote className="text-2xl md:text-3xl font-light mb-8 leading-relaxed">
-                      "{testimonial.quote}"
-                    </blockquote>
-                    <div className="flex flex-col items-center">
-                      <div className="w-16 h-16 bg-gradient-to-br from-accent-blue to-accent-purple rounded-full flex items-center justify-center mb-4">
-                        <span className="text-white font-bold text-xl">
-                          {testimonial.author.split(' ').map(name => name[0]).join('')}
-                        </span>
-                      </div>
-                      <div className="text-lg font-semibold">{testimonial.author}</div>
-                      <div className="text-text-secondary">{testimonial.title}</div>
-                      <div className="text-accent-blue font-medium">{testimonial.company}</div>
-                    </div>
-                  </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="bg-dark-card border-white/20 text-white hover:bg-white/10" />
-            <CarouselNext className="bg-dark-card border-white/20 text-white hover:bg-white/10" />
-          </Carousel>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="p-8 bg-dark-card border-white/10 text-center">
+                <blockquote className="text-lg mb-6 leading-relaxed">
+                  "{testimonial.quote}"
+                </blockquote>
+                <div className="text-accent-blue font-medium">
+                  — {testimonial.author}
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-6 lg:px-8">
+      {/* Final CTA */}
+      <section className="py-20 px-6 lg:px-8 bg-dark-surface">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Ready to Transform Your <span className="gradient-text">Business</span>?
+          <h2 className="text-5xl md:text-6xl font-bold mb-8">
+            Let's Build <span className="gradient-text">Smarter, Together</span>
           </h2>
-          <p className="text-xl text-text-secondary mb-8">
-            Join hundreds of companies who trust Nodematics for their digital transformation.
+          <p className="text-xl text-text-secondary mb-12 leading-relaxed">
+            Want to explore what's possible in just one hour? Book a free call—we'll map out ways to save time, automate tasks, and grow your business.
           </p>
-          <Link to="/contact" className="apple-button">
-            Start Your Journey Today
-          </Link>
+          <a href="#contact" className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90">
+            Book Your Free Strategy Call
+          </a>
         </div>
       </section>
     </Layout>
