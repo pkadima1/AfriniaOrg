@@ -32,7 +32,7 @@ const Blog = () => {
     try {
       // Extract sheet ID from your URL
       const sheetId = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
-      const apiKey = 'YOUR_GOOGLE_SHEETS_API_KEY'; // You'll need to add this
+      const apiKey = 'AIzaSyB29zszwpzTrWtc7ynAOxjn9Hd9bdigqBU'; // You'll need to add this
       const range = 'Sheet1!A:H'; // Adjust based on your sheet structure
       
       const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
