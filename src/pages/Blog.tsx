@@ -5,17 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar, User, Tag } from 'lucide-react';
-
-interface BlogPost {
-  title: string;
-  slug: string;
-  author: string;
-  date: string;
-  category: string;
-  summary: string;
-  publishedDocURL: string;
-  featuredImageURL: string;
-}
+import { fetchBlogPosts, BlogPost } from '@/utils/googleSheetsApi';
 
 const Blog = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -25,61 +15,41 @@ const Blog = () => {
   const [subscribing, setSubscribing] = useState(false);
 
   useEffect(() => {
-    fetchBlogPosts();
+    loadBlogPosts();
   }, []);
 
-  const fetchBlogPosts = async () => {
+  const loadBlogPosts = async () => {
     try {
-      // Extract sheet ID from your URL
-      const sheetId = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
-      const apiKey = 'AIzaSyB29zszwpzTrWtc7ynAOxjn9Hd9bdigqBU';
-      const range = 'Sheet1!A:H';
-      
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
-      
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      if (data.values) {
-        const [headers, ...rows] = data.values;
-        const blogPosts = rows.map((row: string[]) => ({
-          title: row[0] || '',
-          slug: row[1] || '',
-          author: row[2] || '',
-          date: row[3] || '',
-          category: row[4] || '',
-          summary: row[5] || '',
-          publishedDocURL: row[6] || '',
-          featuredImageURL: row[7] || ''
-        })).slice(0, 6);
-        
-        setPosts(blogPosts);
+      const blogPosts = await fetchBlogPosts();
+      if (blogPosts.length > 0) {
+        setPosts(blogPosts.slice(0, 6));
+      } else {
+        // Fallback sample data
+        setPosts([
+          {
+            title: "Getting Started with AI Content Creation",
+            slug: "getting-started-ai-content",
+            author: "NodeMatics Team",
+            date: "2024-01-15",
+            category: "AI Tools",
+            summary: "Learn how to leverage AI for creating high-quality, engaging content that ranks well in search engines.",
+            publishedDocURL: "https://docs.google.com/document/d/your-doc-id/pub",
+            featuredImageURL: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=400&fit=crop"
+          },
+          {
+            title: "SEO Best Practices for 2024",
+            slug: "seo-best-practices-2024",
+            author: "SEO Expert",
+            date: "2024-01-10",
+            category: "SEO",
+            summary: "Discover the latest SEO techniques and strategies that will help your content rank higher in search results.",
+            publishedDocURL: "https://docs.google.com/document/d/your-doc-id/pub",
+            featuredImageURL: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=400&fit=crop"
+          }
+        ]);
       }
     } catch (error) {
-      console.error('Error fetching blog posts:', error);
-      // For demo purposes, using sample data with placeholder images
-      setPosts([
-        {
-          title: "Getting Started with AI Content Creation",
-          slug: "getting-started-ai-content",
-          author: "NodeMatics Team",
-          date: "2024-01-15",
-          category: "AI Tools",
-          summary: "Learn how to leverage AI for creating high-quality, engaging content that ranks well in search engines.",
-          publishedDocURL: "https://docs.google.com/document/d/your-doc-id/pub",
-          featuredImageURL: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=400&fit=crop"
-        },
-        {
-          title: "SEO Best Practices for 2024",
-          slug: "seo-best-practices-2024",
-          author: "SEO Expert",
-          date: "2024-01-10",
-          category: "SEO",
-          summary: "Discover the latest SEO techniques and strategies that will help your content rank higher in search results.",
-          publishedDocURL: "https://docs.google.com/document/d/your-doc-id/pub",
-          featuredImageURL: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=400&fit=crop"
-        }
-      ]);
+      console.error('Error loading blog posts:', error);
     }
     setLoading(false);
   };

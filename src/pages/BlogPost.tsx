@@ -6,28 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, User, ArrowLeft, MessageCircle, Reply } from 'lucide-react';
-
-interface BlogPost {
-  title: string;
-  slug: string;
-  author: string;
-  date: string;
-  category: string;
-  summary: string;
-  publishedDocURL: string;
-  featuredImageURL: string;
-}
-
-interface Comment {
-  id: string;
-  name: string;
-  email?: string;
-  message: string;
-  date: string;
-  parentId?: string;
-  postSlug: string;
-  replies?: Comment[];
-}
+import { fetchBlogPosts, fetchComments, addComment, fetchGoogleDocContent, BlogPost, Comment } from '@/utils/googleSheetsApi';
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -42,76 +21,28 @@ const BlogPost = () => {
   const [commentMessage, setCommentMessage] = useState('');
   const [commentStatus, setCommentStatus] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (slug) {
-      fetchBlogPost();
-      fetchComments();
+      loadBlogPost();
+      loadComments();
     }
   }, [slug]);
 
-  const fetchBlogPost = async () => {
+  const loadBlogPost = async () => {
     try {
-      const sheetId = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
-      const apiKey = 'AIzaSyB29zszwpzTrWtc7ynAOxjn9Hd9bdigqBU';
-      const range = 'Sheet1!A:H';
-      
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
-      
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      let foundPost = null;
-      
-      if (data.values) {
-        const [headers, ...rows] = data.values;
-        const blogPosts = rows.map((row: string[]) => ({
-          title: row[0] || '',
-          slug: row[1] || '',
-          author: row[2] || '',
-          date: row[3] || '',
-          category: row[4] || '',
-          summary: row[5] || '',
-          publishedDocURL: row[6] || '',
-          featuredImageURL: row[7] || ''
-        }));
-        
-        foundPost = blogPosts.find(p => p.slug === slug);
-      }
+      const blogPosts = await fetchBlogPosts();
+      const foundPost = blogPosts.find(p => p.slug === slug);
       
       if (foundPost) {
         setPost(foundPost);
         
-        // Fetch content from Google Doc
-        if (foundPost.publishedDocURL && foundPost.publishedDocURL.includes('docs.google.com')) {
-          try {
-            const response = await fetch(foundPost.publishedDocURL);
-            const htmlContent = await response.text();
-            
-            // Extract content from the Google Doc HTML
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlContent, 'text/html');
-            
-            // Remove Google Docs specific elements
-            const scripts = doc.querySelectorAll('script');
-            scripts.forEach(script => script.remove());
-            
-            const styles = doc.querySelectorAll('style');
-            styles.forEach(style => style.remove());
-            
-            // Get the main content
-            const bodyContent = doc.querySelector('#contents') || doc.body;
-            if (bodyContent) {
-              setContent(bodyContent.innerHTML);
-            } else {
-              setContent('<p>Content could not be loaded from the Google Doc. Please check that the document is published to the web.</p>');
-            }
-          } catch (error) {
-            console.error('Error fetching Google Doc content:', error);
-            setContent('<p>Error loading content from Google Doc. Please check the document URL and ensure it\'s published to the web.</p>');
-          }
+        if (foundPost.publishedDocURL) {
+          const docContent = await fetchGoogleDocContent(foundPost.publishedDocURL);
+          setContent(docContent);
         } else {
-          setContent('<p>No valid Google Doc URL provided for this post.</p>');
+          setContent('<p>No Google Doc URL provided for this post.</p>');
         }
       } else {
         // Fallback for demo
@@ -123,112 +54,85 @@ const BlogPost = () => {
           category: "Sample",
           summary: "This is a sample blog post.",
           publishedDocURL: "",
-          featuredImageURL: ""
+          featuredImageURL: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop"
         });
         setContent('<h2>Sample Content</h2><p>This is sample content. Add your Google Doc URL to the sheet to see real content here.</p>');
       }
-      
     } catch (error) {
-      console.error('Error fetching blog post:', error);
+      console.error('Error loading blog post:', error);
       setContent('<p>Error loading blog post.</p>');
     }
     setLoading(false);
   };
 
-  const fetchComments = async () => {
+  const loadComments = async () => {
+    if (!slug) return;
+    
     try {
-      const sheetId = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
-      const apiKey = 'AIzaSyB29zszwpzTrWtc7ynAOxjn9Hd9bdigqBU';
-      const range = 'Comments!A:G'; // Comments sheet range
-      
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
-      
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      if (data.values) {
-        const [headers, ...rows] = data.values;
-        const fetchedComments = rows
-          .filter((row: string[]) => row[0] === slug) // Filter by post slug
-          .map((row: string[]) => ({
-            id: row[1] || '',
-            postSlug: row[0] || '',
-            name: row[2] || '',
-            email: row[3] || '',
-            message: row[4] || '',
-            date: row[5] || '',
-            parentId: row[6] || undefined
-          }));
-        
-        // Organize comments with replies
-        const topLevelComments = fetchedComments.filter(c => !c.parentId);
-        const replies = fetchedComments.filter(c => c.parentId);
-        
-        const commentsWithReplies = topLevelComments.map(comment => ({
-          ...comment,
-          replies: replies.filter(reply => reply.parentId === comment.id)
-        }));
-        
-        setComments(commentsWithReplies);
-      }
+      const fetchedComments = await fetchComments(slug);
+      setComments(fetchedComments);
     } catch (error) {
-      console.error('Error fetching comments:', error);
-      // Comments sheet might not exist yet
+      console.error('Error loading comments:', error);
       setComments([]);
     }
   };
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!slug || !commentName.trim() || !commentMessage.trim()) return;
+    
+    setSubmitting(true);
     try {
-      const newComment: Comment = {
-        id: Date.now().toString(),
-        postSlug: slug || '',
+      const success = await addComment({
+        postSlug: slug,
         name: commentName,
         email: commentEmail,
         message: commentMessage,
-        date: new Date().toISOString(),
         parentId: replyingTo || undefined
-      };
+      });
       
-      console.log('New comment to be added to sheet:', newComment);
-      console.log('Add this row to Comments sheet:', [
-        newComment.postSlug,
-        newComment.id,
-        newComment.name,
-        newComment.email,
-        newComment.message,
-        newComment.date,
-        newComment.parentId || ''
-      ]);
-      
-      // For now, add to local state
-      if (replyingTo) {
-        const updatedComments = comments.map(comment => {
-          if (comment.id === replyingTo) {
-            return {
-              ...comment,
-              replies: [...(comment.replies || []), newComment]
-            };
-          }
-          return comment;
-        });
-        setComments(updatedComments);
+      if (success) {
+        // Create temporary comment for immediate display
+        const tempComment: Comment = {
+          id: Date.now().toString(),
+          postSlug: slug,
+          name: commentName,
+          email: commentEmail,
+          message: commentMessage,
+          date: new Date().toISOString(),
+          parentId: replyingTo || undefined
+        };
+        
+        if (replyingTo) {
+          const updatedComments = comments.map(comment => {
+            if (comment.id === replyingTo) {
+              return {
+                ...comment,
+                replies: [...(comment.replies || []), tempComment]
+              };
+            }
+            return comment;
+          });
+          setComments(updatedComments);
+        } else {
+          setComments([...comments, tempComment]);
+        }
+        
+        setCommentName('');
+        setCommentEmail('');
+        setCommentMessage('');
+        setReplyingTo(null);
+        setCommentStatus(replyingTo ? 'Reply posted!' : 'Comment posted!');
+        
+        setTimeout(() => setCommentStatus(''), 5000);
       } else {
-        setComments([...comments, newComment]);
+        setCommentStatus('Error posting comment. Please try again.');
       }
-      
-      setCommentName('');
-      setCommentEmail('');
-      setCommentMessage('');
-      setReplyingTo(null);
-      setCommentStatus(replyingTo ? 'Reply posted!' : 'Comment posted!');
-      
-      setTimeout(() => setCommentStatus(''), 5000);
     } catch (error) {
       console.error('Error submitting comment:', error);
       setCommentStatus('Error submitting comment. Please try again.');
     }
+    setSubmitting(false);
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -387,12 +291,14 @@ const BlogPost = () => {
                   value={commentName}
                   onChange={(e) => setCommentName(e.target.value)}
                   required
+                  disabled={submitting}
                 />
                 <Input
                   type="email"
                   placeholder="Email (optional)"
                   value={commentEmail}
                   onChange={(e) => setCommentEmail(e.target.value)}
+                  disabled={submitting}
                 />
               </div>
               <Textarea
@@ -401,9 +307,10 @@ const BlogPost = () => {
                 value={commentMessage}
                 onChange={(e) => setCommentMessage(e.target.value)}
                 required
+                disabled={submitting}
               />
-              <Button type="submit" className="apple-button">
-                {replyingTo ? 'Post Reply' : 'Post Comment'}
+              <Button type="submit" className="apple-button" disabled={submitting}>
+                {submitting ? 'Posting...' : (replyingTo ? 'Post Reply' : 'Post Comment')}
               </Button>
               {commentStatus && (
                 <p className="text-accent-blue">{commentStatus}</p>
@@ -424,19 +331,14 @@ const BlogPost = () => {
         <div className="mt-8 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
           <h3 className="text-lg font-semibold mb-2">Comment Storage Setup</h3>
           <p className="text-sm text-blue-300 mb-2">
-            To store comments in your Google Sheet, create a new sheet tab called "Comments" with these columns:
+            Comments are currently logged to console in the correct format for your Google Sheet. 
+            To automatically save comments, you need to create a Google Apps Script Web App.
           </p>
-          <ul className="text-sm text-blue-200 list-disc list-inside mb-2">
-            <li>PostSlug (A) - Blog post identifier</li>
-            <li>CommentID (B) - Unique comment ID</li>
-            <li>Name (C) - Commenter name</li>
-            <li>Email (D) - Commenter email</li>
-            <li>Message (E) - Comment text</li>
-            <li>Date (F) - Comment timestamp</li>
-            <li>ParentID (G) - For replies (leave empty for top-level comments)</li>
-          </ul>
+          <p className="text-sm text-blue-200 mb-2">
+            Create a "Comments" sheet with columns: PostSlug (A), CommentID (B), Name (C), Email (D), Message (E), Date (F), ParentID (G)
+          </p>
           <p className="text-sm text-blue-300">
-            Comments are currently logged to console. Check browser console to see the data format for manual entry.
+            Check browser console to see the exact data format for manual entry or Google Apps Script integration.
           </p>
         </div>
       </div>
