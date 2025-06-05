@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -23,6 +22,7 @@ const Blog = () => {
   const [email, setEmail] = useState('');
   const [subscribeMessage, setSubscribeMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [subscribing, setSubscribing] = useState(false);
 
   useEffect(() => {
     fetchBlogPosts();
@@ -86,16 +86,34 @@ const Blog = () => {
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email.trim()) return;
+
+    setSubscribing(true);
     try {
-      // Here you would typically send to your Google Sheets
+      // Add email to Google Sheets using Google Apps Script Web App
+      const sheetId = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
+      
+      // For now, we'll use a simple approach with Google Forms or you can create a Google Apps Script
+      // This is a placeholder - you'll need to create a Google Apps Script Web App to handle this
+      const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // You'll need to create this
+      
+      // Alternative: Use Google Forms (simpler approach)
+      // Create a Google Form connected to your sheet and submit to it
+      
+      // For now, let's show success message and log the email
       console.log('Subscribing email:', email);
+      console.log('Email would be added to sheet:', sheetId);
+      
       setSubscribeMessage('Thank you for subscribing! You\'ll receive our weekly articles.');
       setEmail('');
       setTimeout(() => setSubscribeMessage(''), 5000);
+      
     } catch (error) {
       console.error('Error subscribing:', error);
       setSubscribeMessage('Error subscribing. Please try again.');
+      setTimeout(() => setSubscribeMessage(''), 5000);
     }
+    setSubscribing(false);
   };
 
   if (loading) {
@@ -185,14 +203,23 @@ const Blog = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="flex-1"
+                disabled={subscribing}
               />
-              <Button type="submit" className="apple-button">
-                Subscribe
+              <Button type="submit" className="apple-button" disabled={subscribing}>
+                {subscribing ? 'Subscribing...' : 'Subscribe'}
               </Button>
             </form>
             {subscribeMessage && (
               <p className="text-center mt-4 text-accent-blue">{subscribeMessage}</p>
             )}
+            <div className="mt-4 p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
+              <p className="text-sm text-yellow-300">
+                <strong>Setup needed:</strong> To enable email subscriptions, create a Google Apps Script Web App or Google Form connected to your sheet. 
+                <a href="https://developers.google.com/apps-script/guides/web" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline ml-1">
+                  Learn more
+                </a>
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>
