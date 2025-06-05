@@ -25,6 +25,7 @@ interface Comment {
   message: string;
   date: string;
   parentId?: string;
+  postSlug: string;
   replies?: Comment[];
 }
 
@@ -45,12 +46,12 @@ const BlogPost = () => {
   useEffect(() => {
     if (slug) {
       fetchBlogPost();
+      fetchComments();
     }
   }, [slug]);
 
   const fetchBlogPost = async () => {
     try {
-      // Fetch from Google Sheets
       const sheetId = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
       const apiKey = 'AIzaSyB29zszwpzTrWtc7ynAOxjn9Hd9bdigqBU';
       const range = 'Sheet1!A:H';
@@ -134,11 +135,55 @@ const BlogPost = () => {
     setLoading(false);
   };
 
+  const fetchComments = async () => {
+    try {
+      const sheetId = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
+      const apiKey = 'AIzaSyB29zszwpzTrWtc7ynAOxjn9Hd9bdigqBU';
+      const range = 'Comments!A:G'; // Comments sheet range
+      
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.values) {
+        const [headers, ...rows] = data.values;
+        const fetchedComments = rows
+          .filter((row: string[]) => row[0] === slug) // Filter by post slug
+          .map((row: string[]) => ({
+            id: row[1] || '',
+            postSlug: row[0] || '',
+            name: row[2] || '',
+            email: row[3] || '',
+            message: row[4] || '',
+            date: row[5] || '',
+            parentId: row[6] || undefined
+          }));
+        
+        // Organize comments with replies
+        const topLevelComments = fetchedComments.filter(c => !c.parentId);
+        const replies = fetchedComments.filter(c => c.parentId);
+        
+        const commentsWithReplies = topLevelComments.map(comment => ({
+          ...comment,
+          replies: replies.filter(reply => reply.parentId === comment.id)
+        }));
+        
+        setComments(commentsWithReplies);
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      // Comments sheet might not exist yet
+      setComments([]);
+    }
+  };
+
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const newComment: Comment = {
         id: Date.now().toString(),
+        postSlug: slug || '',
         name: commentName,
         email: commentEmail,
         message: commentMessage,
@@ -146,10 +191,19 @@ const BlogPost = () => {
         parentId: replyingTo || undefined
       };
       
-      console.log('New comment:', newComment);
+      console.log('New comment to be added to sheet:', newComment);
+      console.log('Add this row to Comments sheet:', [
+        newComment.postSlug,
+        newComment.id,
+        newComment.name,
+        newComment.email,
+        newComment.message,
+        newComment.date,
+        newComment.parentId || ''
+      ]);
       
+      // For now, add to local state
       if (replyingTo) {
-        // Add as reply to existing comment
         const updatedComments = comments.map(comment => {
           if (comment.id === replyingTo) {
             return {
@@ -161,7 +215,6 @@ const BlogPost = () => {
         });
         setComments(updatedComments);
       } else {
-        // Add as new top-level comment
         setComments([...comments, newComment]);
       }
       
@@ -178,6 +231,11 @@ const BlogPost = () => {
     }
   };
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    target.src = "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop";
+  };
+
   const handleReply = (commentId: string) => {
     setReplyingTo(commentId);
     setCommentStatus('');
@@ -187,6 +245,38 @@ const BlogPost = () => {
     setReplyingTo(null);
     setCommentMessage('');
   };
+
+  const renderComment = (comment: Comment, isReply = false) => (
+    <div key={comment.id} className={`${isReply ? 'ml-8 border-l-2 border-accent-blue pl-4' : 'border-l-2 border-accent-blue pl-4'} mb-6`}>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">{comment.name}</span>
+          <span className="text-sm text-gray-400">
+            {new Date(comment.date).toLocaleDateString()}
+          </span>
+        </div>
+        {!isReply && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleReply(comment.id)}
+            className="text-accent-blue hover:text-accent-purple"
+          >
+            <Reply className="w-4 h-4 mr-1" />
+            Reply
+          </Button>
+        )}
+      </div>
+      <p className="text-gray-300 mb-2">{comment.message}</p>
+      
+      {/* Render replies */}
+      {comment.replies && comment.replies.length > 0 && (
+        <div className="mt-4">
+          {comment.replies.map(reply => renderComment(reply, true))}
+        </div>
+      )}
+    </div>
+  );
 
   if (loading) {
     return (
@@ -222,38 +312,6 @@ const BlogPost = () => {
     );
   }
 
-  const renderComment = (comment: Comment, isReply = false) => (
-    <div key={comment.id} className={`${isReply ? 'ml-8 border-l-2 border-accent-blue pl-4' : 'border-l-2 border-accent-blue pl-4'} mb-6`}>
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">{comment.name}</span>
-          <span className="text-sm text-gray-400">
-            {new Date(comment.date).toLocaleDateString()}
-          </span>
-        </div>
-        {!isReply && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => handleReply(comment.id)}
-            className="text-accent-blue hover:text-accent-purple"
-          >
-            <Reply className="w-4 h-4 mr-1" />
-            Reply
-          </Button>
-        )}
-      </div>
-      <p className="text-gray-300 mb-2">{comment.message}</p>
-      
-      {/* Render replies */}
-      {comment.replies && comment.replies.length > 0 && (
-        <div className="mt-4">
-          {comment.replies.map(reply => renderComment(reply, true))}
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -282,9 +340,10 @@ const BlogPost = () => {
             {post.featuredImageURL && (
               <div className="aspect-video overflow-hidden rounded-lg mb-8">
                 <img 
-                  src={post.featuredImageURL} 
+                  src={post.featuredImageURL || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop"} 
                   alt={post.title}
                   className="w-full h-full object-cover"
+                  onError={handleImageError}
                 />
               </div>
             )}
@@ -361,6 +420,25 @@ const BlogPost = () => {
             </div>
           </CardContent>
         </Card>
+        
+        <div className="mt-8 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+          <h3 className="text-lg font-semibold mb-2">Comment Storage Setup</h3>
+          <p className="text-sm text-blue-300 mb-2">
+            To store comments in your Google Sheet, create a new sheet tab called "Comments" with these columns:
+          </p>
+          <ul className="text-sm text-blue-200 list-disc list-inside mb-2">
+            <li>PostSlug (A) - Blog post identifier</li>
+            <li>CommentID (B) - Unique comment ID</li>
+            <li>Name (C) - Commenter name</li>
+            <li>Email (D) - Commenter email</li>
+            <li>Message (E) - Comment text</li>
+            <li>Date (F) - Comment timestamp</li>
+            <li>ParentID (G) - For replies (leave empty for top-level comments)</li>
+          </ul>
+          <p className="text-sm text-blue-300">
+            Comments are currently logged to console. Check browser console to see the data format for manual entry.
+          </p>
+        </div>
       </div>
     </Layout>
   );

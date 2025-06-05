@@ -32,8 +32,8 @@ const Blog = () => {
     try {
       // Extract sheet ID from your URL
       const sheetId = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
-      const apiKey = 'AIzaSyB29zszwpzTrWtc7ynAOxjn9Hd9bdigqBU'; // You'll need to add this
-      const range = 'Sheet1!A:H'; // Adjust based on your sheet structure
+      const apiKey = 'AIzaSyB29zszwpzTrWtc7ynAOxjn9Hd9bdigqBU';
+      const range = 'Sheet1!A:H';
       
       const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
       
@@ -51,13 +51,13 @@ const Blog = () => {
           summary: row[5] || '',
           publishedDocURL: row[6] || '',
           featuredImageURL: row[7] || ''
-        })).slice(0, 6); // Show latest 6 posts
+        })).slice(0, 6);
         
         setPosts(blogPosts);
       }
     } catch (error) {
       console.error('Error fetching blog posts:', error);
-      // For demo purposes, using sample data
+      // For demo purposes, using sample data with placeholder images
       setPosts([
         {
           title: "Getting Started with AI Content Creation",
@@ -67,7 +67,7 @@ const Blog = () => {
           category: "AI Tools",
           summary: "Learn how to leverage AI for creating high-quality, engaging content that ranks well in search engines.",
           publishedDocURL: "https://docs.google.com/document/d/your-doc-id/pub",
-          featuredImageURL: "/placeholder.svg"
+          featuredImageURL: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=400&fit=crop"
         },
         {
           title: "SEO Best Practices for 2024",
@@ -77,7 +77,7 @@ const Blog = () => {
           category: "SEO",
           summary: "Discover the latest SEO techniques and strategies that will help your content rank higher in search results.",
           publishedDocURL: "https://docs.google.com/document/d/your-doc-id/pub",
-          featuredImageURL: "/placeholder.svg"
+          featuredImageURL: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=400&fit=crop"
         }
       ]);
     }
@@ -116,6 +116,11 @@ const Blog = () => {
     setSubscribing(false);
   };
 
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    target.src = "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop";
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -151,9 +156,10 @@ const Blog = () => {
               {post.featuredImageURL && (
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img 
-                    src={post.featuredImageURL} 
+                    src={post.featuredImageURL || "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop"} 
                     alt={post.title}
                     className="w-full h-full object-cover"
+                    onError={handleImageError}
                   />
                 </div>
               )}
