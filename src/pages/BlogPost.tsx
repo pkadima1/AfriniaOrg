@@ -6,11 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, User, ArrowLeft, MessageCircle, Reply } from 'lucide-react';
-import { fetchBlogPosts, fetchComments, addComment, fetchGoogleDocContent, BlogPost, Comment } from '@/utils/googleSheetsApi';
+import { fetchBlogPosts, fetchComments, addComment, fetchGoogleDocContent, type BlogPost as BlogPostType, Comment } from '@/utils/googleSheetsApi';
 
 const BlogPost = () => {
   const { slug } = useParams();
-  const [post, setPost] = useState<BlogPost | null>(null);
+  const [post, setPost] = useState<BlogPostType | null>(null);
   const [content, setContent] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
