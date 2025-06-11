@@ -107,19 +107,8 @@ export const addComment = async (comment: Omit<Comment, 'id' | 'date'>): Promise
       comment.parentId || ''
     ];
     
-    // For now, we'll use a simple approach by calling a public endpoint
-    // Note: This requires setting up a Google Apps Script web app
-    // Alternative: Use Google Forms or manual entry
-    
     console.log('Comment to be added:', rowData);
     console.log('Add this row to your Comments sheet manually or set up Google Apps Script');
-    
-    // Since we can't directly write to Google Sheets from the frontend without CORS issues,
-    // we'll simulate the addition for now and log the data
-    // In a real implementation, you'd need either:
-    // 1. A backend service
-    // 2. Google Apps Script web app
-    // 3. Google Forms submission
     
     return true;
   } catch (error) {
@@ -130,19 +119,38 @@ export const addComment = async (comment: Omit<Comment, 'id' | 'date'>): Promise
 
 export const fetchGoogleDocContent = async (docUrl: string): Promise<string> => {
   try {
+    console.log('Fetching content from URL:', docUrl);
+    
     if (!docUrl || !docUrl.includes('docs.google.com')) {
+      console.log('Invalid Google Doc URL:', docUrl);
       return '<p>No valid Google Doc URL provided for this post.</p>';
     }
     
-    // Convert Google Docs URL to published format if needed
+    // The URL from your sheet appears to already be in published format
     let publishedUrl = docUrl;
+    
+    // If it's an edit URL, convert it to published format
     if (docUrl.includes('/edit')) {
-      publishedUrl = docUrl.replace('/edit#gid=', '/export?format=html&gid=');
-      publishedUrl = publishedUrl.replace('/edit', '/export?format=html');
+      const docId = docUrl.match(/\/document\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (docId) {
+        publishedUrl = `https://docs.google.com/document/d/e/${docId}/pub`;
+      }
     }
     
-    const response = await fetch(publishedUrl);
-    const htmlContent = await response.text();
+    console.log('Using published URL:', publishedUrl);
+    
+    // Use a proxy or CORS-enabled approach
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(publishedUrl)}`;
+    
+    const response = await fetch(proxyUrl);
+    const data = await response.json();
+    
+    if (!data.contents) {
+      console.log('No content received from proxy');
+      return '<p>Content could not be loaded from the Google Doc. Please check that the document is published to the web.</p>';
+    }
+    
+    const htmlContent = data.contents;
     
     // Extract content from the Google Doc HTML
     const parser = new DOMParser();
@@ -155,13 +163,31 @@ export const fetchGoogleDocContent = async (docUrl: string): Promise<string> => 
     const styles = doc.querySelectorAll('style');
     styles.forEach(style => style.remove());
     
-    // Get the main content
-    const bodyContent = doc.querySelector('#contents') || doc.body;
+    // Get the main content - try different selectors
+    let bodyContent = doc.querySelector('#contents') || 
+                     doc.querySelector('#doc-content') || 
+                     doc.querySelector('.doc-content') ||
+                     doc.querySelector('body');
+    
     if (bodyContent) {
-      return bodyContent.innerHTML;
+      // Clean up the content
+      let content = bodyContent.innerHTML;
+      
+      // Remove any remaining script tags
+      content = content.replace(/<script[^>]*>.*?<\/script>/gi, '');
+      
+      // Basic styling for better appearance
+      content = content.replace(/<p/g, '<p class="mb-4"');
+      content = content.replace(/<h1/g, '<h1 class="text-3xl font-bold mb-6"');
+      content = content.replace(/<h2/g, '<h2 class="text-2xl font-semibold mb-4"');
+      content = content.replace(/<h3/g, '<h3 class="text-xl font-medium mb-3"');
+      
+      console.log('Successfully extracted content');
+      return content;
     }
     
-    return '<p>Content could not be loaded from the Google Doc. Please check that the document is published to the web.</p>';
+    console.log('Could not find content in document structure');
+    return '<p>Content could not be extracted from the Google Doc. Please check the document format.</p>';
   } catch (error) {
     console.error('Error fetching Google Doc content:', error);
     return '<p>Error loading content from Google Doc. Please check the document URL and ensure it\'s published to the web.</p>';

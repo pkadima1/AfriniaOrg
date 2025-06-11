@@ -23,35 +23,115 @@ const Products = () => {
         </div>
       </section>
 
-      {/* UI Preview Section */}
+      {/* Enhanced UI Preview Section */}
       <section className="py-16 px-6 lg:px-8 bg-dark-surface">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">See It in Action</h2>
-            <p className="text-text-secondary">Experience the intuitive interface that makes content creation effortless</p>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-6">See It in Action</h2>
+            <p className="text-xl text-text-secondary max-w-3xl mx-auto">
+              Watch EngagePerfect transform your content creation workflow with intelligent automation and human-like results
+            </p>
           </div>
           
-          <div className="bg-dark-card border border-white/10 rounded-3xl p-8 max-h-96 overflow-y-auto">
-            <div className="space-y-4">
-              <div className="bg-accent-blue/10 rounded-2xl p-4 border-l-4 border-accent-blue">
-                <h3 className="font-semibold mb-2">✨ Content Generated</h3>
-                <p className="text-sm text-text-secondary">"Take your design to the next level with these modern font combinations that elevate your brand presence..."</p>
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            {/* Live Demo Interface */}
+            <div className="bg-dark-card border border-white/10 rounded-3xl p-8 overflow-hidden">
+              <h3 className="text-2xl font-semibold mb-6 text-center">Live Content Generator</h3>
               
-              <div className="bg-accent-purple/10 rounded-2xl p-4 border-l-4 border-accent-purple">
-                <h3 className="font-semibold mb-2">📊 SEO Score: 94/100</h3>
-                <p className="text-sm text-text-secondary">Perfect keyword density • EEAT compliant • Social media ready</p>
+              {/* Mock Interface */}
+              <div className="space-y-4">
+                <div className="bg-dark-bg rounded-2xl p-4 border border-accent-blue/30">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-3 h-3 bg-accent-blue rounded-full"></div>
+                    <span className="text-sm font-medium">Input Prompt</span>
+                  </div>
+                  <p className="text-sm text-gray-300 bg-dark-surface rounded-lg p-3">
+                    "Write a blog post about modern font combinations for web design"
+                  </p>
+                </div>
+                
+                <div className="text-center py-2">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent-purple/20 rounded-full">
+                    <div className="w-2 h-2 bg-accent-purple rounded-full animate-pulse"></div>
+                    <span className="text-sm text-accent-purple">AI Processing...</span>
+                  </div>
+                </div>
+                
+                <div className="bg-accent-blue/10 rounded-2xl p-4 border-l-4 border-accent-blue">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-accent-blue">Generated Content</h4>
+                    <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-full">SEO: 94/100</span>
+                  </div>
+                  <p className="text-sm text-gray-300 leading-relaxed">
+                    "Typography is the silent voice of your brand. When selecting font combinations for modern web design, 
+                    consider pairing a clean sans-serif header like Inter with a readable body font such as Source Sans Pro..."
+                  </p>
+                  <div className="flex gap-2 mt-3">
+                    <span className="text-xs bg-accent-blue/20 text-accent-blue px-2 py-1 rounded">1,247 words</span>
+                    <span className="text-xs bg-accent-purple/20 text-accent-purple px-2 py-1 rounded">EEAT Compliant</span>
+                    <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded">Ready to Publish</span>
+                  </div>
+                </div>
               </div>
-              
-              <div className="bg-accent-blue/10 rounded-2xl p-4 border-l-4 border-accent-blue">
-                <h3 className="font-semibold mb-2">🎯 Caption Ideas</h3>
-                <p className="text-sm text-text-secondary">"Boost engagement in seconds with AI-powered captions tailored to your audience..."</p>
-              </div>
-              
-              <div className="bg-accent-purple/10 rounded-2xl p-4 border-l-4 border-accent-purple">
-                <h3 className="font-semibold mb-2">📝 Blog Post Ready</h3>
-                <p className="text-sm text-text-secondary">"Writer's block? Not anymore. Generate comprehensive articles with proper structure..."</p>
-              </div>
+            </div>
+
+            {/* Features Showcase */}
+            <div className="space-y-6">
+              <Card className="p-6 bg-gradient-to-br from-accent-blue/10 to-accent-purple/10 border-accent-blue/30 card-hover">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-accent-blue/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span className="text-2xl">⚡</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2 text-accent-blue">Lightning Fast Generation</h3>
+                    <p className="text-sm text-gray-300">Generate comprehensive blog posts, social media content, and marketing copy in seconds, not hours.</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-gradient-to-br from-accent-purple/10 to-accent-blue/10 border-accent-purple/30 card-hover">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-accent-purple/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span className="text-2xl">🎯</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2 text-accent-purple">SEO Optimized</h3>
+                    <p className="text-sm text-gray-300">Every piece of content is automatically optimized for search engines with proper keyword density and structure.</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-gradient-to-br from-green-500/10 to-accent-blue/10 border-green-500/30 card-hover">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span className="text-2xl">🧠</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2 text-green-400">Human-Like Quality</h3>
+                    <p className="text-sm text-gray-300">Advanced AI models ensure your content sounds natural and engaging, never robotic or generic.</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+
+          {/* Stats Section */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="text-center p-6 bg-dark-card rounded-2xl border border-white/10">
+              <div className="text-3xl font-bold text-accent-blue mb-2">10x</div>
+              <div className="text-sm text-gray-400">Faster Content Creation</div>
+            </div>
+            <div className="text-center p-6 bg-dark-card rounded-2xl border border-white/10">
+              <div className="text-3xl font-bold text-accent-purple mb-2">94%</div>
+              <div className="text-sm text-gray-400">Average SEO Score</div>
+            </div>
+            <div className="text-center p-6 bg-dark-card rounded-2xl border border-white/10">
+              <div className="text-3xl font-bold text-green-400 mb-2">50+</div>
+              <div className="text-sm text-gray-400">Content Types</div>
+            </div>
+            <div className="text-center p-6 bg-dark-card rounded-2xl border border-white/10">
+              <div className="text-3xl font-bold text-accent-blue mb-2">24/7</div>
+              <div className="text-sm text-gray-400">AI Availability</div>
             </div>
           </div>
         </div>
@@ -292,10 +372,10 @@ const Products = () => {
               Start Free Trial
             </Link>
             <Link 
-              to="/pricing" 
+              to="/contact" 
               className="px-8 py-4 border border-white/20 text-white rounded-2xl hover:bg-white/5 transition-all duration-300"
             >
-              View Pricing
+              Request Demo
             </Link>
           </div>
         </div>
