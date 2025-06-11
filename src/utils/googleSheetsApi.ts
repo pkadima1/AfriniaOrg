@@ -1,4 +1,3 @@
-
 // Google Sheets API utility functions
 const SHEET_ID = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
 const API_KEY = 'AIzaSyB29zszwpzTrWtc7ynAOxjn9Hd9bdigqBU';
@@ -25,6 +24,22 @@ export interface Comment {
   replies?: Comment[];
 }
 
+// Helper function to convert Google Drive sharing links to direct image URLs
+const convertGoogleDriveUrl = (url: string): string => {
+  if (!url || !url.includes('drive.google.com')) {
+    return url;
+  }
+  
+  // Extract file ID from Google Drive URLs
+  const fileIdMatch = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+  if (fileIdMatch && fileIdMatch[1]) {
+    const fileId = fileIdMatch[1];
+    return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  }
+  
+  return url;
+};
+
 export const fetchBlogPosts = async (): Promise<BlogPost[]> => {
   try {
     const range = 'Sheet1!A:H';
@@ -43,7 +58,7 @@ export const fetchBlogPosts = async (): Promise<BlogPost[]> => {
         category: row[4] || '',
         summary: row[5] || '',
         publishedDocURL: row[6] || '',
-        featuredImageURL: row[7] || ''
+        featuredImageURL: convertGoogleDriveUrl(row[7] || '')
       }));
     }
     return [];
