@@ -4,7 +4,6 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -21,13 +20,21 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('contact-form', {
-        body: formData
+      // Submit directly to Google Sheets
+      const response = await fetch('https://script.google.com/macros/s/AKfycbzQXuJqMzKpI_r4VfYI6mO9NjwlXqgftRk2SLH7HXwJBgHsQ5LyKRKCHiJ7dsBKxjOLrQ/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          name: formData.name,
+          email: formData.email,
+          company: formData.company || '',
+          message: formData.message,
+          submitted_at: new Date().toISOString()
+        })
       });
-
-      if (error) {
-        throw error;
-      }
 
       toast({
         title: "Message sent successfully!",
