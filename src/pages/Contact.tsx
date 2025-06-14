@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
@@ -21,20 +20,18 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      // Submit directly to Google Sheets
-      const response = await fetch('https://script.google.com/macros/s/AKfycbxNJJTxieOx89PalsB00f5T6dZUSvAla9HSb9Re75YGq9hIW-noGAKO-so3z8pAUu3w/exec', {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          name: formData.name,
-          email: formData.email,
-          company: formData.company || '',
-          message: formData.message,
-          submitted_at: new Date().toISOString()
-        })
+      // Create URL with parameters for Google Apps Script
+      const params = new URLSearchParams({
+        name: formData.name,
+        email: formData.email,
+        company: formData.company || '',
+        message: formData.message,
+        submitted_at: new Date().toISOString()
+      });
+
+      const response = await fetch(`https://script.google.com/macros/s/AKfycbxNJJTxieOx89PalsB00f5T6dZUSvAla9HSb9Re75YGq9hIW-noGAKO-so3z8pAUu3w/exec?${params.toString()}`, {
+        method: 'GET',
+        mode: 'no-cors'
       });
 
       toast({
