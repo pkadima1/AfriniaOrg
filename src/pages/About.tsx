@@ -1,10 +1,75 @@
-
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
+import { useEffect, useState, useRef } from 'react';
 
 const About = () => {
+  const [isCalendarReady, setIsCalendarReady] = useState(false);
+  const calendarTargetRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Load Google Calendar scheduling script
+    const link = document.createElement('link');
+    link.href = 'https://calendar.google.com/calendar/scheduling-button-script.css';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    const script = document.createElement('script');
+    script.src = 'https://calendar.google.com/calendar/scheduling-button-script.js';
+    script.async = true;
+    
+    script.onload = () => {
+      console.log('Google Calendar script loaded');
+      setTimeout(() => {
+        setIsCalendarReady(true);
+        console.log('Calendar ready state set');
+      }, 1000);
+    };
+
+    script.onerror = () => {
+      console.error('Failed to load Google Calendar script');
+    };
+
+    document.head.appendChild(script);
+
+    return () => {
+      try {
+        document.head.removeChild(link);
+        document.head.removeChild(script);
+      } catch (e) {
+        console.log('Cleanup error (expected):', e);
+      }
+    };
+  }, []);
+
+  const handleCalendarClick = () => {
+    console.log('Calendar button clicked');
+    console.log('Calendar ready:', isCalendarReady);
+    console.log('Calendar target ref:', calendarTargetRef.current);
+
+    try {
+      if ((window as any).calendar && (window as any).calendar.schedulingButton && calendarTargetRef.current) {
+        console.log('Using calendar widget with target element');
+        (window as any).calendar.schedulingButton.load({
+          url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true',
+          color: '#039BE5',
+          label: "Book Free Strategy Call",
+          target: calendarTargetRef.current
+        });
+      } else {
+        console.log('Fallback to direct link');
+        window.open('https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true', '_blank');
+      }
+    } catch (error) {
+      console.error('Calendar error:', error);
+      window.open('https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true', '_blank');
+    }
+  };
+
   return (
     <Layout>
+      {/* Hidden div for calendar widget target */}
+      <div ref={calendarTargetRef} className="hidden"></div>
+      
       {/* Hero Section */}
       <section className="py-20 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
@@ -150,12 +215,12 @@ const About = () => {
             Let's talk about how automation can free up your time, improve your processes, 
             and grow your business. The first hour is on us.
           </p>
-          <a 
-            href="#contact" 
+          <button 
+            onClick={handleCalendarClick}
             className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90"
           >
             Book Your Free Consultation
-          </a>
+          </button>
         </div>
       </section>
     </Layout>

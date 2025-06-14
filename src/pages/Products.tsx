@@ -1,4 +1,3 @@
-
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
@@ -17,9 +16,14 @@ const Products = () => {
             The ultimate AI-powered content generation platform that creates EEAT-compliant, 
             SEO-optimized content for creators, teams, and businesses.
           </p>
-          <Link to="/contact" className="apple-button">
+          <a 
+            href="https://engageperfect.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="apple-button"
+          >
             Start Free Trial
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -368,9 +372,14 @@ const Products = () => {
             Join thousands of creators and businesses transforming their content strategy.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/contact" className="apple-button">
+            <a 
+              href="https://engageperfect.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="apple-button"
+            >
               Start Free Trial
-            </Link>
+            </a>
             <Link 
               to="/contact" 
               className="px-8 py-4 border border-white/20 text-white rounded-2xl hover:bg-white/5 transition-all duration-300"
