@@ -1,11 +1,11 @@
-
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const Index = () => {
   const [isCalendarReady, setIsCalendarReady] = useState(false);
+  const calendarTargetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Load Google Calendar scheduling script
@@ -48,20 +48,21 @@ const Index = () => {
   const handleCalendarClick = () => {
     console.log('Calendar button clicked');
     console.log('Calendar ready:', isCalendarReady);
-    console.log('Window calendar object:', (window as any).calendar);
+    console.log('Calendar target ref:', calendarTargetRef.current);
 
     try {
-      // Check if calendar object exists
-      if ((window as any).calendar && (window as any).calendar.schedulingButton) {
-        console.log('Using calendar widget');
+      // Check if calendar object exists and we have a target element
+      if ((window as any).calendar && (window as any).calendar.schedulingButton && calendarTargetRef.current) {
+        console.log('Using calendar widget with target element');
         (window as any).calendar.schedulingButton.load({
           url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true',
           color: '#039BE5',
-          label: "Book Free Strategy Call"
+          label: "Book Free Strategy Call",
+          target: calendarTargetRef.current
         });
       } else {
         console.log('Fallback to direct link');
-        // Fallback to direct link if script not loaded
+        // Fallback to direct link if script not loaded or no target
         window.open('https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true', '_blank');
       }
     } catch (error) {
@@ -131,6 +132,9 @@ const Index = () => {
 
   return (
     <Layout>
+      {/* Hidden div for calendar widget target */}
+      <div ref={calendarTargetRef} className="hidden"></div>
+      
       {/* Hero Section */}
       <section className="relative py-32 px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/5 to-accent-purple/5"></div>
