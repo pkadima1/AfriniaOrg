@@ -1,9 +1,12 @@
+
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const Index = () => {
+  const [isCalendarReady, setIsCalendarReady] = useState(false);
+
   useEffect(() => {
     // Load Google Calendar scheduling script
     const link = document.createElement('link');
@@ -14,26 +17,56 @@ const Index = () => {
     const script = document.createElement('script');
     script.src = 'https://calendar.google.com/calendar/scheduling-button-script.js';
     script.async = true;
+    
+    // Add load event listener
+    script.onload = () => {
+      console.log('Google Calendar script loaded');
+      // Wait a bit more for the calendar object to be fully initialized
+      setTimeout(() => {
+        setIsCalendarReady(true);
+        console.log('Calendar ready state set');
+      }, 1000);
+    };
+
+    script.onerror = () => {
+      console.error('Failed to load Google Calendar script');
+    };
+
     document.head.appendChild(script);
 
     // Cleanup function
     return () => {
-      document.head.removeChild(link);
-      document.head.removeChild(script);
+      try {
+        document.head.removeChild(link);
+        document.head.removeChild(script);
+      } catch (e) {
+        console.log('Cleanup error (expected):', e);
+      }
     };
   }, []);
 
   const handleCalendarClick = () => {
-    // @ts-ignore - Google Calendar API
-    if (window.calendar?.schedulingButton) {
-      // @ts-ignore
-      window.calendar.schedulingButton.load({
-        url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true',
-        color: '#039BE5',
-        label: "Book Free Strategy Call"
-      });
-    } else {
-      // Fallback to direct link if script not loaded
+    console.log('Calendar button clicked');
+    console.log('Calendar ready:', isCalendarReady);
+    console.log('Window calendar object:', (window as any).calendar);
+
+    try {
+      // Check if calendar object exists
+      if ((window as any).calendar && (window as any).calendar.schedulingButton) {
+        console.log('Using calendar widget');
+        (window as any).calendar.schedulingButton.load({
+          url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true',
+          color: '#039BE5',
+          label: "Book Free Strategy Call"
+        });
+      } else {
+        console.log('Fallback to direct link');
+        // Fallback to direct link if script not loaded
+        window.open('https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true', '_blank');
+      }
+    } catch (error) {
+      console.error('Calendar error:', error);
+      // Fallback to direct link on any error
       window.open('https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true', '_blank');
     }
   };
