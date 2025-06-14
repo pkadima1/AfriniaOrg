@@ -189,7 +189,7 @@ const Index = () => {
       </section>
 
       {/* Client Logo Bar */}
-      <section className="py-16 px-6 lg:px-8 gap-y-1 ">
+      <section className="py-16 px-6 lg:px-8 gap-y-16 ">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-2">
