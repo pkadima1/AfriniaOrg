@@ -102,10 +102,10 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    // Send notification email to company
+    // Send notification email to company team
     const notificationEmailResponse = await resend.emails.send({
       from: "Nodematics Contact Form <noreply@nodematics.com>",
-      to: ["hello@nodematics.com"], // Replace with your actual business email
+      to: ["hello@nodematics.com", "engageperfect@gmail.com", "pkadima1@gmail.com"],
       subject: `New Contact Form Submission from ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
