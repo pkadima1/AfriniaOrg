@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -13,16 +14,38 @@ const Contact = () => {
     company: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    toast({
-      title: "Message sent!",
-      description: "We'll get back to you within 24 hours.",
-    });
-    setFormData({ name: '', email: '', company: '', message: '' });
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('contact-form', {
+        body: formData
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Message sent successfully!",
+        description: "We'll get back to you within 24 hours.",
+      });
+      
+      setFormData({ name: '', email: '', company: '', message: '' });
+    } catch (error: any) {
+      console.error('Contact form error:', error);
+      toast({
+        title: "Error sending message",
+        description: "Please try again or contact us directly at hello@nodematics.com",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -67,6 +90,7 @@ const Contact = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
+                    disabled={isSubmitting}
                     className="bg-dark-surface border-white/20 text-white placeholder:text-text-secondary"
                     placeholder="Your full name"
                   />
@@ -83,6 +107,7 @@ const Contact = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
+                    disabled={isSubmitting}
                     className="bg-dark-surface border-white/20 text-white placeholder:text-text-secondary"
                     placeholder="your@email.com"
                   />
@@ -98,6 +123,7 @@ const Contact = () => {
                     type="text"
                     value={formData.company}
                     onChange={handleChange}
+                    disabled={isSubmitting}
                     className="bg-dark-surface border-white/20 text-white placeholder:text-text-secondary"
                     placeholder="Your company name"
                   />
@@ -114,7 +140,8 @@ const Contact = () => {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full bg-dark-surface border border-white/20 rounded-lg px-3 py-2 text-white placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                    disabled={isSubmitting}
+                    className="w-full bg-dark-surface border border-white/20 rounded-lg px-3 py-2 text-white placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-accent-blue disabled:opacity-50"
                     placeholder="Tell us about your project and how we can help..."
                   />
                 </div>
@@ -122,8 +149,9 @@ const Contact = () => {
                 <Button 
                   type="submit" 
                   className="w-full apple-button"
+                  disabled={isSubmitting}
                 >
-                  Send Message
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>
             </Card>
