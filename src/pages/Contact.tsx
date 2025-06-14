@@ -137,16 +137,26 @@ const Contact = () => {
                     <h4 className="font-medium mb-2">Email</h4>
                     <p className="text-text-secondary">hello@nodematics.com</p>
                   </div>
+                  
                   <div>
-                    <h4 className="font-medium mb-2">Phone</h4>
-                    <p className="text-text-secondary">+1 (555) 123-4567</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Address</h4>
+                    <h4 className="font-medium mb-2">UK Office</h4>
+                    <p className="text-text-secondary mb-2">
+                      2 Main Court Cumbrea, Main Court<br />
+                      Brampton, England, CA8 1SA
+                    </p>
                     <p className="text-text-secondary">
-                      123 Innovation Drive<br />
-                      San Francisco, CA 94107<br />
-                      United States
+                      Phone & WhatsApp: <span className="text-accent-blue">+44 7767 59 6260</span>
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium mb-2">EU Office</h4>
+                    <p className="text-text-secondary mb-2">
+                      Auna st 4-5 North Tallinn district<br />
+                      Tallinn Harju county 10317
+                    </p>
+                    <p className="text-text-secondary">
+                      Phone & Telegram: <span className="text-accent-blue">+372 5354 1829</span>
                     </p>
                   </div>
                 </div>
@@ -157,11 +167,11 @@ const Contact = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span>Monday - Friday</span>
-                    <span className="text-text-secondary">9:00 AM - 6:00 PM PST</span>
+                    <span className="text-text-secondary">9:00 AM - 6:00 PM GMT</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Saturday</span>
-                    <span className="text-text-secondary">10:00 AM - 4:00 PM PST</span>
+                    <span className="text-text-secondary">10:00 AM - 4:00 PM GMT</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Sunday</span>

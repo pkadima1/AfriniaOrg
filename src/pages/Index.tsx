@@ -2,15 +2,18 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
 import { useEffect, useState, useRef } from 'react';
+
 const Index = () => {
   const [isCalendarReady, setIsCalendarReady] = useState(false);
   const calendarTargetRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     // Load Google Calendar scheduling script
     const link = document.createElement('link');
     link.href = 'https://calendar.google.com/calendar/scheduling-button-script.css';
     link.rel = 'stylesheet';
     document.head.appendChild(link);
+
     const script = document.createElement('script');
     script.src = 'https://calendar.google.com/calendar/scheduling-button-script.js';
     script.async = true;
@@ -24,9 +27,11 @@ const Index = () => {
         console.log('Calendar ready state set');
       }, 1000);
     };
+
     script.onerror = () => {
       console.error('Failed to load Google Calendar script');
     };
+
     document.head.appendChild(script);
 
     // Cleanup function
@@ -39,10 +44,12 @@ const Index = () => {
       }
     };
   }, []);
+
   const handleCalendarClick = () => {
     console.log('Calendar button clicked');
     console.log('Calendar ready:', isCalendarReady);
     console.log('Calendar target ref:', calendarTargetRef.current);
+    
     try {
       // Check if calendar object exists and we have a target element
       if ((window as any).calendar && (window as any).calendar.schedulingButton && calendarTargetRef.current) {
@@ -64,56 +71,79 @@ const Index = () => {
       window.open('https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true', '_blank');
     }
   };
-  const solutions = [{
-    title: "EngagePerfect",
-    description: "AI-powered content generation for blogs, captions, and product copy",
-    icon: "🎯"
-  }, {
-    title: "SkySpark Rules",
-    description: "Custom SkySpark analytics and Axon scripts for building/facility optimization",
-    icon: "⚡"
-  }, {
-    title: "Smart Automations",
-    description: "Small, remote-first tools that eliminate bottlenecks and save time",
-    icon: "🤖"
-  }];
-  const coreValues = [{
-    title: "We Respect Your Time",
-    description: "Tools built to free you from repetitive work",
-    icon: "⏰"
-  }, {
-    title: "We Keep It Practical",
-    description: "Simple, lean, and scalable—not overbuilt or bloated",
-    icon: "🎯"
-  }, {
-    title: "We Build for Impact",
-    description: "Everything we do supports measurable growth",
-    icon: "📈"
-  }];
-  const clientLogos = [{
-    name: "CoffeeDesk",
-    image: "/lovable-uploads/df1e608e-1eaf-400e-a5ff-dcc7b1c2e147.png"
-  }, {
-    name: "Biscuiteers",
-    image: "/lovable-uploads/151297f0-c6b5-40a4-8af9-3eee4de77ffc.png"
-  }, {
-    name: "WebInsight",
-    image: "/lovable-uploads/75a928ad-e768-4ae4-befd-90a07fca9f8a.png"
-  }, {
-    name: "WikiLaps",
-    image: "/lovable-uploads/b3cdf068-a2d8-4b73-bc82-2e33138ede1f.png"
-  }];
-  const testimonials = [{
-    quote: "NodeMatics helped us reduce content creation time by 80%. It's like having a full-time content team.",
-    author: "A.M., Ecommerce Founder"
-  }, {
-    quote: "Their automation tools eliminated hours of manual work every week. We can finally focus on strategy.",
-    author: "J.K., Operations Manager"
-  }, {
-    quote: "The SkySpark implementation optimized our facility management beyond our expectations.",
-    author: "R.L., Facility Director"
-  }];
-  return <Layout>
+
+  const solutions = [
+    {
+      title: "EngagePerfect",
+      description: "AI-powered content generation for blogs, captions, and product copy",
+      icon: "🎯"
+    },
+    {
+      title: "SkySpark Rules",
+      description: "Custom SkySpark analytics and Axon scripts for building/facility optimization",
+      icon: "⚡"
+    },
+    {
+      title: "Smart Automations",
+      description: "Small, remote-first tools that eliminate bottlenecks and save time",
+      icon: "🤖"
+    }
+  ];
+
+  const coreValues = [
+    {
+      title: "We Respect Your Time",
+      description: "Tools built to free you from repetitive work",
+      icon: "⏰"
+    },
+    {
+      title: "We Keep It Practical",
+      description: "Simple, lean, and scalable—not overbuilt or bloated",
+      icon: "🎯"
+    },
+    {
+      title: "We Build for Impact",
+      description: "Everything we do supports measurable growth",
+      icon: "📈"
+    }
+  ];
+
+  const clientLogos = [
+    {
+      name: "CoffeeDesk",
+      image: "/lovable-uploads/df1e608e-1eaf-400e-a5ff-dcc7b1c2e147.png"
+    },
+    {
+      name: "Biscuiteers",
+      image: "/lovable-uploads/151297f0-c6b5-40a4-8af9-3eee4de77ffc.png"
+    },
+    {
+      name: "WebInsight",
+      image: "/lovable-uploads/75a928ad-e768-4ae4-befd-90a07fca9f8a.png"
+    },
+    {
+      name: "WikiLaps",
+      image: "/lovable-uploads/b3cdf068-a2d8-4b73-bc82-2e33138ede1f.png"
+    }
+  ];
+
+  const testimonials = [
+    {
+      quote: "NodeMatics helped us reduce content creation time by 80%. It's like having a full-time content team.",
+      author: "A.M., Ecommerce Founder"
+    },
+    {
+      quote: "Their automation tools eliminated hours of manual work every week. We can finally focus on strategy.",
+      author: "J.K., Operations Manager"
+    },
+    {
+      quote: "The SkySpark implementation optimized our facility management beyond our expectations.",
+      author: "R.L., Facility Director"
+    }
+  ];
+
+  return (
+    <Layout>
       {/* Hidden div for calendar widget target */}
       <div ref={calendarTargetRef} className="hidden"></div>
       
@@ -129,13 +159,22 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link to="/products" className="apple-button bg-accent-purple hover:bg-accent-purple/90 hover:shadow-accent-purple/20">
+            <Link
+              to="/products"
+              className="apple-button bg-accent-purple hover:bg-accent-purple/90 hover:shadow-accent-purple/20"
+            >
               Explore EngagePerfect
             </Link>
-            <Link to="/about" className="apple-button bg-accent-blue hover:bg-accent-blue/90 hover:shadow-accent-blue/20">
+            <Link
+              to="/about"
+              className="apple-button bg-accent-blue hover:bg-accent-blue/90 hover:shadow-accent-blue/20"
+            >
               Learn About Us
             </Link>
-            <button onClick={handleCalendarClick} className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90">
+            <button
+              onClick={handleCalendarClick}
+              className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90"
+            >
               Book Free Strategy Call
             </button>
           </div>
@@ -152,7 +191,8 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-scale-in">
-            {solutions.map((solution, index) => <Card key={index} className="p-8 bg-dark-card border-white/10 card-hover text-center">
+            {solutions.map((solution, index) => (
+              <Card key={index} className="p-8 bg-dark-card border-white/10 card-hover text-center">
                 <div className="w-20 h-20 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
                   <span className="text-4xl">{solution.icon}</span>
                 </div>
@@ -160,7 +200,8 @@ const Index = () => {
                 <p className="text-text-secondary leading-relaxed">
                   {solution.description}
                 </p>
-              </Card>)}
+              </Card>
+            ))}
           </div>
         </div>
       </section>
@@ -175,7 +216,8 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-scale-in">
-            {coreValues.map((value, index) => <div key={index} className="text-center">
+            {coreValues.map((value, index) => (
+              <div key={index} className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
                   <span className="text-3xl">{value.icon}</span>
                 </div>
@@ -183,13 +225,14 @@ const Index = () => {
                 <p className="text-text-secondary leading-relaxed">
                   {value.description}
                 </p>
-              </div>)}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Client Logo Bar */}
-      <section className="py-16 px-6 lg:px-8 gap-y-16 ">
+      {/* Client Logo Bar - Updated with lighter background */}
+      <section className="py-16 px-6 lg:px-8 bg-white/5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-2">
@@ -198,9 +241,15 @@ const Index = () => {
           </div>
           
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-            {clientLogos.map((logo, index) => <div key={index} className="flex items-center justify-center h-16 opacity-70 hover:opacity-100 transition-opacity">
-                <img src={logo.image} alt={logo.name} className="max-h-full max-w-32 object-contain filter grayscale hover:grayscale-0 transition-all" />
-              </div>)}
+            {clientLogos.map((logo, index) => (
+              <div key={index} className="flex items-center justify-center h-16 opacity-80 hover:opacity-100 transition-opacity">
+                <img 
+                  src={logo.image} 
+                  alt={logo.name} 
+                  className="max-h-full max-w-32 object-contain filter brightness-110 hover:brightness-125 transition-all" 
+                />
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -215,14 +264,16 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => <Card key={index} className="p-8 bg-dark-card border-white/10 text-center">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="p-8 bg-dark-card border-white/10 text-center">
                 <blockquote className="text-lg mb-6 leading-relaxed">
                   "{testimonial.quote}"
                 </blockquote>
                 <div className="text-accent-blue font-medium">
                   — {testimonial.author}
                 </div>
-              </Card>)}
+              </Card>
+            ))}
           </div>
         </div>
       </section>
@@ -236,11 +287,16 @@ const Index = () => {
           <p className="text-xl text-text-secondary mb-12 leading-relaxed">
             Want to explore what's possible in just one hour? Book a free call—we'll map out ways to save time, automate tasks, and grow your business.
           </p>
-          <button onClick={handleCalendarClick} className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90">
+          <button
+            onClick={handleCalendarClick}
+            className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90"
+          >
             Book Your Free Strategy Call
           </button>
         </div>
       </section>
-    </Layout>;
+    </Layout>
+  );
 };
+
 export default Index;
