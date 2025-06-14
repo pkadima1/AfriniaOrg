@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
@@ -21,7 +22,7 @@ const Contact = () => {
 
     try {
       // Submit directly to Google Sheets
-      const response = await fetch('https://script.google.com/macros/s/AKfycbzQXuJqMzKpI_r4VfYI6mO9NjwlXqgftRk2SLH7HXwJBgHsQ5LyKRKCHiJ7dsBKxjOLrQ/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbxNJJTxieOx89PalsB00f5T6dZUSvAla9HSb9Re75YGq9hIW-noGAKO-so3z8pAUu3w/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: {
