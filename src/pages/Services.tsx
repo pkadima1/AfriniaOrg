@@ -1,3 +1,4 @@
+
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
@@ -56,6 +57,24 @@ const Services = () => {
           label: "Book Free Strategy Call",
           target: calendarTargetRef.current
         });
+
+        // Wait for the Google button to be created, then auto-click it
+        setTimeout(() => {
+          const googleButton = calendarTargetRef.current?.querySelector('button');
+          if (googleButton) {
+            console.log('Auto-clicking Google calendar button');
+            googleButton.click();
+          } else {
+            console.log('Google button not found, trying iframe approach');
+            const iframe = calendarTargetRef.current?.querySelector('iframe');
+            if (iframe) {
+              console.log('Calendar iframe found');
+            } else {
+              console.log('Fallback to direct link');
+              window.open('https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true', '_blank');
+            }
+          }
+        }, 500);
       } else {
         console.log('Fallback to direct link');
         window.open('https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true', '_blank');
@@ -68,8 +87,8 @@ const Services = () => {
 
   return (
     <Layout>
-      {/* Hidden div for calendar widget target */}
-      <div ref={calendarTargetRef} className="hidden"></div>
+      {/* Calendar widget target - make it visible but positioned off-screen for auto-click */}
+      <div ref={calendarTargetRef} className="fixed -top-96 left-0 opacity-0 pointer-events-none"></div>
       
       {/* Hero Section */}
       <section className="py-20 px-6 lg:px-8">
