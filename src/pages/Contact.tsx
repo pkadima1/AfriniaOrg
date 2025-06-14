@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
@@ -208,6 +207,8 @@ const Contact = () => {
                 </div>
               </Card>
 
+              {/* Quick Links Card - Commented Out */}
+              {/*
               <Card className="p-8 bg-dark-card border-white/10">
                 <h3 className="text-2xl font-semibold mb-6">Quick Links</h3>
                 <div className="space-y-4">
@@ -225,6 +226,7 @@ const Contact = () => {
                   </div>
                 </div>
               </Card>
+              */}
             </div>
           </div>
         </div>
