@@ -17,6 +17,8 @@ interface ContactFormRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  console.log("Contact form function called");
+  
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -34,9 +36,11 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const { name, email, company, message }: ContactFormRequest = await req.json();
+    console.log("Received form data:", { name, email, company: company || 'N/A' });
 
     // Validate required fields
     if (!name || !email || !message) {
+      console.log("Missing required fields");
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         {
@@ -52,6 +56,7 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
+    console.log("Storing submission in database...");
     // Store contact submission in database
     const { data: submission, error: dbError } = await supabase
       .from('contact_submissions')
@@ -75,10 +80,26 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    console.log("Database submission successful:", submission.id);
+
     // Initialize Resend
-    const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      console.error("RESEND_API_KEY not found");
+      return new Response(
+        JSON.stringify({ error: "Email service not configured" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    const resend = new Resend(resendApiKey);
+    console.log("Resend initialized successfully");
 
     // Send confirmation email to user
+    console.log("Sending confirmation email to user...");
     const userEmailResponse = await resend.emails.send({
       from: "Nodematics <noreply@nodematics.com>",
       to: [email],
@@ -102,7 +123,10 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
+    console.log("User confirmation email response:", userEmailResponse);
+
     // Send notification email to company team
+    console.log("Sending notification emails to team...");
     const notificationEmailResponse = await resend.emails.send({
       from: "Nodematics Contact Form <noreply@nodematics.com>",
       to: ["hello@nodematics.com", "engageperfect@gmail.com", "pkadima1@gmail.com"],
@@ -128,16 +152,28 @@ const handler = async (req: Request): Promise<Response> => {
       `,
     });
 
-    console.log("Emails sent successfully:", {
-      userEmail: userEmailResponse,
-      notificationEmail: notificationEmailResponse
-    });
+    console.log("Team notification email response:", notificationEmailResponse);
+
+    // Check for email sending errors
+    if (userEmailResponse.error) {
+      console.error("User email error:", userEmailResponse.error);
+    }
+    
+    if (notificationEmailResponse.error) {
+      console.error("Notification email error:", notificationEmailResponse.error);
+    }
+
+    console.log("All operations completed successfully");
 
     return new Response(
       JSON.stringify({
         success: true,
         message: "Contact form submitted successfully",
-        submissionId: submission.id
+        submissionId: submission.id,
+        emails: {
+          userEmail: userEmailResponse.error ? "failed" : "sent",
+          notificationEmail: notificationEmailResponse.error ? "failed" : "sent"
+        }
       }),
       {
         status: 200,
@@ -150,7 +186,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in contact-form function:", error);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ error: "Internal server error", details: error.message }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
