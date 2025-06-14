@@ -1,9 +1,43 @@
-
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
+import { useEffect } from 'react';
 
 const Index = () => {
+  useEffect(() => {
+    // Load Google Calendar scheduling script
+    const link = document.createElement('link');
+    link.href = 'https://calendar.google.com/calendar/scheduling-button-script.css';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+
+    const script = document.createElement('script');
+    script.src = 'https://calendar.google.com/calendar/scheduling-button-script.js';
+    script.async = true;
+    document.head.appendChild(script);
+
+    // Cleanup function
+    return () => {
+      document.head.removeChild(link);
+      document.head.removeChild(script);
+    };
+  }, []);
+
+  const handleCalendarClick = () => {
+    // @ts-ignore - Google Calendar API
+    if (window.calendar?.schedulingButton) {
+      // @ts-ignore
+      window.calendar.schedulingButton.load({
+        url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true',
+        color: '#039BE5',
+        label: "Book Free Strategy Call"
+      });
+    } else {
+      // Fallback to direct link if script not loaded
+      window.open('https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true', '_blank');
+    }
+  };
+
   const solutions = [
     {
       title: "EngagePerfect",
@@ -88,12 +122,12 @@ const Index = () => {
             >
               Learn About Us
             </Link>
-            <a 
-              href="#contact" 
+            <button 
+              onClick={handleCalendarClick}
               className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90"
             >
               Book Free Strategy Call
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -204,9 +238,12 @@ const Index = () => {
           <p className="text-xl text-text-secondary mb-12 leading-relaxed">
             Want to explore what's possible in just one hour? Book a free call—we'll map out ways to save time, automate tasks, and grow your business.
           </p>
-          <a href="#contact" className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90">
+          <button 
+            onClick={handleCalendarClick}
+            className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90"
+          >
             Book Your Free Strategy Call
-          </a>
+          </button>
         </div>
       </section>
     </Layout>
