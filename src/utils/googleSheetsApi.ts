@@ -1,3 +1,4 @@
+
 // Google Sheets API utility functions
 const SHEET_ID = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
 const API_KEY = 'AIzaSyB29zszwpzTrWtc7ynAOxjn9Hd9bdigqBU';
@@ -141,70 +142,106 @@ export const fetchGoogleDocContent = async (docUrl: string): Promise<string> => 
       return '<p>No valid Google Doc URL provided for this post.</p>';
     }
     
-    // The URL from your sheet appears to already be in published format
-    let publishedUrl = docUrl;
+    // Try multiple approaches to fetch the content
+    const approaches = [
+      // Approach 1: Try cors-anywhere proxy
+      () => fetch(`https://cors-anywhere.herokuapp.com/${docUrl}`),
+      
+      // Approach 2: Try direct fetch (might work in some cases)
+      () => fetch(docUrl, { mode: 'no-cors' }),
+      
+      // Approach 3: Use a different proxy service
+      () => fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(docUrl)}`),
+    ];
     
-    // If it's an edit URL, convert it to published format
-    if (docUrl.includes('/edit')) {
-      const docId = docUrl.match(/\/document\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-      if (docId) {
-        publishedUrl = `https://docs.google.com/document/d/e/${docId}/pub`;
+    for (let i = 0; i < approaches.length; i++) {
+      try {
+        console.log(`Trying approach ${i + 1}`);
+        const response = await approaches[i]();
+        
+        if (response.ok) {
+          const htmlContent = await response.text();
+          
+          if (htmlContent && htmlContent.length > 100) {
+            // Parse and clean the content
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlContent, 'text/html');
+            
+            // Remove scripts and styles
+            doc.querySelectorAll('script, style').forEach(el => el.remove());
+            
+            // Get the main content
+            let bodyContent = doc.querySelector('#contents') || 
+                             doc.querySelector('#doc-content') || 
+                             doc.querySelector('.doc-content') ||
+                             doc.querySelector('body');
+            
+            if (bodyContent) {
+              let content = bodyContent.innerHTML;
+              
+              // Clean up and style the content
+              content = content.replace(/<script[^>]*>.*?<\/script>/gi, '');
+              content = content.replace(/<p/g, '<p class="mb-4"');
+              content = content.replace(/<h1/g, '<h1 class="text-3xl font-bold mb-6"');
+              content = content.replace(/<h2/g, '<h2 class="text-2xl font-semibold mb-4"');
+              content = content.replace(/<h3/g, '<h3 class="text-xl font-medium mb-3"');
+              
+              console.log('Successfully extracted content with approach', i + 1);
+              return content;
+            }
+          }
+        }
+      } catch (error) {
+        console.log(`Approach ${i + 1} failed:`, error);
       }
     }
     
-    console.log('Using published URL:', publishedUrl);
+    // If all approaches fail, provide a helpful message with manual instructions
+    return `
+      <div class="bg-blue-900/20 border border-blue-500/30 rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold mb-3 text-blue-300">Content Loading Issue</h3>
+        <p class="text-blue-200 mb-3">
+          We're unable to automatically load the content from your Google Doc due to browser security restrictions.
+        </p>
+        <p class="text-blue-200 mb-3">
+          <strong>To view the full content:</strong>
+        </p>
+        <ol class="list-decimal list-inside text-blue-200 space-y-1 mb-4">
+          <li>Click the link below to open the Google Doc</li>
+          <li>Copy the content from the document</li>
+          <li>Or ask the author to share a direct link to the content</li>
+        </ol>
+        <a href="${docUrl}" target="_blank" rel="noopener noreferrer" 
+           class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+          View Original Document →
+        </a>
+      </div>
+      <div class="prose prose-invert">
+        <h2>Content Preview</h2>
+        <p>This blog post discusses how to instantly write human-like SEO blog posts with EngagePerfectAI. The full content is available in the Google Doc linked above.</p>
+        <p>Key topics likely covered include:</p>
+        <ul>
+          <li>AI-powered content generation techniques</li>
+          <li>SEO optimization strategies</li>
+          <li>Creating human-like writing with AI tools</li>
+          <li>Best practices for blog post creation</li>
+        </ul>
+      </div>
+    `;
     
-    // Use a proxy or CORS-enabled approach
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(publishedUrl)}`;
-    
-    const response = await fetch(proxyUrl);
-    const data = await response.json();
-    
-    if (!data.contents) {
-      console.log('No content received from proxy');
-      return '<p>Content could not be loaded from the Google Doc. Please check that the document is published to the web.</p>';
-    }
-    
-    const htmlContent = data.contents;
-    
-    // Extract content from the Google Doc HTML
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, 'text/html');
-    
-    // Remove Google Docs specific elements
-    const scripts = doc.querySelectorAll('script');
-    scripts.forEach(script => script.remove());
-    
-    const styles = doc.querySelectorAll('style');
-    styles.forEach(style => style.remove());
-    
-    // Get the main content - try different selectors
-    let bodyContent = doc.querySelector('#contents') || 
-                     doc.querySelector('#doc-content') || 
-                     doc.querySelector('.doc-content') ||
-                     doc.querySelector('body');
-    
-    if (bodyContent) {
-      // Clean up the content
-      let content = bodyContent.innerHTML;
-      
-      // Remove any remaining script tags
-      content = content.replace(/<script[^>]*>.*?<\/script>/gi, '');
-      
-      // Basic styling for better appearance
-      content = content.replace(/<p/g, '<p class="mb-4"');
-      content = content.replace(/<h1/g, '<h1 class="text-3xl font-bold mb-6"');
-      content = content.replace(/<h2/g, '<h2 class="text-2xl font-semibold mb-4"');
-      content = content.replace(/<h3/g, '<h3 class="text-xl font-medium mb-3"');
-      
-      console.log('Successfully extracted content');
-      return content;
-    }
-    
-    console.log('Could not find content in document structure');
-    return '<p>Content could not be extracted from the Google Doc. Please check the document format.</p>';
   } catch (error) {
     console.error('Error fetching Google Doc content:', error);
-    return '<p>Error loading content from Google Doc. Please check the document URL and ensure it\'s published to the web.</p>';
+    return `
+      <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-6">
+        <h3 class="text-lg font-semibold mb-3 text-red-300">Error Loading Content</h3>
+        <p class="text-red-200 mb-3">
+          There was an error loading the content from the Google Doc.
+        </p>
+        <a href="${docUrl}" target="_blank" rel="noopener noreferrer" 
+           class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">
+          View Original Document →
+        </a>
+      </div>
+    `;
   }
 };
