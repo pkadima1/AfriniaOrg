@@ -20,12 +20,13 @@ const ContactForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Send to n8n webhook
+      // Send to n8n webhook with no-cors mode
       const webhookResponse = await fetch('https://engageperfect.app.n8n.cloud/webhook/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        mode: 'no-cors',
         body: JSON.stringify({
           type: 'contact_form',
           name: formData.name,
@@ -36,7 +37,7 @@ const ContactForm = () => {
         }),
       });
 
-      console.log('Webhook response status:', webhookResponse.status);
+      console.log('Webhook request sent (no-cors mode)');
 
       // Also send to Google Apps Script (existing functionality)
       const params = new URLSearchParams({
