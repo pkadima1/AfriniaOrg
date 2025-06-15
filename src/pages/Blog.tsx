@@ -60,19 +60,20 @@ const Blog = () => {
 
     setSubscribing(true);
     try {
-      // Add email to Google Sheets using Google Apps Script Web App
-      const sheetId = '16brbAVXZVvOap4KGH7_l67_QlHX_TCKrD_GzlGvR5LU';
-      
-      // For now, we'll use a simple approach with Google Forms or you can create a Google Apps Script
-      // This is a placeholder - you'll need to create a Google Apps Script Web App to handle this
-      const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // You'll need to create this
-      
-      // Alternative: Use Google Forms (simpler approach)
-      // Create a Google Form connected to your sheet and submit to it
-      
-      // For now, let's show success message and log the email
-      console.log('Subscribing email:', email);
-      console.log('Email would be added to sheet:', sheetId);
+      // Send to n8n webhook
+      const webhookResponse = await fetch('https://engageperfect.app.n8n.cloud/webhook/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'newsletter_subscription',
+          email: email,
+          subscribed_at: new Date().toISOString()
+        }),
+      });
+
+      console.log('Newsletter webhook response status:', webhookResponse.status);
       
       setSubscribeMessage('Thank you for subscribing! You\'ll receive our weekly articles.');
       setEmail('');

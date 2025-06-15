@@ -20,7 +20,25 @@ const ContactForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Create URL with parameters for Google Apps Script
+      // Send to n8n webhook
+      const webhookResponse = await fetch('https://engageperfect.app.n8n.cloud/webhook/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'contact_form',
+          name: formData.name,
+          email: formData.email,
+          company: formData.company || '',
+          message: formData.message,
+          submitted_at: new Date().toISOString()
+        }),
+      });
+
+      console.log('Webhook response status:', webhookResponse.status);
+
+      // Also send to Google Apps Script (existing functionality)
       const params = new URLSearchParams({
         name: formData.name,
         email: formData.email,
@@ -29,7 +47,7 @@ const ContactForm = () => {
         submitted_at: new Date().toISOString()
       });
 
-      const response = await fetch(`https://script.google.com/macros/s/AKfycbxNJJTxieOx89PalsB00f5T6dZUSvAla9HSb9Re75YGq9hIW-noGAKO-so3z8pAUu3w/exec?${params.toString()}`, {
+      await fetch(`https://script.google.com/macros/s/AKfycbxNJJTxieOx89PalsB00f5T6dZUSvAla9HSb9Re75YGq9hIW-noGAKO-so3z8pAUu3w/exec?${params.toString()}`, {
         method: 'GET',
         mode: 'no-cors'
       });
