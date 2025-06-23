@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,8 +20,8 @@ const ContactForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Send to n8n webhook with no-cors mode
-      const webhookResponse = await fetch('https://engageperfect.app.n8n.cloud/webhook/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
+      // Send to n8n webhook
+      await fetch('https://engageperfect.app.n8n.cloud/webhook/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,21 +37,7 @@ const ContactForm = () => {
         }),
       });
 
-      console.log('Webhook request sent (no-cors mode)');
-
-      // Also send to Google Apps Script (existing functionality)
-      const params = new URLSearchParams({
-        name: formData.name,
-        email: formData.email,
-        company: formData.company || '',
-        message: formData.message,
-        submitted_at: new Date().toISOString()
-      });
-
-      await fetch(`https://script.google.com/macros/s/AKfycbxNJJTxieOx89PalsB00f5T6dZUSvAla9HSb9Re75YGq9hIW-noGAKO-so3z8pAUu3w/exec?${params.toString()}`, {
-        method: 'GET',
-        mode: 'no-cors'
-      });
+      console.log('Contact form sent to n8n webhook');
 
       toast({
         title: "Message sent successfully!",
