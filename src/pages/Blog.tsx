@@ -61,8 +61,8 @@ const Blog = () => {
 
     setSubscribing(true);
     try {
-      // Send to n8n test webhook with no-cors mode
-      const webhookResponse = await fetch('https://engageperfect.app.n8n.cloud/webhook-test/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
+      // Send to n8n webhook with no-cors mode
+      const webhookResponse = await fetch('https://engageperfect.app.n8n.cloud/webhook/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ const Blog = () => {
         }),
       });
 
-      console.log('Newsletter test webhook request sent (no-cors mode)');
+      console.log('Newsletter webhook request sent (no-cors mode)');
       
       setSubscribeMessage('Thank you for subscribing! You\'ll receive our weekly articles.');
       setEmail('');

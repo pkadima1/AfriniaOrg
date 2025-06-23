@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,8 +19,8 @@ const ContactForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Send to n8n test webhook with no-cors mode
-      const webhookResponse = await fetch('https://engageperfect.app.n8n.cloud/webhook-test/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
+      // Send to n8n webhook with no-cors mode
+      const webhookResponse = await fetch('https://engageperfect.app.n8n.cloud/webhook/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,7 +36,7 @@ const ContactForm = () => {
         }),
       });
 
-      console.log('Test webhook request sent (no-cors mode)');
+      console.log('Webhook request sent (no-cors mode)');
 
       // Also send to Google Apps Script (existing functionality)
       const params = new URLSearchParams({
