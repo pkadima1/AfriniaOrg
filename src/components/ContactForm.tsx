@@ -49,7 +49,7 @@ const ContactForm = () => {
       console.error('Contact form error:', error);
       toast({
         title: "Error sending message",
-        description: "Please try again or contact us directly at hello@nodematics.com",
+        description: "Please try again or contact us directly at contact@nodematics.com",
         variant: "destructive",
       });
     } finally {

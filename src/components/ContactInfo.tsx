@@ -9,7 +9,7 @@ const ContactInfo = () => {
         <div className="space-y-6">
           <div>
             <h4 className="font-medium mb-2">Email</h4>
-            <p className="text-text-secondary">hello@nodematics.com</p>
+            <p className="text-text-secondary">contact@nodematics.com</p>
           </div>
           
           <div>
