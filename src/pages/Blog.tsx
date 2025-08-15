@@ -61,13 +61,12 @@ const Blog = () => {
 
     setSubscribing(true);
     try {
-      // Send to n8n webhook with no-cors mode
-      const webhookResponse = await fetch('https://engageperfect.app.n8n.cloud/webhook/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
+      // Send to Google Apps Script Web App
+      const response = await fetch('https://script.google.com/macros/s/AKfycbwBrO-MXdOI68Ae0ATLwTN6IcicLn5QXpMou1faaL8BRjd4fpzvpmkafHRcjZh6oEF7/exec', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        mode: 'no-cors',
         body: JSON.stringify({
           type: 'newsletter_subscription',
           email: email,
@@ -75,7 +74,7 @@ const Blog = () => {
         }),
       });
 
-      console.log('Newsletter webhook request sent (no-cors mode)');
+      console.log('Newsletter subscription sent to Google Apps Script');
       
       setSubscribeMessage('Thank you for subscribing! You\'ll receive our weekly articles.');
       setEmail('');
@@ -191,14 +190,6 @@ const Blog = () => {
             {subscribeMessage && (
               <p className="text-center mt-4 text-accent-blue">{subscribeMessage}</p>
             )}
-            <div className="mt-4 p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
-              <p className="text-sm text-yellow-300">
-                <strong>Setup needed:</strong> To enable email subscriptions, create a Google Apps Script Web App or Google Form connected to your sheet. 
-                <a href="https://developers.google.com/apps-script/guides/web" target="_blank" rel="noopener noreferrer" className="text-accent-blue hover:underline ml-1">
-                  Learn more
-                </a>
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>
