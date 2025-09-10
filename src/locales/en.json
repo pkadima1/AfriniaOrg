@@ -1,0 +1,175 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "products": "Products",
+    "services": "Services",
+    "blog": "Blog",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  },
+  "home": {
+    "hero": {
+      "title": "Work Less. Grow More.",
+      "subtitle": "NodeMatics helps small teams and creators automate content, operations, and analytics—so they can focus on what really matters.",
+      "cta": {
+        "exploreProducts": "Explore EngagePerfect",
+        "learnAbout": "Learn About Us",
+        "bookCall": "Book Free Strategy Call"
+      }
+    },
+    "solutions": {
+      "title": "Smart Tools for Real Results",
+      "items": {
+        "engagePerfect": {
+          "title": "EngagePerfect",
+          "description": "AI-powered content generation for blogs, captions, and product copy"
+        },
+        "skySparkRules": {
+          "title": "SkySpark Rules",
+          "description": "Custom SkySpark analytics and Axon scripts for building/facility optimization"
+        },
+        "smartAutomations": {
+          "title": "Smart Automations",
+          "description": "Small, remote-first tools that eliminate bottlenecks and save time"
+        }
+      }
+    },
+    "values": {
+      "title": "Why We Exist",
+      "items": {
+        "respectTime": {
+          "title": "We Respect Your Time",
+          "description": "Tools built to free you from repetitive work"
+        },
+        "keepPractical": {
+          "title": "We Keep It Practical",
+          "description": "Simple, lean, and scalable—not overbuilt or bloated"
+        },
+        "buildImpact": {
+          "title": "We Build for Impact",
+          "description": "Everything we do supports measurable growth"
+        }
+      }
+    },
+    "clients": {
+      "title": "Trusted by Teams Like..."
+    },
+    "testimonials": {
+      "title": "What Our Clients Say",
+      "items": {
+        "quote1": "NodeMatics helped us reduce content creation time by 80%. It's like having a full-time content team.",
+        "author1": "A.M., Ecommerce Founder",
+        "quote2": "Their automation tools eliminated hours of manual work every week. We can finally focus on strategy.",
+        "author2": "J.K., Operations Manager",
+        "quote3": "The SkySpark implementation optimized our facility management beyond our expectations.",
+        "author3": "R.L., Facility Director"
+      }
+    },
+    "finalCta": {
+      "title": "Let's Build Smarter, Together",
+      "subtitle": "Want to explore what's possible in just one hour? Book a free call—we'll map out ways to save time, automate tasks, and grow your business.",
+      "cta": "Book Your Free Strategy Call"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "About NodeMatics",
+      "subtitle": "NodeMatics helps solopreneurs, small teams with ambitions work smarter by building lean automation tools and solutions, that save time, reduce repetitive work, and drive growth. We focus on practicality over complexity—using AI and automation to simplify everyday business challenges."
+    },
+    "story": {
+      "title": "Who We Are",
+      "paragraph1": "Founded in 2017, NodeMatics started as a hands-on consulting service and has grown into a product-first digital firm. Today, we develop scalable tools like EngagePerfect and SkySpark rule packages that serve creators, consultants, and small businesses around the world.",
+      "paragraph2": "We are a growing team of developers, consultants, and creators who believe in one thing above all: your time is too valuable to be wasted on tasks that can be automated and improved.",
+      "stats": {
+        "experience": "Years of Experience",
+        "projects": "Projects Delivered",
+        "countries": "Countries Served"
+      }
+    },
+    "beliefs": {
+      "title": "What We Believe",
+      "items": {
+        "timeValue": {
+          "title": "Time is your most valuable asset",
+          "description": "Our tools are designed to give you more of it"
+        },
+        "simplicityScales": {
+          "title": "Simplicity scales",
+          "description": "We don't overbuild. We design lean, practical solutions"
+        },
+        "improvementConstant": {
+          "title": "Improvement is constant",
+          "description": "We believe small, smart changes create lasting growth"
+        }
+      }
+    },
+    "founders": {
+      "title": "Meet the Founders",
+      "patrick": {
+        "name": "Patrick Kadima",
+        "role": "Co-Founder & Automation Lead",
+        "bio": "Automation & AI Consultant with 10+ years' experience helping businesses across Europe and Africa streamline operations. Creator of EngagePerfect. Passionate about process design and digital growth."
+      },
+      "sunita": {
+        "name": "Sunita",
+        "role": "Co-Founder & Creative Lead",
+        "bio": "Creative strategist and project lead. Co-founder of CurioKids and advocate for education, storytelling, and accessible tech tools."
+      }
+    },
+    "finalCta": {
+      "title": "Want to See What's Possible?",
+      "subtitle": "Let's talk about how automation can free up your time, improve your processes, and grow your business. The first hour is on us.",
+      "cta": "Book Your Free Consultation"
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "Get in Touch",
+      "subtitle": "Ready to transform your content strategy? Let's discuss how Nodematics can help you achieve your goals."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "newsletter": {
+      "title": "Subscribe to our Newsletter",
+      "subtitle": "Get weekly articles on automation, AI, and growth strategies delivered to your inbox.",
+      "placeholder": "Enter your email address",
+      "button": "Subscribe",
+      "success": "Thank you for subscribing! You'll receive our weekly articles.",
+      "error": "Something went wrong. Please try again."
+    },
+    "readMore": "Read More",
+    "backToBlog": "Back to Blog",
+    "comments": {
+      "title": "Comments",
+      "addComment": "Add a comment",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Submit Comment",
+      "reply": "Reply",
+      "replyTo": "Reply to {{name}}",
+      "success": "Comment submitted successfully!",
+      "error": "Failed to submit comment. Please try again."
+    }
+  },
+  "language": {
+    "current": "English",
+    "switch": "Switch language",
+    "en": "English",
+    "fr": "Français"
+  }
+}

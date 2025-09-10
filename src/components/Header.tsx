@@ -2,18 +2,21 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation();
 
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Products', href: '/products' },
-    { name: 'Services', href: '/services' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Contact', href: '/contact' },
+    { name: t('navigation.home'), href: '/' },
+    { name: t('navigation.about'), href: '/about' },
+    { name: t('navigation.products'), href: '/products' },
+    { name: t('navigation.services'), href: '/services' },
+    { name: t('navigation.blog'), href: '/blog' },
+    { name: t('navigation.contact'), href: '/contact' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -47,12 +50,13 @@ const Header = () => {
             ))}
           </div>
 
-          <div className="hidden md:flex space-x-4">
+          <div className="hidden md:flex items-center space-x-4">
+            <LanguageSwitcher />
             <Link
               to="/contact"
               className="px-6 py-2 border border-accent-blue text-accent-blue rounded-xl hover:bg-accent-blue hover:text-white transition-all duration-300"
             >
-              Get Started
+              {t('navigation.getStarted')}
             </Link>
           </div>
 
@@ -82,13 +86,16 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
-            <Link
-              to="/contact"
-              className="block mt-4 px-6 py-2 border border-accent-blue text-accent-blue rounded-xl hover:bg-accent-blue hover:text-white transition-all duration-300 text-center"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Get Started
-            </Link>
+            <div className="mt-4 flex flex-col space-y-2">
+              <LanguageSwitcher />
+              <Link
+                to="/contact"
+                className="px-6 py-2 border border-accent-blue text-accent-blue rounded-xl hover:bg-accent-blue hover:text-white transition-all duration-300 text-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {t('navigation.getStarted')}
+              </Link>
+            </div>
           </div>
         )}
       </nav>

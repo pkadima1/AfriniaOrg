@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
 import { useEffect, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Index = () => {
   const [isCalendarReady, setIsCalendarReady] = useState(false);
   const calendarTargetRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Load Google Calendar scheduling script
@@ -105,76 +107,6 @@ const Index = () => {
     }
   };
 
-  const solutions = [
-    {
-      title: "EngagePerfect",
-      description: "AI-powered content generation for blogs, captions, and product copy",
-      icon: "🎯"
-    },
-    {
-      title: "SkySpark Rules",
-      description: "Custom SkySpark analytics and Axon scripts for building/facility optimization",
-      icon: "⚡"
-    },
-    {
-      title: "Smart Automations",
-      description: "Small, remote-first tools that eliminate bottlenecks and save time",
-      icon: "🤖"
-    }
-  ];
-
-  const coreValues = [
-    {
-      title: "We Respect Your Time",
-      description: "Tools built to free you from repetitive work",
-      icon: "⏰"
-    },
-    {
-      title: "We Keep It Practical",
-      description: "Simple, lean, and scalable—not overbuilt or bloated",
-      icon: "🎯"
-    },
-    {
-      title: "We Build for Impact",
-      description: "Everything we do supports measurable growth",
-      icon: "📈"
-    }
-  ];
-
-  const clientLogos = [
-    {
-      name: "CoffeeDesk",
-      image: "/lovable-uploads/df1e608e-1eaf-400e-a5ff-dcc7b1c2e147.png"
-    },
-    {
-      name: "Biscuiteers",
-      image: "/lovable-uploads/151297f0-c6b5-40a4-8af9-3eee4de77ffc.png"
-    },
-    {
-      name: "WebInsight",
-      image: "/lovable-uploads/75a928ad-e768-4ae4-befd-90a07fca9f8a.png"
-    },
-    {
-      name: "WikiLaps",
-      image: "/lovable-uploads/b3cdf068-a2d8-4b73-bc82-2e33138ede1f.png"
-    }
-  ];
-
-  const testimonials = [
-    {
-      quote: "NodeMatics helped us reduce content creation time by 80%. It's like having a full-time content team.",
-      author: "A.M., Ecommerce Founder"
-    },
-    {
-      quote: "Their automation tools eliminated hours of manual work every week. We can finally focus on strategy.",
-      author: "J.K., Operations Manager"
-    },
-    {
-      quote: "The SkySpark implementation optimized our facility management beyond our expectations.",
-      author: "R.L., Facility Director"
-    }
-  ];
-
   return (
     <Layout>
       {/* Calendar widget target - make it visible but positioned off-screen for auto-click */}
@@ -185,10 +117,10 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-accent-blue/5 to-accent-purple/5"></div>
         <div className="relative max-w-4xl mx-auto text-center animate-fade-in">
           <h1 className="text-6xl md:text-8xl font-bold mb-8">
-            Work Less. <span className="gradient-text">Grow More.</span>
+            {t('home.hero.title')}
           </h1>
           <p className="text-xl md:text-2xl text-text-secondary mb-12 max-w-3xl mx-auto leading-relaxed">
-            NodeMatics helps small teams and creators automate content, operations, and analytics—so they can focus on what really matters.
+            {t('home.hero.subtitle')}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -196,19 +128,19 @@ const Index = () => {
               to="/products"
               className="apple-button bg-accent-purple hover:bg-accent-purple/90 hover:shadow-accent-purple/20"
             >
-              Explore EngagePerfect
+              {t('home.hero.cta.exploreProducts')}
             </Link>
             <Link
               to="/about"
               className="apple-button bg-accent-blue hover:bg-accent-blue/90 hover:shadow-accent-blue/20"
             >
-              Learn About Us
+              {t('home.hero.cta.learnAbout')}
             </Link>
             <button
               onClick={handleCalendarClick}
               className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90"
             >
-              Book Free Strategy Call
+              {t('home.hero.cta.bookCall')}
             </button>
           </div>
         </div>
@@ -219,22 +151,38 @@ const Index = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-slide-up">
             <h2 className="text-5xl md:text-6xl font-bold mb-6">
-              Smart Tools for <span className="gradient-text">Real Results</span>
+              {t('home.solutions.title')}
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-scale-in">
-            {solutions.map((solution, index) => (
-              <Card key={index} className="p-8 bg-dark-card border-white/10 card-hover text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
-                  <span className="text-4xl">{solution.icon}</span>
-                </div>
-                <h3 className="text-2xl font-bold mb-4">{solution.title}</h3>
-                <p className="text-text-secondary leading-relaxed">
-                  {solution.description}
-                </p>
-              </Card>
-            ))}
+            <Card className="p-8 bg-dark-card border-white/10 card-hover text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
+                <span className="text-4xl">🎯</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-4">{t('home.solutions.items.engagePerfect.title')}</h3>
+              <p className="text-text-secondary leading-relaxed">
+                {t('home.solutions.items.engagePerfect.description')}
+              </p>
+            </Card>
+            <Card className="p-8 bg-dark-card border-white/10 card-hover text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
+                <span className="text-4xl">⚡</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-4">{t('home.solutions.items.skySparkRules.title')}</h3>
+              <p className="text-text-secondary leading-relaxed">
+                {t('home.solutions.items.skySparkRules.description')}
+              </p>
+            </Card>
+            <Card className="p-8 bg-dark-card border-white/10 card-hover text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
+                <span className="text-4xl">🤖</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-4">{t('home.solutions.items.smartAutomations.title')}</h3>
+              <p className="text-text-secondary leading-relaxed">
+                {t('home.solutions.items.smartAutomations.description')}
+              </p>
+            </Card>
           </div>
         </div>
       </section>
@@ -244,22 +192,38 @@ const Index = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-slide-up">
             <h2 className="text-5xl md:text-6xl font-bold mb-6">
-              Why We <span className="gradient-text">Exist</span>
+              {t('home.values.title')}
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-scale-in">
-            {coreValues.map((value, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
-                  <span className="text-3xl">{value.icon}</span>
-                </div>
-                <h3 className="text-2xl font-bold mb-4">{value.title}</h3>
-                <p className="text-text-secondary leading-relaxed">
-                  {value.description}
-                </p>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
+                <span className="text-3xl">⏰</span>
               </div>
-            ))}
+              <h3 className="text-2xl font-bold mb-4">{t('home.values.items.respectTime.title')}</h3>
+              <p className="text-text-secondary leading-relaxed">
+                {t('home.values.items.respectTime.description')}
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
+                <span className="text-3xl">🎯</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-4">{t('home.values.items.keepPractical.title')}</h3>
+              <p className="text-text-secondary leading-relaxed">
+                {t('home.values.items.keepPractical.description')}
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-accent-blue/20 to-accent-purple/20 rounded-3xl flex items-center justify-center mb-6 mx-auto">
+                <span className="text-3xl">📈</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-4">{t('home.values.items.buildImpact.title')}</h3>
+              <p className="text-text-secondary leading-relaxed">
+                {t('home.values.items.buildImpact.description')}
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -269,20 +233,39 @@ const Index = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-2">
-              Trusted by Teams <span className="gradient-text">Like...</span>
+              {t('home.clients.title')}
             </h2>
           </div>
           
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-            {clientLogos.map((logo, index) => (
-              <div key={index} className="flex items-center justify-center h-16 opacity-80 hover:opacity-100 transition-opacity">
-                <img 
-                  src={logo.image} 
-                  alt={logo.name} 
-                  className="max-h-full max-w-32 object-contain filter brightness-110 hover:brightness-125 transition-all" 
-                />
-              </div>
-            ))}
+            <div className="flex items-center justify-center h-16 opacity-80 hover:opacity-100 transition-opacity">
+              <img 
+                src="/lovable-uploads/df1e608e-1eaf-400e-a5ff-dcc7b1c2e147.png" 
+                alt="CoffeeDesk" 
+                className="max-h-full max-w-32 object-contain filter brightness-110 hover:brightness-125 transition-all" 
+              />
+            </div>
+            <div className="flex items-center justify-center h-16 opacity-80 hover:opacity-100 transition-opacity">
+              <img 
+                src="/lovable-uploads/151297f0-c6b5-40a4-8af9-3eee4de77ffc.png" 
+                alt="Biscuiteers" 
+                className="max-h-full max-w-32 object-contain filter brightness-110 hover:brightness-125 transition-all" 
+              />
+            </div>
+            <div className="flex items-center justify-center h-16 opacity-80 hover:opacity-100 transition-opacity">
+              <img 
+                src="/lovable-uploads/75a928ad-e768-4ae4-befd-90a07fca9f8a.png" 
+                alt="WebInsight" 
+                className="max-h-full max-w-32 object-contain filter brightness-110 hover:brightness-125 transition-all" 
+              />
+            </div>
+            <div className="flex items-center justify-center h-16 opacity-80 hover:opacity-100 transition-opacity">
+              <img 
+                src="/lovable-uploads/b3cdf068-a2d8-4b73-bc82-2e33138ede1f.png" 
+                alt="WikiLaps" 
+                className="max-h-full max-w-32 object-contain filter brightness-110 hover:brightness-125 transition-all" 
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -292,21 +275,35 @@ const Index = () => {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-5xl md:text-6xl font-bold mb-6">
-              What Our <span className="gradient-text">Clients Say</span>
+              {t('home.testimonials.title')}
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="p-8 bg-dark-card border-white/10 text-center">
-                <blockquote className="text-lg mb-6 leading-relaxed">
-                  "{testimonial.quote}"
-                </blockquote>
-                <div className="text-accent-blue font-medium">
-                  — {testimonial.author}
-                </div>
-              </Card>
-            ))}
+            <Card className="p-8 bg-dark-card border-white/10 text-center">
+              <blockquote className="text-lg mb-6 leading-relaxed">
+                "{t('home.testimonials.items.quote1')}"
+              </blockquote>
+              <div className="text-accent-blue font-medium">
+                — {t('home.testimonials.items.author1')}
+              </div>
+            </Card>
+            <Card className="p-8 bg-dark-card border-white/10 text-center">
+              <blockquote className="text-lg mb-6 leading-relaxed">
+                "{t('home.testimonials.items.quote2')}"
+              </blockquote>
+              <div className="text-accent-blue font-medium">
+                — {t('home.testimonials.items.author2')}
+              </div>
+            </Card>
+            <Card className="p-8 bg-dark-card border-white/10 text-center">
+              <blockquote className="text-lg mb-6 leading-relaxed">
+                "{t('home.testimonials.items.quote3')}"
+              </blockquote>
+              <div className="text-accent-blue font-medium">
+                — {t('home.testimonials.items.author3')}
+              </div>
+            </Card>
           </div>
         </div>
       </section>
@@ -315,16 +312,16 @@ const Index = () => {
       <section className="py-20 px-6 lg:px-8 bg-dark-surface">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl md:text-6xl font-bold mb-8">
-            Let's Build <span className="gradient-text">Smarter, Together</span>
+            {t('home.finalCta.title')}
           </h2>
           <p className="text-xl text-text-secondary mb-12 leading-relaxed">
-            Want to explore what's possible in just one hour? Book a free call—we'll map out ways to save time, automate tasks, and grow your business.
+            {t('home.finalCta.subtitle')}
           </p>
           <button
             onClick={handleCalendarClick}
             className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90"
           >
-            Book Your Free Strategy Call
+            {t('home.finalCta.cta')}
           </button>
         </div>
       </section>

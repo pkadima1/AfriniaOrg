@@ -1,0 +1,175 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent"
+  },
+  "navigation": {
+    "home": "Accueil",
+    "about": "À propos",
+    "products": "Produits",
+    "services": "Services",
+    "blog": "Blog",
+    "contact": "Contact",
+    "getStarted": "Commencer"
+  },
+  "home": {
+    "hero": {
+      "title": "Travaillez Moins. Grandissez Plus.",
+      "subtitle": "NodeMatics aide les petites équipes et les créateurs à automatiser le contenu, les opérations et l'analyse—pour qu'ils puissent se concentrer sur ce qui compte vraiment.",
+      "cta": {
+        "exploreProducts": "Découvrir EngagePerfect",
+        "learnAbout": "En savoir plus",
+        "bookCall": "Réserver un appel gratuit"
+      }
+    },
+    "solutions": {
+      "title": "Outils Intelligents pour des Résultats Réels",
+      "items": {
+        "engagePerfect": {
+          "title": "EngagePerfect",
+          "description": "Génération de contenu alimentée par l'IA pour blogs, légendes et textes produits"
+        },
+        "skySparkRules": {
+          "title": "Règles SkySpark",
+          "description": "Analyses SkySpark personnalisées et scripts Axon pour l'optimisation des bâtiments/installations"
+        },
+        "smartAutomations": {
+          "title": "Automatisations Intelligentes",
+          "description": "Petits outils à distance qui éliminent les goulots d'étranglement et font gagner du temps"
+        }
+      }
+    },
+    "values": {
+      "title": "Pourquoi Nous Existons",
+      "items": {
+        "respectTime": {
+          "title": "Nous Respectons Votre Temps",
+          "description": "Des outils conçus pour vous libérer du travail répétitif"
+        },
+        "keepPractical": {
+          "title": "Nous Restons Pratiques",
+          "description": "Simple, efficace et évolutif—pas surchargé ou gonflé"
+        },
+        "buildImpact": {
+          "title": "Nous Construisons pour l'Impact",
+          "description": "Tout ce que nous faisons soutient une croissance mesurable"
+        }
+      }
+    },
+    "clients": {
+      "title": "Fait confiance par des équipes comme..."
+    },
+    "testimonials": {
+      "title": "Ce que disent nos clients",
+      "items": {
+        "quote1": "NodeMatics nous a aidés à réduire le temps de création de contenu de 80 %. C'est comme avoir une équipe de contenu à temps plein.",
+        "author1": "A.M., Fondateur E-commerce",
+        "quote2": "Leurs outils d'automatisation ont éliminé des heures de travail manuel chaque semaine. Nous pouvons enfin nous concentrer sur la stratégie.",
+        "author2": "J.K., Responsable des Opérations",
+        "quote3": "L'implémentation SkySpark a optimisé notre gestion des installations au-delà de nos attentes.",
+        "author3": "R.L., Directeur des Installations"
+      }
+    },
+    "finalCta": {
+      "title": "Construisons Plus Intelligemment, Ensemble",
+      "subtitle": "Vous voulez explorer ce qui est possible en une heure seulement ? Réservez un appel gratuit—nous tracerons des moyens d'économiser du temps, d'automatiser les tâches et de développer votre entreprise.",
+      "cta": "Réservez Votre Appel Stratégique Gratuit"
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "À propos de NodeMatics",
+      "subtitle": "NodeMatics aide les solopreneurs et les petites équipes ambitieuses à travailler plus intelligemment en construisant des outils d'automatisation et des solutions efficaces qui font gagner du temps, réduisent le travail répétitif et stimulent la croissance. Nous nous concentrons sur la praticité plutôt que sur la complexité—utilisant l'IA et l'automatisation pour simplifier les défis commerciaux quotidiens."
+    },
+    "story": {
+      "title": "Qui Nous Sommes",
+      "paragraph1": "Fondée en 2017, NodeMatics a commencé comme un service de conseil pratique et s'est développée en une entreprise numérique axée sur les produits. Aujourd'hui, nous développons des outils évolutifs comme EngagePerfect et des packages de règles SkySpark qui servent les créateurs, consultants et petites entreprises du monde entier.",
+      "paragraph2": "Nous sommes une équipe croissante de développeurs, consultants et créateurs qui croient en une chose par-dessus tout : votre temps est trop précieux pour être gaspillé sur des tâches qui peuvent être automatisées et améliorées.",
+      "stats": {
+        "experience": "Années d'Expérience",
+        "projects": "Projets Livrés",
+        "countries": "Pays Servis"
+      }
+    },
+    "beliefs": {
+      "title": "Ce En Quoi Nous Croyons",
+      "items": {
+        "timeValue": {
+          "title": "Le temps est votre atout le plus précieux",
+          "description": "Nos outils sont conçus pour vous en donner plus"
+        },
+        "simplicityScales": {
+          "title": "La simplicité s'adapte",
+          "description": "Nous ne surchargeons pas. Nous concevons des solutions efficaces et pratiques"
+        },
+        "improvementConstant": {
+          "title": "L'amélioration est constante",
+          "description": "Nous croyons que de petits changements intelligents créent une croissance durable"
+        }
+      }
+    },
+    "founders": {
+      "title": "Rencontrez les Fondateurs",
+      "patrick": {
+        "name": "Patrick Kadima",
+        "role": "Co-Fondateur & Responsable Automatisation",
+        "bio": "Consultant en Automatisation et IA avec plus de 10 ans d'expérience aidant les entreprises en Europe et en Afrique à rationaliser leurs opérations. Créateur d'EngagePerfect. Passionné par la conception de processus et la croissance numérique."
+      },
+      "sunita": {
+        "name": "Sunita",
+        "role": "Co-Fondatrice & Responsable Créative",
+        "bio": "Stratège créative et chef de projet. Co-fondatrice de CurioKids et défenseure de l'éducation, de la narration et des outils technologiques accessibles."
+      }
+    },
+    "finalCta": {
+      "title": "Vous Voulez Voir Ce Qui Est Possible ?",
+      "subtitle": "Parlons de la façon dont l'automatisation peut libérer votre temps, améliorer vos processus et développer votre entreprise. La première heure est offerte.",
+      "cta": "Réservez Votre Consultation Gratuite"
+    }
+  },
+  "contact": {
+    "hero": {
+      "title": "Entrez en Contact",
+      "subtitle": "Prêt à transformer votre stratégie de contenu ? Discutons de la façon dont Nodematics peut vous aider à atteindre vos objectifs."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "newsletter": {
+      "title": "Abonnez-vous à notre Newsletter",
+      "subtitle": "Recevez des articles hebdomadaires sur l'automatisation, l'IA et les stratégies de croissance dans votre boîte mail.",
+      "placeholder": "Entrez votre adresse email",
+      "button": "S'abonner",
+      "success": "Merci de vous être abonné ! Vous recevrez nos articles hebdomadaires.",
+      "error": "Quelque chose s'est mal passé. Veuillez réessayer."
+    },
+    "readMore": "Lire la Suite",
+    "backToBlog": "Retour au Blog",
+    "comments": {
+      "title": "Commentaires",
+      "addComment": "Ajouter un commentaire",
+      "name": "Nom",
+      "email": "Email",
+      "message": "Message",
+      "submit": "Soumettre le Commentaire",
+      "reply": "Répondre",
+      "replyTo": "Répondre à {{name}}",
+      "success": "Commentaire soumis avec succès !",
+      "error": "Échec de la soumission du commentaire. Veuillez réessayer."
+    }
+  },
+  "language": {
+    "current": "Français",
+    "switch": "Changer de langue",
+    "en": "English",
+    "fr": "Français"
+  }
+}
