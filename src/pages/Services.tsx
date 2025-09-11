@@ -3,8 +3,10 @@ import Layout from '../components/Layout';
 import { Card } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Services = () => {
+  const { t } = useTranslation();
   const [isCalendarReady, setIsCalendarReady] = useState(false);
   const calendarTargetRef = useRef<HTMLDivElement>(null);
 
@@ -106,11 +108,10 @@ const Services = () => {
       <section className="py-20 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Our <span className="gradient-text">Services</span>
+            {t('services.hero.title').split(' ').slice(0, -1).join(' ')} <span className="gradient-text">{t('services.hero.title').split(' ').slice(-1)}</span>
           </h1>
           <p className="text-xl text-text-secondary mb-8">
-            Comprehensive AI-powered solutions to transform your content strategy 
-            and accelerate your business growth.
+            {t('services.hero.subtitle')}
           </p>
         </div>
       </section>
@@ -125,31 +126,30 @@ const Services = () => {
               <div className="w-12 h-12 bg-accent-blue/20 rounded-2xl flex items-center justify-center mb-6">
                 <span className="text-accent-blue text-2xl">✍️</span>
               </div>
-              <h3 className="text-2xl font-semibold mb-4">AI Content Generation</h3>
+              <h3 className="text-2xl font-semibold mb-4">{t('services.cards.contentGeneration.title')}</h3>
               <p className="text-text-secondary mb-6">
-                Transform your ideas into compelling, SEO-optimized content that engages 
-                your audience and drives results.
+                {t('services.cards.contentGeneration.description')}
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-blue rounded-full"></span>
-                  <span>Blog posts and articles</span>
+                  <span>{t('services.cards.contentGeneration.features.blogPosts')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-blue rounded-full"></span>
-                  <span>Social media content</span>
+                  <span>{t('services.cards.contentGeneration.features.socialMedia')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-blue rounded-full"></span>
-                  <span>Email campaigns</span>
+                  <span>{t('services.cards.contentGeneration.features.emailCampaigns')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-blue rounded-full"></span>
-                  <span>Product descriptions</span>
+                  <span>{t('services.cards.contentGeneration.features.productDescriptions')}</span>
                 </li>
               </ul>
               <Link to="/contact" className="text-accent-blue hover:text-accent-blue/80 font-medium">
-                Learn More →
+                {t('services.learnMore')} →
               </Link>
             </Card>
 
@@ -158,31 +158,30 @@ const Services = () => {
               <div className="w-12 h-12 bg-accent-purple/20 rounded-2xl flex items-center justify-center mb-6">
                 <span className="text-accent-purple text-2xl">📈</span>
               </div>
-              <h3 className="text-2xl font-semibold mb-4">SEO Optimization</h3>
+              <h3 className="text-2xl font-semibold mb-4">{t('services.cards.seoOptimization.title')}</h3>
               <p className="text-text-secondary mb-6">
-                Boost your search rankings with content that's specifically optimized 
-                for search engines and user engagement.
+                {t('services.cards.seoOptimization.description')}
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-purple rounded-full"></span>
-                  <span>Keyword research and optimization</span>
+                  <span>{t('services.cards.seoOptimization.features.keywordResearch')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-purple rounded-full"></span>
-                  <span>Meta tags and descriptions</span>
+                  <span>{t('services.cards.seoOptimization.features.metaTags')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-purple rounded-full"></span>
-                  <span>Content structure optimization</span>
+                  <span>{t('services.cards.seoOptimization.features.contentStructure')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-purple rounded-full"></span>
-                  <span>Readability improvements</span>
+                  <span>{t('services.cards.seoOptimization.features.readability')}</span>
                 </li>
               </ul>
               <Link to="/contact" className="text-accent-purple hover:text-accent-purple/80 font-medium">
-                Learn More →
+                {t('services.learnMore')} →
               </Link>
             </Card>
 
@@ -191,31 +190,30 @@ const Services = () => {
               <div className="w-12 h-12 bg-accent-blue/20 rounded-2xl flex items-center justify-center mb-6">
                 <span className="text-accent-blue text-2xl">🎯</span>
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Content Strategy Consulting</h3>
+              <h3 className="text-2xl font-semibold mb-4">{t('services.cards.contentStrategy.title')}</h3>
               <p className="text-text-secondary mb-6">
-                Work with our experts to develop a comprehensive content strategy 
-                that aligns with your business goals and audience needs.
+                {t('services.cards.contentStrategy.description')}
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-blue rounded-full"></span>
-                  <span>Content audit and analysis</span>
+                  <span>{t('services.cards.contentStrategy.features.contentAudit')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-blue rounded-full"></span>
-                  <span>Editorial calendar planning</span>
+                  <span>{t('services.cards.contentStrategy.features.editorialCalendar')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-blue rounded-full"></span>
-                  <span>Audience research</span>
+                  <span>{t('services.cards.contentStrategy.features.audienceResearch')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-blue rounded-full"></span>
-                  <span>Performance optimization</span>
+                  <span>{t('services.cards.contentStrategy.features.performanceOptimization')}</span>
                 </li>
               </ul>
               <Link to="/contact" className="text-accent-blue hover:text-accent-blue/80 font-medium">
-                Learn More →
+                {t('services.learnMore')} →
               </Link>
             </Card>
 
@@ -224,31 +222,30 @@ const Services = () => {
               <div className="w-12 h-12 bg-accent-purple/20 rounded-2xl flex items-center justify-center mb-6">
                 <span className="text-accent-purple text-2xl">⚙️</span>
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Custom Integrations</h3>
+              <h3 className="text-2xl font-semibold mb-4">{t('services.cards.customIntegrations.title')}</h3>
               <p className="text-text-secondary mb-6">
-                Seamlessly integrate our AI tools into your existing workflow 
-                with custom API solutions and enterprise features.
+                {t('services.cards.customIntegrations.description')}
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-purple rounded-full"></span>
-                  <span>API development and integration</span>
+                  <span>{t('services.cards.customIntegrations.features.apiDevelopment')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-purple rounded-full"></span>
-                  <span>Workflow automation</span>
+                  <span>{t('services.cards.customIntegrations.features.workflowAutomation')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-purple rounded-full"></span>
-                  <span>Custom model training</span>
+                  <span>{t('services.cards.customIntegrations.features.customModelTraining')}</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <span className="w-2 h-2 bg-accent-purple rounded-full"></span>
-                  <span>Enterprise support</span>
+                  <span>{t('services.cards.customIntegrations.features.enterpriseSupport')}</span>
                 </li>
               </ul>
               <Link to="/contact" className="text-accent-purple hover:text-accent-purple/80 font-medium">
-                Learn More →
+                {t('services.learnMore')} →
               </Link>
             </Card>
           </div>
@@ -259,9 +256,9 @@ const Services = () => {
       <section className="py-20 px-6 lg:px-8 bg-dark-surface">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-6">Our Process</h2>
+            <h2 className="text-4xl font-bold mb-6">{t('services.process.title')}</h2>
             <p className="text-xl text-text-secondary max-w-3xl mx-auto">
-              A streamlined approach to delivering exceptional results for every client.
+              {t('services.process.subtitle')}
             </p>
           </div>
 
@@ -270,9 +267,9 @@ const Services = () => {
               <div className="w-16 h-16 bg-accent-blue/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <span className="text-accent-blue font-bold text-xl">1</span>
               </div>
-              <h3 className="text-xl font-semibold mb-4">Discovery</h3>
+              <h3 className="text-xl font-semibold mb-4">{t('services.process.steps.discovery.title')}</h3>
               <p className="text-text-secondary">
-                We understand your goals, audience, and current content challenges.
+                {t('services.process.steps.discovery.description')}
               </p>
             </div>
 
@@ -280,9 +277,9 @@ const Services = () => {
               <div className="w-16 h-16 bg-accent-purple/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <span className="text-accent-purple font-bold text-xl">2</span>
               </div>
-              <h3 className="text-xl font-semibold mb-4">Strategy</h3>
+              <h3 className="text-xl font-semibold mb-4">{t('services.process.steps.strategy.title')}</h3>
               <p className="text-text-secondary">
-                We develop a customized content strategy tailored to your needs.
+                {t('services.process.steps.strategy.description')}
               </p>
             </div>
 
@@ -290,9 +287,9 @@ const Services = () => {
               <div className="w-16 h-16 bg-accent-blue/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <span className="text-accent-blue font-bold text-xl">3</span>
               </div>
-              <h3 className="text-xl font-semibold mb-4">Implementation</h3>
+              <h3 className="text-xl font-semibold mb-4">{t('services.process.steps.implementation.title')}</h3>
               <p className="text-text-secondary">
-                We execute the strategy using our advanced AI tools and expertise.
+                {t('services.process.steps.implementation.description')}
               </p>
             </div>
 
@@ -300,9 +297,9 @@ const Services = () => {
               <div className="w-16 h-16 bg-accent-purple/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <span className="text-accent-purple font-bold text-xl">4</span>
               </div>
-              <h3 className="text-xl font-semibold mb-4">Optimization</h3>
+              <h3 className="text-xl font-semibold mb-4">{t('services.process.steps.optimization.title')}</h3>
               <p className="text-text-secondary">
-                We continuously monitor and optimize for better results.
+                {t('services.process.steps.optimization.description')}
               </p>
             </div>
           </div>
@@ -313,16 +310,16 @@ const Services = () => {
       <section className="py-20 px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold mb-6">
-            Ready to Transform Your <span className="gradient-text">Content Strategy</span>?
+            {t('services.cta.title').split(' ').slice(0, -2).join(' ')} <span className="gradient-text">{t('services.cta.title').split(' ').slice(-2).join(' ')}</span>
           </h2>
           <p className="text-xl text-text-secondary mb-8">
-            Let's discuss how our services can help you achieve your content goals.
+            {t('services.cta.subtitle')}
           </p>
           <button 
             onClick={handleCalendarClick}
             className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90"
           >
-            Schedule Consultation
+            {t('services.cta.button')}
           </button>
         </div>
       </section>

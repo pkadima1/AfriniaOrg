@@ -223,6 +223,95 @@
       "error": "Échec de la soumission du commentaire. Veuillez réessayer."
     }
   },
+  "services": {
+    "hero": {
+      "title": "Nos Services",
+      "subtitle": "Des solutions complètes alimentées par l'IA pour transformer votre stratégie de contenu et accélérer la croissance de votre entreprise."
+    },
+    "cards": {
+      "contentGeneration": {
+        "title": "Génération de Contenu IA",
+        "description": "Transformez vos idées en contenu convaincant et optimisé pour le SEO qui engage votre audience et génère des résultats.",
+        "features": {
+          "blogPosts": "Articles et billets de blog",
+          "socialMedia": "Contenu pour réseaux sociaux",
+          "emailCampaigns": "Campagnes email",
+          "productDescriptions": "Descriptions de produits"
+        }
+      },
+      "seoOptimization": {
+        "title": "Optimisation SEO",
+        "description": "Améliorez votre classement dans les moteurs de recherche avec du contenu spécifiquement optimisé pour les moteurs de recherche et l'engagement des utilisateurs.",
+        "features": {
+          "keywordResearch": "Recherche et optimisation de mots-clés",
+          "metaTags": "Balises méta et descriptions",
+          "contentStructure": "Optimisation de la structure du contenu",
+          "readability": "Améliorations de la lisibilité"
+        }
+      },
+      "contentStrategy": {
+        "title": "Conseil en Stratégie de Contenu",
+        "description": "Travaillez avec nos experts pour développer une stratégie de contenu complète qui s'aligne avec vos objectifs commerciaux et les besoins de votre audience.",
+        "features": {
+          "contentAudit": "Audit et analyse de contenu",
+          "editorialCalendar": "Planification du calendrier éditorial",
+          "audienceResearch": "Recherche d'audience",
+          "performanceOptimization": "Optimisation des performances"
+        }
+      },
+      "customIntegrations": {
+        "title": "Intégrations Personnalisées",
+        "description": "Intégrez de manière transparente nos outils IA dans votre flux de travail existant avec des solutions API personnalisées et des fonctionnalités d'entreprise.",
+        "features": {
+          "apiDevelopment": "Développement et intégration d'API",
+          "workflowAutomation": "Automatisation du flux de travail",
+          "customModelTraining": "Formation de modèles personnalisés",
+          "enterpriseSupport": "Support entreprise"
+        }
+      }
+    },
+    "process": {
+      "title": "Notre Processus",
+      "subtitle": "Une approche rationalisée pour fournir des résultats exceptionnels à chaque client.",
+      "steps": {
+        "discovery": {
+          "title": "Découverte",
+          "description": "Nous comprenons vos objectifs, votre audience et vos défis de contenu actuels."
+        },
+        "strategy": {
+          "title": "Stratégie",
+          "description": "Nous développons une stratégie de contenu personnalisée adaptée à vos besoins."
+        },
+        "implementation": {
+          "title": "Mise en Œuvre",
+          "description": "Nous exécutons la stratégie en utilisant nos outils IA avancés et notre expertise."
+        },
+        "optimization": {
+          "title": "Optimisation",
+          "description": "Nous surveillons et optimisons continuellement pour de meilleurs résultats."
+        }
+      }
+    },
+    "cta": {
+      "title": "Prêt à Transformer Votre Stratégie de Contenu ?",
+      "subtitle": "Discutons de la façon dont nos services peuvent vous aider à atteindre vos objectifs de contenu.",
+      "button": "Planifier une Consultation"
+    },
+    "learnMore": "En Savoir Plus"
+  },
+  "footer": {
+    "company": "Entreprise",
+    "products": "Produits",
+    "description": "Donner aux créateurs, équipes et entreprises les moyens d'agir avec des outils d'automatisation alimentés par l'IA et des solutions de génération de contenu.",
+    "copyright": "© 2024 Nodematics. Tous droits réservés.",
+    "links": {
+      "about": "À propos",
+      "services": "Services",
+      "contact": "Contact", 
+      "engagePerfect": "EngagePerfect",
+      "support": "Support"
+    }
+  },
   "language": {
     "current": "Français",
     "switch": "Changer de langue",

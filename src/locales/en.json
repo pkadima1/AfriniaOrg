@@ -223,6 +223,95 @@
       "error": "Failed to submit comment. Please try again."
     }
   },
+  "services": {
+    "hero": {
+      "title": "Our Services",
+      "subtitle": "Comprehensive AI-powered solutions to transform your content strategy and accelerate your business growth."
+    },
+    "cards": {
+      "contentGeneration": {
+        "title": "AI Content Generation",
+        "description": "Transform your ideas into compelling, SEO-optimized content that engages your audience and drives results.",
+        "features": {
+          "blogPosts": "Blog posts and articles",
+          "socialMedia": "Social media content", 
+          "emailCampaigns": "Email campaigns",
+          "productDescriptions": "Product descriptions"
+        }
+      },
+      "seoOptimization": {
+        "title": "SEO Optimization",
+        "description": "Boost your search rankings with content that's specifically optimized for search engines and user engagement.",
+        "features": {
+          "keywordResearch": "Keyword research and optimization",
+          "metaTags": "Meta tags and descriptions",
+          "contentStructure": "Content structure optimization",
+          "readability": "Readability improvements"
+        }
+      },
+      "contentStrategy": {
+        "title": "Content Strategy Consulting",
+        "description": "Work with our experts to develop a comprehensive content strategy that aligns with your business goals and audience needs.",
+        "features": {
+          "contentAudit": "Content audit and analysis",
+          "editorialCalendar": "Editorial calendar planning",
+          "audienceResearch": "Audience research",
+          "performanceOptimization": "Performance optimization"
+        }
+      },
+      "customIntegrations": {
+        "title": "Custom Integrations",
+        "description": "Seamlessly integrate our AI tools into your existing workflow with custom API solutions and enterprise features.",
+        "features": {
+          "apiDevelopment": "API development and integration",
+          "workflowAutomation": "Workflow automation",
+          "customModelTraining": "Custom model training",
+          "enterpriseSupport": "Enterprise support"
+        }
+      }
+    },
+    "process": {
+      "title": "Our Process",
+      "subtitle": "A streamlined approach to delivering exceptional results for every client.",
+      "steps": {
+        "discovery": {
+          "title": "Discovery",
+          "description": "We understand your goals, audience, and current content challenges."
+        },
+        "strategy": {
+          "title": "Strategy", 
+          "description": "We develop a customized content strategy tailored to your needs."
+        },
+        "implementation": {
+          "title": "Implementation",
+          "description": "We execute the strategy using our advanced AI tools and expertise."
+        },
+        "optimization": {
+          "title": "Optimization",
+          "description": "We continuously monitor and optimize for better results."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to Transform Your Content Strategy?",
+      "subtitle": "Let's discuss how our services can help you achieve your content goals.",
+      "button": "Schedule Consultation"
+    },
+    "learnMore": "Learn More"
+  },
+  "footer": {
+    "company": "Company",
+    "products": "Products",
+    "description": "Empowering creators, teams, and businesses with AI-powered automation tools and content generation solutions.",
+    "copyright": "© 2024 Nodematics. All rights reserved.",
+    "links": {
+      "about": "About",
+      "services": "Services", 
+      "contact": "Contact",
+      "engagePerfect": "EngagePerfect",
+      "support": "Support"
+    }
+  },
   "language": {
     "current": "English",
     "switch": "Switch language",
