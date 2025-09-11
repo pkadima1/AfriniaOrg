@@ -139,6 +139,63 @@
     "hero": {
       "title": "Entrez en Contact",
       "subtitle": "Prêt à transformer votre stratégie de contenu ? Discutons de la façon dont Nodematics peut vous aider à atteindre vos objectifs."
+    },
+    "form": {
+      "title": "Envoyez-nous un message",
+      "fields": {
+        "name": {
+          "label": "Nom Complet",
+          "placeholder": "Votre nom complet"
+        },
+        "email": {
+          "label": "Adresse Email",
+          "placeholder": "votre@email.com"
+        },
+        "company": {
+          "label": "Entreprise (Optionnel)",
+          "placeholder": "Nom de votre entreprise"
+        },
+        "message": {
+          "label": "Message",
+          "placeholder": "Parlez-nous de votre projet et comment nous pouvons vous aider..."
+        }
+      },
+      "submit": "Envoyer le Message",
+      "submitting": "Envoi...",
+      "success": {
+        "title": "Message envoyé avec succès !",
+        "description": "Nous vous répondrons dans les 24 heures."
+      },
+      "error": {
+        "title": "Erreur lors de l'envoi du message",
+        "description": "Veuillez réessayer ou nous contacter directement à contact@nodematics.com"
+      }
+    },
+    "info": {
+      "title": "Informations de Contact",
+      "email": "Email",
+      "ukOffice": "Bureau UK",
+      "euOffice": "Bureau EU",
+      "phoneWhatsapp": "Téléphone & WhatsApp",
+      "phoneTelegram": "Téléphone & Telegram",
+      "officeHours": {
+        "title": "Heures d'Ouverture",
+        "mondayFriday": "Lundi - Vendredi",
+        "saturday": "Samedi",
+        "sunday": "Dimanche",
+        "closed": "Fermé",
+        "timeGMT": "GMT"
+      }
+    },
+    "responseTime": {
+      "title": "Nous Répondons Rapidement",
+      "subtitle": "Notre équipe répond généralement aux demandes dans les 2-4 heures pendant les heures d'ouverture.",
+      "sales": "Demandes Commerciales",
+      "general": "Questions Générales",
+      "technical": "Support Technique",
+      "hours2": "< 2h",
+      "hours4": "< 4h",
+      "hours24": "< 24h"
     }
   },
   "blog": {

@@ -139,6 +139,63 @@
     "hero": {
       "title": "Get in Touch",
       "subtitle": "Ready to transform your content strategy? Let's discuss how Nodematics can help you achieve your goals."
+    },
+    "form": {
+      "title": "Send us a message",
+      "fields": {
+        "name": {
+          "label": "Full Name",
+          "placeholder": "Your full name"
+        },
+        "email": {
+          "label": "Email Address", 
+          "placeholder": "your@email.com"
+        },
+        "company": {
+          "label": "Company (Optional)",
+          "placeholder": "Your company name"
+        },
+        "message": {
+          "label": "Message",
+          "placeholder": "Tell us about your project and how we can help..."
+        }
+      },
+      "submit": "Send Message",
+      "submitting": "Sending...",
+      "success": {
+        "title": "Message sent successfully!",
+        "description": "We'll get back to you within 24 hours."
+      },
+      "error": {
+        "title": "Error sending message",
+        "description": "Please try again or contact us directly at contact@nodematics.com"
+      }
+    },
+    "info": {
+      "title": "Contact Information",
+      "email": "Email",
+      "ukOffice": "UK Office",
+      "euOffice": "EU Office",
+      "phoneWhatsapp": "Phone & WhatsApp",
+      "phoneTelegram": "Phone & Telegram",
+      "officeHours": {
+        "title": "Office Hours",
+        "mondayFriday": "Monday - Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday",
+        "closed": "Closed",
+        "timeGMT": "GMT"
+      }
+    },
+    "responseTime": {
+      "title": "We'll Respond Quickly",
+      "subtitle": "Our team typically responds to inquiries within 2-4 hours during business hours.",
+      "sales": "Sales Inquiries",
+      "general": "General Questions", 
+      "technical": "Technical Support",
+      "hours2": "< 2hrs",
+      "hours4": "< 4hrs", 
+      "hours24": "< 24hrs"
     }
   },
   "blog": {
