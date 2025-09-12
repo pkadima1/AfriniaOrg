@@ -326,9 +326,131 @@
       "support": "Support"
     }
   },
+  "products": {
+    "hero": {
+      "title": "EngagePerfect",
+      "subtitle": "Generate SEO content 10x faster—without sounding like a robot? But Human Like. The ultimate AI-powered content generation platform that creates EEAT-compliant, SEO-optimized content for creators, teams, and businesses.",
+      "cta": "Start Free Trial"
+    },
+    "seeItInAction": {
+      "title": "See It in Action",
+      "subtitle": "Watch EngagePerfect transform your content creation workflow with intelligent automation and human-like results",
+      "liveGenerator": {
+        "title": "Live Content Generator",
+        "inputPrompt": "Input Prompt",
+        "samplePrompt": "Write a blog post about modern font combinations for web design",
+        "aiProcessing": "AI Processing...",
+        "generatedContent": "Generated Content",
+        "seoScore": "SEO: 94/100",
+        "sampleContent": "Typography is the silent voice of your brand. When selecting font combinations for modern web design, consider pairing a clean sans-serif header like Inter with a readable body font such as Source Sans Pro...",
+        "words": "words",
+        "eatCompliant": "EEAT Compliant",
+        "readyToPublish": "Ready to Publish"
+      },
+      "features": {
+        "lightningFast": {
+          "title": "Lightning Fast Generation",
+          "description": "Generate comprehensive blog posts, social media content, and marketing copy in seconds, not hours."
+        },
+        "seoOptimized": {
+          "title": "SEO Optimized", 
+          "description": "Every piece of content is automatically optimized for search engines with proper keyword density and structure."
+        },
+        "humanLike": {
+          "title": "Human-Like Quality",
+          "description": "Advanced AI models ensure your content sounds natural and engaging, never robotic or generic."
+        }
+      },
+      "stats": {
+        "faster": "Faster Content Creation",
+        "seoScore": "Average SEO Score", 
+        "contentTypes": "Content Types",
+        "availability": "AI Availability"
+      }
+    },
+    "features": {
+      "title": "Powerful Features",
+      "subtitle": "Everything you need to create compelling, search-optimized content at scale.",
+      "contentGeneration": {
+        "title": "Content Generation",
+        "description": "Generate blog posts, articles, social media captions, product descriptions, and email campaigns with our advanced AI models.",
+        "features": {
+          "longForm": "Long-form articles (1000+ words)",
+          "socialMedia": "Social media content",
+          "productDescriptions": "Product descriptions",
+          "emailCampaigns": "Email campaigns"
+        }
+      },
+      "eatCompliance": {
+        "title": "EEAT Compliance",
+        "description": "Ensure your content meets Google's Experience, Expertise, Authoritativeness, and Trustworthiness guidelines for better search rankings.",
+        "note": "e.g., adds sources & structure that Google rewards and AI search engines value",
+        "features": {
+          "expertLevel": "Expert-level content depth",
+          "authoritative": "Authoritative tone and structure", 
+          "trustworthy": "Trustworthy source integration",
+          "experienceBased": "Experience-based insights"
+        }
+      },
+      "seoOptimization": {
+        "title": "SEO Optimization",
+        "description": "Built-in SEO tools ensure your content ranks well in search results and drives organic traffic to your website.",
+        "features": {
+          "keywordOptimization": "Keyword optimization",
+          "metaDescriptions": "Meta descriptions",
+          "headerOptimization": "Header optimization",
+          "readabilityScoring": "Readability scoring"
+        }
+      },
+      "automation": {
+        "title": "Automation & Integrations",
+        "description": "Seamlessly integrate with your existing workflow and automate repetitive content tasks to save time and increase productivity.",
+        "note": "No dev required — Sign up & start execution",
+        "features": {
+          "wordpressIntegration": "WordPress integration",
+          "socialScheduling": "Social media scheduling",
+          "apiAccess": "API access",
+          "bulkGeneration": "Bulk content generation"
+        }
+      }
+    },
+    "useCases": {
+      "title": "Perfect For",
+      "subtitle": "EngagePerfect adapts to your specific needs, whether you're a creator, team, or business.",
+      "contentCreators": {
+        "title": "Content Creators",
+        "description": "Bloggers, YouTubers, and influencers who need consistent, high-quality content to engage their audience."
+      },
+      "marketingTeams": {
+        "title": "Marketing Teams", 
+        "description": "Marketing departments that need to scale content production while maintaining quality and brand consistency."
+      },
+      "smallBusinesses": {
+        "title": "Small Businesses",
+        "description": "Small business owners who want to compete with larger companies through professional, SEO-optimized content."
+      }
+    },
+    "testimonials": {
+      "title": "What Our Clients Say",
+      "items": {
+        "quote1": "I use this daily — saves hours!",
+        "author1": "S.P., Content Creator",
+        "quote2": "NodeMatics helped us reduce content creation time by 80%. It's like having a full-time content team.",
+        "author2": "A.M., Ecommerce Founder", 
+        "quote3": "Their automation tools eliminated hours of manual work every week. We can finally focus on strategy.",
+        "author3": "J.K., Operations Manager"
+      }
+    },
+    "finalCta": {
+      "title": "Ready to Experience EngagePerfect?",
+      "subtitle": "Join thousands of creators and businesses transforming their content strategy.",
+      "startTrial": "Start Free Trial",
+      "requestDemo": "Request Demo"
+    }
+  },
   "language": {
     "current": "English",
-    "switch": "Switch language",
+    "switch": "Switch Language",
     "en": "English",
     "fr": "Français"
   }

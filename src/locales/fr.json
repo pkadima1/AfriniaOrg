@@ -326,6 +326,128 @@
       "support": "Support"
     }
   },
+  "products": {
+    "hero": {
+      "title": "EngagePerfect",
+      "subtitle": "Générez du contenu SEO 10x plus vite—sans ressembler à un robot ? Mais Humain. La plateforme ultime de génération de contenu alimentée par l'IA qui crée du contenu conforme EEAT et optimisé SEO pour les créateurs, équipes et entreprises.",
+      "cta": "Commencer l'Essai Gratuit"
+    },
+    "seeItInAction": {
+      "title": "Voyez-le en Action",
+      "subtitle": "Regardez EngagePerfect transformer votre flux de création de contenu avec une automatisation intelligente et des résultats humains",
+      "liveGenerator": {
+        "title": "Générateur de Contenu en Direct",
+        "inputPrompt": "Invite d'Entrée",
+        "samplePrompt": "Écrivez un article de blog sur les combinaisons de polices modernes pour le design web",
+        "aiProcessing": "Traitement IA...",
+        "generatedContent": "Contenu Généré",
+        "seoScore": "SEO: 94/100",
+        "sampleContent": "La typographie est la voix silencieuse de votre marque. Lors de la sélection de combinaisons de polices pour le design web moderne, considérez l'association d'un en-tête sans-serif propre comme Inter avec une police de corps lisible comme Source Sans Pro...",
+        "words": "mots",
+        "eatCompliant": "Conforme EEAT",
+        "readyToPublish": "Prêt à Publier"
+      },
+      "features": {
+        "lightningFast": {
+          "title": "Génération Ultra-Rapide",
+          "description": "Générez des articles de blog complets, du contenu de médias sociaux et du texte marketing en secondes, pas en heures."
+        },
+        "seoOptimized": {
+          "title": "Optimisé SEO",
+          "description": "Chaque élément de contenu est automatiquement optimisé pour les moteurs de recherche avec une densité de mots-clés et une structure appropriées."
+        },
+        "humanLike": {
+          "title": "Qualité Humaine",
+          "description": "Les modèles IA avancés garantissent que votre contenu sonne naturel et engageant, jamais robotique ou générique."
+        }
+      },
+      "stats": {
+        "faster": "Création de Contenu Plus Rapide",
+        "seoScore": "Score SEO Moyen",
+        "contentTypes": "Types de Contenu",
+        "availability": "Disponibilité IA"
+      }
+    },
+    "features": {
+      "title": "Fonctionnalités Puissantes",
+      "subtitle": "Tout ce dont vous avez besoin pour créer du contenu convaincant et optimisé pour la recherche à grande échelle.",
+      "contentGeneration": {
+        "title": "Génération de Contenu",
+        "description": "Générez des articles de blog, articles, légendes de médias sociaux, descriptions de produits et campagnes email avec nos modèles IA avancés.",
+        "features": {
+          "longForm": "Articles longs (1000+ mots)",
+          "socialMedia": "Contenu de médias sociaux",
+          "productDescriptions": "Descriptions de produits",
+          "emailCampaigns": "Campagnes email"
+        }
+      },
+      "eatCompliance": {
+        "title": "Conformité EEAT",
+        "description": "Assurez-vous que votre contenu respecte les directives d'Expérience, Expertise, Autorité et Fiabilité de Google pour de meilleurs classements de recherche.",
+        "note": "par ex., ajoute des sources et une structure que Google récompense et que les moteurs de recherche IA valorisent",
+        "features": {
+          "expertLevel": "Profondeur de contenu expert",
+          "authoritative": "Ton et structure autoritaires",
+          "trustworthy": "Intégration de sources fiables",
+          "experienceBased": "Insights basés sur l'expérience"
+        }
+      },
+      "seoOptimization": {
+        "title": "Optimisation SEO",
+        "description": "Les outils SEO intégrés garantissent que votre contenu se classe bien dans les résultats de recherche et génère du trafic organique vers votre site web.",
+        "features": {
+          "keywordOptimization": "Optimisation des mots-clés",
+          "metaDescriptions": "Méta descriptions",
+          "headerOptimization": "Optimisation des en-têtes",
+          "readabilityScoring": "Score de lisibilité"
+        }
+      },
+      "automation": {
+        "title": "Automatisation et Intégrations",
+        "description": "Intégrez de manière transparente à votre flux de travail existant et automatisez les tâches de contenu répétitives pour gagner du temps et augmenter la productivité.",
+        "note": "Aucun développement requis — Inscrivez-vous et commencez l'exécution",
+        "features": {
+          "wordpressIntegration": "Intégration WordPress",
+          "socialScheduling": "Planification des médias sociaux",
+          "apiAccess": "Accès API",
+          "bulkGeneration": "Génération en masse"
+        }
+      }
+    },
+    "useCases": {
+      "title": "Parfait Pour",
+      "subtitle": "EngagePerfect s'adapte à vos besoins spécifiques, que vous soyez un créateur, une équipe ou une entreprise.",
+      "contentCreators": {
+        "title": "Créateurs de Contenu",
+        "description": "Blogueurs, YouTubeurs et influenceurs qui ont besoin de contenu cohérent et de haute qualité pour engager leur audience."
+      },
+      "marketingTeams": {
+        "title": "Équipes Marketing",
+        "description": "Départements marketing qui ont besoin de faire évoluer la production de contenu tout en maintenant la qualité et la cohérence de la marque."
+      },
+      "smallBusinesses": {
+        "title": "Petites Entreprises",
+        "description": "Propriétaires de petites entreprises qui veulent concurrencer les grandes entreprises grâce à un contenu professionnel et optimisé SEO."
+      }
+    },
+    "testimonials": {
+      "title": "Ce que Disent nos Clients",
+      "items": {
+        "quote1": "Je l'utilise quotidiennement — fait économiser des heures !",
+        "author1": "S.P., Créateur de Contenu",
+        "quote2": "NodeMatics nous a aidés à réduire le temps de création de contenu de 80 %. C'est comme avoir une équipe de contenu à temps plein.",
+        "author2": "A.M., Fondateur E-commerce",
+        "quote3": "Leurs outils d'automatisation ont éliminé des heures de travail manuel chaque semaine. Nous pouvons enfin nous concentrer sur la stratégie.",
+        "author3": "J.K., Responsable des Opérations"
+      }
+    },
+    "finalCta": {
+      "title": "Prêt à Découvrir EngagePerfect ?",
+      "subtitle": "Rejoignez des milliers de créateurs et d'entreprises transformant leur stratégie de contenu.",
+      "startTrial": "Commencer l'Essai Gratuit",
+      "requestDemo": "Demander une Démo"
+    }
+  },
   "language": {
     "current": "Français",
     "switch": "Changer de langue",
