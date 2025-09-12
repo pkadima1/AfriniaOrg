@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +10,7 @@ import { Calendar, User, ArrowLeft, MessageCircle, Reply } from 'lucide-react';
 import { fetchBlogPosts, fetchComments, addComment, fetchGoogleDocContent, type BlogPost as BlogPostType, Comment } from '@/utils/googleSheetsApi';
 
 const BlogPost = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const [post, setPost] = useState<BlogPostType | null>(null);
   const [content, setContent] = useState('');
@@ -122,15 +124,15 @@ const BlogPost = () => {
         setCommentEmail('');
         setCommentMessage('');
         setReplyingTo(null);
-        setCommentStatus(replyingTo ? 'Reply posted!' : 'Comment posted!');
+        setCommentStatus(replyingTo ? t('blog.comments.successReply') : t('blog.comments.success'));
         
         setTimeout(() => setCommentStatus(''), 5000);
       } else {
-        setCommentStatus('Error posting comment. Please try again.');
+        setCommentStatus(t('blog.comments.error'));
       }
     } catch (error) {
       console.error('Error submitting comment:', error);
-      setCommentStatus('Error submitting comment. Please try again.');
+      setCommentStatus(t('blog.comments.error'));
     }
     setSubmitting(false);
   };
@@ -167,7 +169,7 @@ const BlogPost = () => {
             className="text-accent-blue hover:text-accent-purple"
           >
             <Reply className="w-4 h-4 mr-1" />
-            Reply
+            {t('blog.comments.reply')}
           </Button>
         )}
       </div>
@@ -204,11 +206,11 @@ const BlogPost = () => {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">Blog post not found</h1>
+          <h1 className="text-2xl font-bold mb-4">{t('blog.notFound.title')}</h1>
           <Link to="/blog">
             <Button className="apple-button">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Blog
+              {t('blog.notFound.button')}
             </Button>
           </Link>
         </div>
@@ -221,7 +223,7 @@ const BlogPost = () => {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link to="/blog" className="inline-flex items-center text-accent-blue hover:text-accent-purple mb-8">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Blog
+          {t('blog.backToBlog')}
         </Link>
 
         <article className="mb-12">
@@ -263,7 +265,7 @@ const BlogPost = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MessageCircle className="w-5 h-5" />
-              Comments ({comments.length})
+              {t('blog.comments.count', { count: comments.length })}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -271,7 +273,7 @@ const BlogPost = () => {
               {replyingTo && (
                 <div className="bg-accent-blue/10 border border-accent-blue/30 rounded-lg p-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-accent-blue">Replying to comment</span>
+                    <span className="text-sm text-accent-blue">{t('blog.comments.replyingTo')}</span>
                     <Button
                       type="button"
                       variant="ghost"
@@ -279,7 +281,7 @@ const BlogPost = () => {
                       onClick={cancelReply}
                       className="text-gray-400 hover:text-white"
                     >
-                      Cancel
+                      {t('blog.comments.cancel')}
                     </Button>
                   </div>
                 </div>
@@ -287,7 +289,7 @@ const BlogPost = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
-                  placeholder="Name (required)"
+                  placeholder={t('blog.comments.name')}
                   value={commentName}
                   onChange={(e) => setCommentName(e.target.value)}
                   required
@@ -295,14 +297,14 @@ const BlogPost = () => {
                 />
                 <Input
                   type="email"
-                  placeholder="Email (optional)"
+                  placeholder={t('blog.comments.email')}
                   value={commentEmail}
                   onChange={(e) => setCommentEmail(e.target.value)}
                   disabled={submitting}
                 />
               </div>
               <Textarea
-                placeholder={replyingTo ? "Write your reply..." : "Your message"}
+                placeholder={replyingTo ? t('blog.comments.messageReply') : t('blog.comments.message')}
                 rows={4}
                 value={commentMessage}
                 onChange={(e) => setCommentMessage(e.target.value)}
@@ -310,7 +312,7 @@ const BlogPost = () => {
                 disabled={submitting}
               />
               <Button type="submit" className="apple-button" disabled={submitting}>
-                {submitting ? 'Posting...' : (replyingTo ? 'Post Reply' : 'Post Comment')}
+                {submitting ? t('blog.comments.submitting') : (replyingTo ? t('blog.comments.submitReply') : t('blog.comments.submit'))}
               </Button>
               {commentStatus && (
                 <p className="text-accent-blue">{commentStatus}</p>
@@ -321,7 +323,7 @@ const BlogPost = () => {
               {comments.filter(c => !c.parentId).map(comment => renderComment(comment))}
               {comments.filter(c => !c.parentId).length === 0 && (
                 <p className="text-gray-400 text-center py-8">
-                  No comments yet. Be the first to comment!
+                  {t('blog.comments.noComments')}
                 </p>
               )}
             </div>

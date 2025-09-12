@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { Calendar, User, Tag } from 'lucide-react';
 import { fetchBlogPosts, BlogPost } from '@/utils/googleSheetsApi';
 
 const Blog = () => {
+  const { t } = useTranslation();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [email, setEmail] = useState('');
   const [subscribeMessage, setSubscribeMessage] = useState('');
@@ -76,13 +78,13 @@ const Blog = () => {
 
       console.log('Newsletter subscription sent to Google Apps Script');
       
-      setSubscribeMessage('Thank you for subscribing! You\'ll receive our weekly articles.');
+      setSubscribeMessage(t('blog.newsletter.success'));
       setEmail('');
       setTimeout(() => setSubscribeMessage(''), 5000);
       
     } catch (error) {
       console.error('Error subscribing:', error);
-      setSubscribeMessage('Error subscribing. Please try again.');
+      setSubscribeMessage(t('blog.newsletter.error'));
       setTimeout(() => setSubscribeMessage(''), 5000);
     }
     setSubscribing(false);
@@ -115,9 +117,9 @@ const Blog = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 gradient-text">NodeMatics Blog</h1>
+          <h1 className="text-4xl font-bold mb-4 gradient-text">{t('blog.title')}</h1>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Insights, tips, and strategies for modern content creation and SEO optimization
+            {t('blog.subtitle')}
           </p>
         </div>
 
@@ -156,7 +158,7 @@ const Blog = () => {
                 <p className="text-gray-300 mb-4">{post.summary}</p>
                 <Link to={`/blog/${post.slug}`}>
                   <Button className="apple-button w-full">
-                    Read More
+                    {t('blog.readMore')}
                   </Button>
                 </Link>
               </CardContent>
@@ -167,16 +169,16 @@ const Blog = () => {
         {/* Newsletter Subscription */}
         <Card className="glass-effect max-w-2xl mx-auto">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl mb-2">Subscribe to Weekly Articles</CardTitle>
+            <CardTitle className="text-2xl mb-2">{t('blog.newsletter.title')}</CardTitle>
             <p className="text-gray-400">
-              Get the latest insights and tips delivered to your inbox every week
+              {t('blog.newsletter.subtitle')}
             </p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubscribe} className="flex gap-4">
               <Input
                 type="email"
-                placeholder="Enter your email address"
+                placeholder={t('blog.newsletter.placeholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -184,7 +186,7 @@ const Blog = () => {
                 disabled={subscribing}
               />
               <Button type="submit" className="apple-button" disabled={subscribing}>
-                {subscribing ? 'Subscribing...' : 'Subscribe'}
+                {subscribing ? t('blog.newsletter.subscribing') : t('blog.newsletter.button')}
               </Button>
             </form>
             {subscribeMessage && (

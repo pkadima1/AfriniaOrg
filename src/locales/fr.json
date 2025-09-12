@@ -199,28 +199,42 @@
     }
   },
   "blog": {
-    "title": "Blog",
+    "title": "Blog NodeMatics",
+    "subtitle": "Perspectives, conseils et stratégies pour la création de contenu moderne et l'optimisation SEO",
+    "loading": "Chargement des articles de blog...",
     "newsletter": {
-      "title": "Abonnez-vous à notre Newsletter",
-      "subtitle": "Recevez des articles hebdomadaires sur l'automatisation, l'IA et les stratégies de croissance dans votre boîte mail.",
+      "title": "Abonnez-vous aux Articles Hebdomadaires",
+      "subtitle": "Recevez les dernières perspectives et conseils dans votre boîte mail chaque semaine",
       "placeholder": "Entrez votre adresse email",
       "button": "S'abonner",
+      "subscribing": "Abonnement...",
       "success": "Merci de vous être abonné ! Vous recevrez nos articles hebdomadaires.",
       "error": "Quelque chose s'est mal passé. Veuillez réessayer."
     },
     "readMore": "Lire la Suite",
     "backToBlog": "Retour au Blog",
+    "notFound": {
+      "title": "Article de blog non trouvé",
+      "button": "Retour au Blog"
+    },
     "comments": {
       "title": "Commentaires",
+      "count": "Commentaires ({{count}})",
       "addComment": "Ajouter un commentaire",
-      "name": "Nom",
-      "email": "Email",
-      "message": "Message",
-      "submit": "Soumettre le Commentaire",
+      "name": "Nom (requis)",
+      "email": "Email (optionnel)",
+      "message": "Votre message",
+      "messageReply": "Écrivez votre réponse...",
+      "submit": "Publier le Commentaire",
+      "submitReply": "Publier la Réponse",
+      "submitting": "Publication...",
       "reply": "Répondre",
-      "replyTo": "Répondre à {{name}}",
-      "success": "Commentaire soumis avec succès !",
-      "error": "Échec de la soumission du commentaire. Veuillez réessayer."
+      "replyingTo": "Répondre au commentaire",
+      "cancel": "Annuler",
+      "noComments": "Aucun commentaire pour le moment. Soyez le premier à commenter !",
+      "success": "Commentaire publié !",
+      "successReply": "Réponse publiée !",
+      "error": "Erreur lors de la publication du commentaire. Veuillez réessayer."
     }
   },
   "services": {

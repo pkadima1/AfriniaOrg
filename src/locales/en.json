@@ -199,28 +199,42 @@
     }
   },
   "blog": {
-    "title": "Blog",
+    "title": "NodeMatics Blog",
+    "subtitle": "Insights, tips, and strategies for modern content creation and SEO optimization",
+    "loading": "Loading blog posts...",
     "newsletter": {
-      "title": "Subscribe to our Newsletter",
-      "subtitle": "Get weekly articles on automation, AI, and growth strategies delivered to your inbox.",
+      "title": "Subscribe to Weekly Articles",
+      "subtitle": "Get the latest insights and tips delivered to your inbox every week",
       "placeholder": "Enter your email address",
       "button": "Subscribe",
+      "subscribing": "Subscribing...",
       "success": "Thank you for subscribing! You'll receive our weekly articles.",
       "error": "Something went wrong. Please try again."
     },
     "readMore": "Read More",
     "backToBlog": "Back to Blog",
+    "notFound": {
+      "title": "Blog post not found",
+      "button": "Back to Blog"
+    },
     "comments": {
       "title": "Comments",
+      "count": "Comments ({{count}})",
       "addComment": "Add a comment",
-      "name": "Name",
-      "email": "Email",
-      "message": "Message",
-      "submit": "Submit Comment",
+      "name": "Name (required)",
+      "email": "Email (optional)",
+      "message": "Your message",
+      "messageReply": "Write your reply...",
+      "submit": "Post Comment",
+      "submitReply": "Post Reply",
+      "submitting": "Posting...",
       "reply": "Reply",
-      "replyTo": "Reply to {{name}}",
-      "success": "Comment submitted successfully!",
-      "error": "Failed to submit comment. Please try again."
+      "replyingTo": "Replying to comment",
+      "cancel": "Cancel",
+      "noComments": "No comments yet. Be the first to comment!",
+      "success": "Comment posted!",
+      "successReply": "Reply posted!",
+      "error": "Error posting comment. Please try again."
     }
   },
   "services": {
