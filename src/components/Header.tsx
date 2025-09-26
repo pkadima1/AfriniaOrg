@@ -48,6 +48,13 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
+            <Link
+              to="/admin"
+              className="text-gray-300 hover:text-white transition-colors duration-200 text-sm"
+              title="Admin Dashboard"
+            >
+              Admin
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-4">

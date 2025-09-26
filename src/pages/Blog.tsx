@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar, User, Tag } from 'lucide-react';
 import { fetchBlogPosts, BlogPost } from '@/utils/googleSheetsApi';
+import { supabase } from '@/integrations/supabase/client';
 
 const Blog = () => {
   const { t } = useTranslation();
@@ -23,36 +24,69 @@ const Blog = () => {
 
   const loadBlogPosts = async () => {
     try {
-      const blogPosts = await fetchBlogPosts();
-      if (blogPosts.length > 0) {
-        setPosts(blogPosts.slice(0, 6));
+      // First try to load from Supabase
+      const { data: supabasePosts, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(6);
+
+      if (!error && supabasePosts && supabasePosts.length > 0) {
+        // Convert Supabase posts to BlogPost format
+        const convertedPosts: BlogPost[] = supabasePosts.map(post => ({
+          title: post.title,
+          slug: post.slug,
+          author: post.author_name,
+          date: post.published_at ? new Date(post.published_at).toISOString().split('T')[0] : post.created_at.split('T')[0],
+          category: post.category || 'General',
+          summary: post.excerpt || post.content?.substring(0, 150) + '...' || '',
+          publishedDocURL: `/blog/${post.slug}`, // Use internal blog post route
+          featuredImageURL: post.featured_image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=400&fit=crop"
+        }));
+        setPosts(convertedPosts);
       } else {
-        // Fallback sample data
-        setPosts([
-          {
-            title: "Getting Started with AI Content Creation",
-            slug: "getting-started-ai-content",
-            author: "NodeMatics Team",
-            date: "2024-01-15",
-            category: "AI Tools",
-            summary: "Learn how to leverage AI for creating high-quality, engaging content that ranks well in search engines.",
-            publishedDocURL: "https://docs.google.com/document/d/your-doc-id/pub",
-            featuredImageURL: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=400&fit=crop"
-          },
-          {
-            title: "SEO Best Practices for 2024",
-            slug: "seo-best-practices-2024",
-            author: "SEO Expert",
-            date: "2024-01-10",
-            category: "SEO",
-            summary: "Discover the latest SEO techniques and strategies that will help your content rank higher in search results.",
-            publishedDocURL: "https://docs.google.com/document/d/your-doc-id/pub",
-            featuredImageURL: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=400&fit=crop"
-          }
-        ]);
+        // Fallback to Google Sheets
+        const blogPosts = await fetchBlogPosts();
+        if (blogPosts.length > 0) {
+          setPosts(blogPosts.slice(0, 6));
+        } else {
+          // Fallback sample data
+          setPosts([
+            {
+              title: "Getting Started with AI Content Creation",
+              slug: "getting-started-ai-content",
+              author: "NodeMatics Team",
+              date: "2024-01-15",
+              category: "AI Tools",
+              summary: "Learn how to leverage AI for creating high-quality, engaging content that ranks well in search engines.",
+              publishedDocURL: "https://docs.google.com/document/d/your-doc-id/pub",
+              featuredImageURL: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=400&fit=crop"
+            },
+            {
+              title: "SEO Best Practices for 2024",
+              slug: "seo-best-practices-2024",
+              author: "SEO Expert",
+              date: "2024-01-10",
+              category: "SEO",
+              summary: "Discover the latest SEO techniques and strategies that will help your content rank higher in search results.",
+              publishedDocURL: "https://docs.google.com/document/d/your-doc-id/pub",
+              featuredImageURL: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=400&fit=crop"
+            }
+          ]);
+        }
       }
     } catch (error) {
       console.error('Error loading blog posts:', error);
+      // Try Google Sheets as final fallback
+      try {
+        const blogPosts = await fetchBlogPosts();
+        if (blogPosts.length > 0) {
+          setPosts(blogPosts.slice(0, 6));
+        }
+      } catch (sheetsError) {
+        console.error('Error loading from Google Sheets:', sheetsError);
+      }
     }
     setLoading(false);
   };

@@ -15,6 +15,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 import IndustrialAnalytics from "./pages/IndustrialAnalytics";
+import { BlogAdmin } from "./pages/admin/BlogAdmin";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/admin/*" element={<BlogAdmin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
