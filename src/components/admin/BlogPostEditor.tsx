@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Save, Eye, Upload, X } from "lucide-react";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface BlogPost {
   id?: string;
@@ -296,14 +298,33 @@ export const BlogPostEditor = () => {
 
               <div>
                 <Label htmlFor="content">Content *</Label>
-                <Textarea
-                  id="content"
-                  value={post.content}
-                  onChange={(e) => setPost(prev => ({ ...prev, content: e.target.value }))}
-                  placeholder="Write your blog post content here..."
-                  rows={15}
-                  className="font-mono"
-                />
+                <div className="quill-editor-wrapper">
+                  <ReactQuill
+                    value={post.content}
+                    onChange={(content) => setPost(prev => ({ ...prev, content }))}
+                    placeholder="Write your blog post content here..."
+                    theme="snow"
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        ['blockquote', 'code-block'],
+                        ['link', 'image'],
+                        [{ 'align': [] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['clean']
+                      ],
+                    }}
+                    formats={[
+                      'header', 'bold', 'italic', 'underline', 'strike',
+                      'list', 'bullet', 'indent', 'blockquote', 'code-block',
+                      'link', 'image', 'align', 'color', 'background'
+                    ]}
+                    style={{ height: '400px', marginBottom: '50px' }}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
