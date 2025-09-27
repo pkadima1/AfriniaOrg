@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, User, ArrowLeft, MessageCircle, Reply } from 'lucide-react';
 import { fetchBlogPosts, fetchComments, addComment, fetchGoogleDocContent, type BlogPost as BlogPostType, Comment } from '@/utils/googleSheetsApi';
+import { supabase } from '@/integrations/supabase/client';
 
 const BlogPost = () => {
   const { t } = useTranslation();
@@ -34,8 +35,40 @@ const BlogPost = () => {
 
   const loadBlogPost = async () => {
     try {
+      let foundPost: BlogPostType | null = null;
+
+      // First try to find in Supabase
+      try {
+        const { data: supabasePost, error } = await supabase
+          .from('blog_posts')
+          .select('*')
+          .eq('slug', slug)
+          .eq('status', 'published')
+          .single();
+
+        if (!error && supabasePost) {
+          foundPost = {
+            title: supabasePost.title,
+            slug: supabasePost.slug,
+            author: supabasePost.author_name,
+            date: supabasePost.published_at ? new Date(supabasePost.published_at).toISOString().split('T')[0] : supabasePost.created_at.split('T')[0],
+            category: supabasePost.category || 'General',
+            summary: supabasePost.excerpt || supabasePost.content?.substring(0, 150) + '...' || '',
+            publishedDocURL: '', // Supabase posts don't use Google Docs
+            featuredImageURL: supabasePost.featured_image_url || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop"
+          };
+          setPost(foundPost);
+          setContent(supabasePost.content || '<p>No content available.</p>');
+          setLoading(false);
+          return;
+        }
+      } catch (supabaseError) {
+        console.error('Error loading from Supabase:', supabaseError);
+      }
+
+      // If not found in Supabase, try Google Sheets
       const blogPosts = await fetchBlogPosts();
-      const foundPost = blogPosts.find(p => p.slug === slug);
+      foundPost = blogPosts.find(p => p.slug === slug) || null;
       
       if (foundPost) {
         setPost(foundPost);
