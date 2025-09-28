@@ -7,12 +7,15 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, User, ArrowLeft, MessageCircle, Reply } from 'lucide-react';
-import { fetchBlogPosts, fetchComments, addComment, fetchGoogleDocContent, type BlogPost as BlogPostType, Comment } from '@/utils/googleSheetsApi';
+import { fetchBlogPosts, fetchGoogleDocContent, type BlogPost as BlogPostType, Comment as GoogleComment } from '@/utils/googleSheetsApi';
+import { fetchCommentsForPost, addCommentToPost, type Comment } from '@/utils/supabaseComments';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const BlogPost = () => {
   const { t } = useTranslation();
   const { slug } = useParams();
+  const { toast } = useToast();
   const [post, setPost] = useState<BlogPostType | null>(null);
   const [content, setContent] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
@@ -22,7 +25,6 @@ const BlogPost = () => {
   const [commentName, setCommentName] = useState('');
   const [commentEmail, setCommentEmail] = useState('');
   const [commentMessage, setCommentMessage] = useState('');
-  const [commentStatus, setCommentStatus] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -104,7 +106,7 @@ const BlogPost = () => {
     if (!slug) return;
     
     try {
-      const fetchedComments = await fetchComments(slug);
+      const fetchedComments = await fetchCommentsForPost(slug);
       setComments(fetchedComments);
     } catch (error) {
       console.error('Error loading comments:', error);
@@ -118,7 +120,7 @@ const BlogPost = () => {
     
     setSubmitting(true);
     try {
-      const success = await addComment({
+      const result = await addCommentToPost({
         postSlug: slug,
         name: commentName,
         email: commentEmail,
@@ -126,46 +128,35 @@ const BlogPost = () => {
         parentId: replyingTo || undefined
       });
       
-      if (success) {
-        // Create temporary comment for immediate display
-        const tempComment: Comment = {
-          id: Date.now().toString(),
-          postSlug: slug,
-          name: commentName,
-          email: commentEmail,
-          message: commentMessage,
-          date: new Date().toISOString(),
-          parentId: replyingTo || undefined
-        };
+      if (result.success && result.comment) {
+        // Reload comments to get the latest data
+        await loadComments();
         
-        if (replyingTo) {
-          const updatedComments = comments.map(comment => {
-            if (comment.id === replyingTo) {
-              return {
-                ...comment,
-                replies: [...(comment.replies || []), tempComment]
-              };
-            }
-            return comment;
-          });
-          setComments(updatedComments);
-        } else {
-          setComments([...comments, tempComment]);
-        }
-        
+        // Clear form
         setCommentName('');
         setCommentEmail('');
         setCommentMessage('');
         setReplyingTo(null);
-        setCommentStatus(replyingTo ? t('blog.comments.successReply') : t('blog.comments.success'));
         
-        setTimeout(() => setCommentStatus(''), 5000);
+        // Show success message
+        toast({
+          title: "Comment posted successfully!",
+          description: replyingTo ? "Your reply has been added." : "Your comment has been posted.",
+        });
       } else {
-        setCommentStatus(t('blog.comments.error'));
+        toast({
+          title: "Error posting comment",
+          description: result.error || "Please try again later.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error('Error submitting comment:', error);
-      setCommentStatus(t('blog.comments.error'));
+      toast({
+        title: "Error posting comment",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
     }
     setSubmitting(false);
   };
@@ -177,7 +168,6 @@ const BlogPost = () => {
 
   const handleReply = (commentId: string) => {
     setReplyingTo(commentId);
-    setCommentStatus('');
   };
 
   const cancelReply = () => {
@@ -186,12 +176,12 @@ const BlogPost = () => {
   };
 
   const renderComment = (comment: Comment, isReply = false) => (
-    <div key={comment.id} className={`${isReply ? 'ml-8 border-l-2 border-accent-blue pl-4' : 'border-l-2 border-accent-blue pl-4'} mb-6`}>
+    <div key={comment.id} className={`${isReply ? 'ml-8 border-l-2 border-primary pl-4' : 'border-l-2 border-primary pl-4'} mb-6`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="font-semibold">{comment.name}</span>
-          <span className="text-sm text-gray-400">
-            {new Date(comment.date).toLocaleDateString()}
+          <span className="font-semibold text-foreground">{comment.name}</span>
+          <span className="text-sm text-muted-foreground">
+            {new Date(comment.created_at).toLocaleDateString()}
           </span>
         </div>
         {!isReply && (
@@ -199,14 +189,14 @@ const BlogPost = () => {
             variant="ghost"
             size="sm"
             onClick={() => handleReply(comment.id)}
-            className="text-accent-blue hover:text-accent-purple"
+            className="text-primary hover:text-primary/80"
           >
             <Reply className="w-4 h-4 mr-1" />
             {t('blog.comments.reply')}
           </Button>
         )}
       </div>
-      <p className="text-gray-300 mb-2">{comment.message}</p>
+      <p className="text-foreground mb-2">{comment.message}</p>
       
       {/* Render replies */}
       {comment.replies && comment.replies.length > 0 && (
@@ -304,15 +294,15 @@ const BlogPost = () => {
           <CardContent>
             <form onSubmit={handleCommentSubmit} className="space-y-4 mb-8">
               {replyingTo && (
-                <div className="bg-accent-blue/10 border border-accent-blue/30 rounded-lg p-3">
+                <div className="bg-primary/10 border border-primary/30 rounded-lg p-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-accent-blue">{t('blog.comments.replyingTo')}</span>
+                    <span className="text-sm text-primary">{t('blog.comments.replyingTo')}</span>
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
                       onClick={cancelReply}
-                      className="text-gray-400 hover:text-white"
+                      className="text-muted-foreground hover:text-foreground"
                     >
                       {t('blog.comments.cancel')}
                     </Button>
@@ -327,6 +317,7 @@ const BlogPost = () => {
                   onChange={(e) => setCommentName(e.target.value)}
                   required
                   disabled={submitting}
+                  className="max-w-full"
                 />
                 <Input
                   type="email"
@@ -334,6 +325,7 @@ const BlogPost = () => {
                   value={commentEmail}
                   onChange={(e) => setCommentEmail(e.target.value)}
                   disabled={submitting}
+                  className="max-w-full"
                 />
               </div>
               <Textarea
@@ -343,39 +335,23 @@ const BlogPost = () => {
                 onChange={(e) => setCommentMessage(e.target.value)}
                 required
                 disabled={submitting}
+                className="max-w-full"
               />
-              <Button type="submit" className="apple-button" disabled={submitting}>
+              <Button type="submit" disabled={submitting}>
                 {submitting ? t('blog.comments.submitting') : (replyingTo ? t('blog.comments.submitReply') : t('blog.comments.submit'))}
               </Button>
-              {commentStatus && (
-                <p className="text-accent-blue">{commentStatus}</p>
-              )}
             </form>
 
             <div className="space-y-6">
-              {comments.filter(c => !c.parentId).map(comment => renderComment(comment))}
-              {comments.filter(c => !c.parentId).length === 0 && (
-                <p className="text-gray-400 text-center py-8">
+              {comments.filter(c => !c.parent_id).map(comment => renderComment(comment))}
+              {comments.filter(c => !c.parent_id).length === 0 && (
+                <p className="text-muted-foreground text-center py-8">
                   {t('blog.comments.noComments')}
                 </p>
               )}
             </div>
           </CardContent>
         </Card>
-        
-        <div className="mt-8 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">Comment Storage Setup</h3>
-          <p className="text-sm text-blue-300 mb-2">
-            Comments are currently logged to console in the correct format for your Google Sheet. 
-            To automatically save comments, you need to create a Google Apps Script Web App.
-          </p>
-          <p className="text-sm text-blue-200 mb-2">
-            Create a "Comments" sheet with columns: PostSlug (A), CommentID (B), Name (C), Email (D), Message (E), Date (F), ParentID (G)
-          </p>
-          <p className="text-sm text-blue-300">
-            Check browser console to see the exact data format for manual entry or Google Apps Script integration.
-          </p>
-        </div>
       </div>
     </Layout>
   );
