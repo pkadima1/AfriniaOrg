@@ -11,6 +11,8 @@ import { fetchBlogPosts, fetchGoogleDocContent, type BlogPost as BlogPostType, C
 import { fetchCommentsForPost, addCommentToPost, type Comment } from '@/utils/supabaseComments';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import SocialShare from '@/components/SocialShare';
+import EmojiPickerComponent from '@/components/EmojiPicker';
 
 const BlogPost = () => {
   const { t } = useTranslation();
@@ -175,6 +177,10 @@ const BlogPost = () => {
     setCommentMessage('');
   };
 
+  const handleEmojiSelect = (emoji: string) => {
+    setCommentMessage(prev => prev + emoji);
+  };
+
   const renderComment = (comment: Comment, isReply = false) => (
     <div key={comment.id} className={`${isReply ? 'ml-8 border-l-2 border-primary pl-4' : 'border-l-2 border-primary pl-4'} mb-6`}>
       <div className="flex items-center justify-between mb-2">
@@ -241,8 +247,28 @@ const BlogPost = () => {
     );
   }
 
+  // Generate current page URL for sharing
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+
   return (
     <Layout>
+      {/* Meta tags for social sharing */}
+      {post && (
+        <>
+          <title>{post.title} - NodeMatics Blog</title>
+          <meta name="description" content={post.summary} />
+          <meta property="og:title" content={post.title} />
+          <meta property="og:description" content={post.summary} />
+          <meta property="og:image" content={post.featuredImageURL} />
+          <meta property="og:url" content={currentUrl} />
+          <meta property="og:type" content="article" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={post.title} />
+          <meta name="twitter:description" content={post.summary} />
+          <meta name="twitter:image" content={post.featuredImageURL} />
+        </>
+      )}
+      
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Link to="/blog" className="inline-flex items-center text-accent-blue hover:text-accent-purple mb-8">
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -282,6 +308,15 @@ const BlogPost = () => {
             className="prose prose-invert prose-lg max-w-none"
             dangerouslySetInnerHTML={{ __html: content }}
           />
+          
+          {/* Social Share Section */}
+          <div className="mt-8 pt-6 border-t border-border">
+            <SocialShare 
+              title={post.title}
+              url={currentUrl}
+              description={post.summary}
+            />
+          </div>
         </article>
 
         <Card className="glass-effect">
@@ -328,18 +363,29 @@ const BlogPost = () => {
                   className="max-w-full"
                 />
               </div>
-              <Textarea
-                placeholder={replyingTo ? t('blog.comments.messageReply') : t('blog.comments.message')}
-                rows={4}
-                value={commentMessage}
-                onChange={(e) => setCommentMessage(e.target.value)}
-                required
-                disabled={submitting}
-                className="max-w-full"
-              />
-              <Button type="submit" disabled={submitting}>
-                {submitting ? t('blog.comments.submitting') : (replyingTo ? t('blog.comments.submitReply') : t('blog.comments.submit'))}
-              </Button>
+              <div className="relative">
+                <Textarea
+                  placeholder={replyingTo ? t('blog.comments.messageReply') : t('blog.comments.message')}
+                  rows={4}
+                  value={commentMessage}
+                  onChange={(e) => setCommentMessage(e.target.value)}
+                  required
+                  disabled={submitting}
+                  className="max-w-full pr-12"
+                />
+                <div className="absolute top-2 right-2">
+                  <EmojiPickerComponent 
+                    onEmojiSelect={handleEmojiSelect}
+                    disabled={submitting}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? t('blog.comments.submitting') : (replyingTo ? t('blog.comments.submitReply') : t('blog.comments.submit'))}
+                </Button>
+              </div>
             </form>
 
             <div className="space-y-6">
