@@ -8,7 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Search, Edit, Trash2, Eye, Calendar } from "lucide-react";
+import { useAuth } from '@/contexts/AuthContext';
+import { Plus, Search, Edit, Trash2, Eye, Calendar, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 
 interface BlogPost {
@@ -26,6 +27,7 @@ interface BlogPost {
 
 export const BlogPostList = () => {
   const navigate = useNavigate();
+  const { isAdmin, userProfile } = useAuth();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -86,7 +88,17 @@ export const BlogPostList = () => {
   }, [searchTerm, statusFilter, categoryFilter]);
 
   const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
+    // Only admins can delete posts
+    if (!isAdmin()) {
+      toast({
+        title: "Access Denied",
+        description: "Only administrators can delete posts",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) return;
 
     try {
       const { error } = await supabase
@@ -168,7 +180,13 @@ export const BlogPostList = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Blog Posts</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Blog Posts</h1>
+          <p className="text-sm text-gray-400 mt-1">
+            Logged in as {userProfile?.full_name || userProfile?.email} ({userProfile?.role})
+            {!isAdmin() && " • Contact admin for delete permissions"}
+          </p>
+        </div>
         <Button onClick={() => navigate('/admin/blog/new')}>
           <Plus className="w-4 h-4 mr-2" />
           New Post
@@ -306,14 +324,27 @@ export const BlogPostList = () => {
                             <Eye className="w-4 h-4" />
                           </Button>
                         )}
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDelete(post.id, post.title)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        {isAdmin() ? (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDelete(post.id, post.title)}
+                            className="text-destructive hover:text-destructive"
+                            title="Delete post (Admin only)"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled
+                            className="text-gray-500 cursor-not-allowed"
+                            title="Only administrators can delete posts"
+                          >
+                            <AlertTriangle className="w-4 h-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

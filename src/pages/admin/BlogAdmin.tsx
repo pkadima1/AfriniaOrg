@@ -2,14 +2,19 @@ import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { BlogPostList } from '@/components/admin/BlogPostList';
 import { BlogPostEditor } from '@/components/admin/BlogPostEditor';
+import { UserManagement } from '@/components/admin/UserManagement';
+import { ContributorRoute, AdminRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, FileText, Settings, Users } from "lucide-react";
+import { ArrowLeft, FileText, Settings, Users, Crown, Edit3 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { Badge } from "@/components/ui/badge";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { userProfile, isAdmin, isContributor } = useAuth();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -19,7 +24,21 @@ const AdminDashboard = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Site
           </Button>
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <div>
+            <h1 className="text-3xl font-bold">
+              {isAdmin() ? 'Admin Dashboard' : 'Content Management'}
+            </h1>
+            <div className="flex items-center gap-2 mt-1">
+              <Badge variant="outline" className="text-xs">
+                {userProfile?.role === 'admin' && <Crown className="w-3 h-3 mr-1" />}
+                {userProfile?.role === 'contributor' && <Edit3 className="w-3 h-3 mr-1" />}
+                {userProfile?.role?.toUpperCase()}
+              </Badge>
+              <span className="text-sm text-gray-400">
+                {userProfile?.full_name || userProfile?.email}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -33,35 +52,56 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Create, edit, and manage your blog posts with a WordPress-like interface.
+              {isAdmin() 
+                ? 'Create, edit, and manage your blog posts with full control.'
+                : 'Create and edit blog posts. Contact admin for advanced permissions.'
+              }
             </p>
           </CardContent>
         </Card>
 
-        <Card className="opacity-50">
+        <Card className={isAdmin() ? "cursor-pointer hover:shadow-lg transition-shadow" : "opacity-50"}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="w-5 h-5" />
-              Users
+              User Management
+              {!isAdmin() && <Badge variant="outline" className="text-xs">Admin Only</Badge>}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Manage user accounts and permissions. (Coming soon)
+              {isAdmin() 
+                ? 'Manage user accounts, roles, and permissions.'
+                : 'Only administrators can manage users.'
+              }
             </p>
+            {isAdmin() && (
+              <Button 
+                className="mt-3" 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/admin/users')}
+              >
+                Manage Users
+              </Button>
+            )}
           </CardContent>
         </Card>
 
-        <Card className="opacity-50">
+        <Card className={isAdmin() ? "cursor-pointer hover:shadow-lg transition-shadow" : "opacity-50"}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Settings className="w-5 h-5" />
               Settings
+              {!isAdmin() && <Badge variant="outline" className="text-xs">Admin Only</Badge>}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              Configure site settings and preferences. (Coming soon)
+              {isAdmin() 
+                ? 'Configure site settings and preferences. (Coming soon)'
+                : 'Only administrators can modify settings.'
+              }
             </p>
           </CardContent>
         </Card>
@@ -90,14 +130,50 @@ const AdminDashboard = () => {
 };
 
 export const BlogAdmin = () => {
-  const location = useLocation();
-  
   return (
     <Routes>
       <Route path="/" element={<AdminDashboard />} />
-      <Route path="/blog" element={<BlogPostList />} />
-      <Route path="/blog/new" element={<BlogPostEditor />} />
-      <Route path="/blog/edit/:id" element={<BlogPostEditor />} />
+      <Route 
+        path="/blog" 
+        element={
+          <ContributorRoute>
+            <BlogPostList />
+          </ContributorRoute>
+        } 
+      />
+      <Route 
+        path="/blog/new" 
+        element={
+          <ContributorRoute>
+            <BlogPostEditor />
+          </ContributorRoute>
+        } 
+      />
+      <Route 
+        path="/blog/edit/:id" 
+        element={
+          <ContributorRoute>
+            <BlogPostEditor />
+          </ContributorRoute>
+        } 
+      />
+      <Route 
+        path="/users" 
+        element={
+          <AdminRoute>
+            <div className="container mx-auto px-4 py-8">
+              <div className="flex items-center gap-4 mb-6">
+                <Button variant="ghost" onClick={() => window.history.back()}>
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+                <h1 className="text-3xl font-bold">User Management</h1>
+              </div>
+              <UserManagement />
+            </div>
+          </AdminRoute>
+        } 
+      />
       <Route path="*" element={<Navigate to="/admin" replace />} />
     </Routes>
   );

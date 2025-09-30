@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import { UserMenu } from './auth/UserMenu';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -48,23 +49,11 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
-            <Link
-              to="/admin"
-              className="text-gray-300 hover:text-white transition-colors duration-200 text-sm"
-              title="Admin Dashboard"
-            >
-              Admin
-            </Link>
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
             <LanguageSwitcher />
-            <Link
-              to="/contact"
-              className="px-6 py-2 border border-accent-blue text-accent-blue rounded-xl hover:bg-accent-blue hover:text-white transition-all duration-300"
-            >
-              {t('navigation.getStarted')}
-            </Link>
+            <UserMenu />
           </div>
 
           {/* Mobile menu button */}
@@ -95,13 +84,7 @@ const Header = () => {
             ))}
             <div className="mt-4 flex flex-col space-y-2">
               <LanguageSwitcher />
-              <Link
-                to="/contact"
-                className="px-6 py-2 border border-accent-blue text-accent-blue rounded-xl hover:bg-accent-blue hover:text-white transition-all duration-300 text-center"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {t('navigation.getStarted')}
-              </Link>
+              <UserMenu />
             </div>
           </div>
         )}
