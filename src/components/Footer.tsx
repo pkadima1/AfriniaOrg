@@ -9,8 +9,12 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
-            <Link to="/" className="text-2xl font-bold gradient-text">
-              Nodematics
+            <Link to="/" className="flex items-center">
+              <img 
+                src="/insighter-logo.png" 
+                alt="InSighter Logo" 
+                className="h-12 w-auto"
+              />
             </Link>
             <p className="mt-4 text-text-secondary max-w-md">
               {t('footer.description')}

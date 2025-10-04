@@ -23,7 +23,7 @@
   "home": {
     "hero": {
       "title": "Work Less. Grow More.",
-      "subtitle": "NodeMatics helps small teams and creators automate content, operations, and analytics—so they can focus on what really matters.",
+      "subtitle": "InSighter helps small teams and creators automate content, operations, and analytics—so they can focus on what really matters.",
       "cta": {
         "exploreProducts": "Explore EngagePerfect",
         "learnAbout": "Learn About Us",
@@ -70,7 +70,7 @@
     "testimonials": {
       "title": "What Our Clients Say",
       "items": {
-        "quote1": "NodeMatics helped us reduce content creation time by 80%. It's like having a full-time content team.",
+        "quote1": "InSighter helped us reduce content creation time by 80%. It's like having a full-time content team.",
         "author1": "A.M., Ecommerce Founder",
         "quote2": "Their automation tools eliminated hours of manual work every week. We can finally focus on strategy.",
         "author2": "J.K., Operations Manager",
@@ -86,12 +86,12 @@
   },
   "about": {
     "hero": {
-      "title": "About NodeMatics",
-      "subtitle": "NodeMatics helps solopreneurs, small teams with ambitions work smarter by building lean automation tools and solutions, that save time, reduce repetitive work, and drive growth. We focus on practicality over complexity—using AI and automation to simplify everyday business challenges."
+      "title": "About InSighter",
+      "subtitle": "InSighter helps solopreneurs, small teams with ambitions work smarter by building lean automation tools and solutions, that save time, reduce repetitive work, and drive growth. We focus on practicality over complexity—using AI and automation to simplify everyday business challenges."
     },
     "story": {
       "title": "Who We Are",
-      "paragraph1": "Founded in 2017, NodeMatics started as a hands-on consulting service and has grown into a product-first digital firm. Today, we develop scalable tools like EngagePerfect and SkySpark rule packages that serve creators, consultants, and small businesses around the world.",
+      "paragraph1": "Founded in 2017, InSighter started as a hands-on consulting service and has grown into a product-first digital firm. Today, we develop scalable tools like EngagePerfect and SkySpark rule packages that serve creators, consultants, and small businesses around the world.",
       "paragraph2": "We are a growing team of developers, consultants, and creators who believe in one thing above all: your time is too valuable to be wasted on tasks that can be automated and improved.",
       "stats": {
         "experience": "Years of Experience",
@@ -138,7 +138,7 @@
   "contact": {
     "hero": {
       "title": "Get in Touch",
-      "subtitle": "Ready to transform your content strategy? Let's discuss how Nodematics can help you achieve your goals."
+      "subtitle": "Ready to transform your content strategy? Let's discuss how InSighter can help you achieve your goals."
     },
     "form": {
       "title": "Send us a message",
@@ -168,7 +168,7 @@
       },
       "error": {
         "title": "Error sending message",
-        "description": "Please try again or contact us directly at contact@nodematics.com"
+        "description": "Please try again or contact us directly at contact@InSighter.com"
       }
     },
     "info": {
@@ -199,7 +199,7 @@
     }
   },
   "blog": {
-    "title": "NodeMatics Blog",
+    "title": "InSighter Blog",
     "subtitle": "Insights, tips, and strategies for modern content creation and SEO optimization",
     "loading": "Loading blog posts...",
     "newsletter": {
@@ -317,7 +317,7 @@
     "company": "Company",
     "products": "Products",
     "description": "Empowering creators, teams, and businesses with AI-powered automation tools and content generation solutions.",
-    "copyright": "© 2024 Nodematics. All rights reserved.",
+    "copyright": "© 2024 InSighter. All rights reserved.",
     "links": {
       "about": "About",
       "services": "Services", 
@@ -435,7 +435,7 @@
       "items": {
         "quote1": "I use this daily — saves hours!",
         "author1": "S.P., Content Creator",
-        "quote2": "NodeMatics helped us reduce content creation time by 80%. It's like having a full-time content team.",
+        "quote2": "InSighter helped us reduce content creation time by 80%. It's like having a full-time content team.",
         "author2": "A.M., Ecommerce Founder", 
         "quote3": "Their automation tools eliminated hours of manual work every week. We can finally focus on strategy.",
         "author3": "J.K., Operations Manager"

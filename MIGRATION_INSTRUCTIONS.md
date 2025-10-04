@@ -5,12 +5,12 @@ Since we don't have the Supabase CLI installed in this environment, you'll need 
 ## Steps to Apply the Migration:
 
 1. **Go to your Supabase Dashboard**: https://supabase.com/dashboard
-2. **Select your project**: `nodematics-engage-ai-web`
+2. **Select your project**: `InSighter-engage-ai-web`
 3. **Navigate to SQL Editor** (left sidebar)
 4. **Create a new query**
 5. **Copy and paste the entire contents** of:
    ```
-   /workspaces/nodematics-engage-ai-web/supabase/migrations/20250930000001_create_auth_and_roles.sql
+   /workspaces/InSighter-engage-ai-web/supabase/migrations/20250930000001_create_auth_and_roles.sql
    ```
 6. **Execute the query**
 

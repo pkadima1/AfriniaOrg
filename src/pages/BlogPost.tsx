@@ -88,7 +88,7 @@ const BlogPost = () => {
         setPost({
           title: "Sample Blog Post",
           slug: slug || '',
-          author: "NodeMatics Team",
+          author: "InSighter Team",
           date: "2024-01-15",
           category: "Sample",
           summary: "This is a sample blog post.",
@@ -255,7 +255,7 @@ const BlogPost = () => {
       {/* Meta tags for social sharing */}
       {post && (
         <>
-          <title>{post.title} - NodeMatics Blog</title>
+          <title>{post.title} - InSighter Blog</title>
           <meta name="description" content={post.summary} />
           <meta property="og:title" content={post.title} />
           <meta property="og:description" content={post.summary} />

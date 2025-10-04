@@ -1,4 +1,4 @@
--- Initial setup script for Nodematics Engage AI Web
+-- Initial setup script for InSighter Engage AI Web
 -- This script sets up the default admin user
 
 -- First, let's ensure the migration has been applied

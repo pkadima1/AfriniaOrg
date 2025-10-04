@@ -28,9 +28,9 @@ const Header = () => {
         <div className="flex justify-between items-center py-4">
           <Link to="/" className="flex items-center">
             <img 
-              src="/lovable-uploads/8235a7be-e051-4013-a38e-a6748d05bdab.png" 
-              alt="NodeMatics Logo" 
-              className="h-8 w-auto"
+              src="/insighter-logo.png" 
+              alt="InSighter Logo" 
+              className="h-11 w-auto"
             />
           </Link>
 

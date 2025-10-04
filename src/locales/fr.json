@@ -23,7 +23,7 @@
   "home": {
     "hero": {
       "title": "Travaillez Moins. Grandissez Plus Vite.",
-      "subtitle": "NodeMatics aide les petites équipes et les créateurs à automatiser le contenu, les opérations et l'analyse—pour qu'ils puissent se concentrer sur ce qui compte vraiment.",
+      "subtitle": "InSighter aide les petites équipes et les créateurs à automatiser le contenu, les opérations et l'analyse—pour qu'ils puissent se concentrer sur ce qui compte vraiment.",
       "cta": {
         "exploreProducts": "Découvrir EngagePerfect",
         "learnAbout": "En savoir plus",
@@ -70,7 +70,7 @@
     "testimonials": {
       "title": "Ce que disent nos clients",
       "items": {
-        "quote1": "NodeMatics nous a aidés à réduire le temps de création de contenu de 80 %. C'est comme avoir une équipe de contenu à temps plein.",
+        "quote1": "InSighter nous a aidés à réduire le temps de création de contenu de 80 %. C'est comme avoir une équipe de contenu à temps plein.",
         "author1": "A.M., Fondateur E-commerce",
         "quote2": "Leurs outils d'automatisation ont éliminé des heures de travail manuel chaque semaine. Nous pouvons enfin nous concentrer sur la stratégie.",
         "author2": "J.K., Responsable des Opérations",
@@ -86,12 +86,12 @@
   },
   "about": {
     "hero": {
-      "title": "À propos de NodeMatics",
-      "subtitle": "NodeMatics aide les solopreneurs et les petites équipes ambitieuses à travailler plus intelligemment en construisant des outils d'automatisation et des solutions efficaces qui font gagner du temps, réduisent le travail répétitif et stimulent la croissance. Nous nous concentrons sur la praticité plutôt que sur la complexité—utilisant l'IA et l'automatisation pour simplifier les défis commerciaux quotidiens."
+      "title": "À propos de InSighter",
+      "subtitle": "InSighter aide les solopreneurs et les petites équipes ambitieuses à travailler plus intelligemment en construisant des outils d'automatisation et des solutions efficaces qui font gagner du temps, réduisent le travail répétitif et stimulent la croissance. Nous nous concentrons sur la praticité plutôt que sur la complexité—utilisant l'IA et l'automatisation pour simplifier les défis commerciaux quotidiens."
     },
     "story": {
       "title": "Qui Nous Sommes",
-      "paragraph1": "Fondée en 2017, NodeMatics a commencé comme un service de conseil pratique et s'est développée en une entreprise numérique axée sur les produits. Aujourd'hui, nous développons des outils évolutifs comme EngagePerfect et des packages de règles SkySpark qui servent les créateurs, consultants et petites entreprises du monde entier.",
+      "paragraph1": "Fondée en 2017, InSighter a commencé comme un service de conseil pratique et s'est développée en une entreprise numérique axée sur les produits. Aujourd'hui, nous développons des outils évolutifs comme EngagePerfect et des packages de règles SkySpark qui servent les créateurs, consultants et petites entreprises du monde entier.",
       "paragraph2": "Nous sommes une équipe croissante de développeurs, consultants et créateurs qui croient en une chose par-dessus tout : votre temps est trop précieux pour être gaspillé sur des tâches qui peuvent être automatisées et améliorées.",
       "stats": {
         "experience": "Années d'Expérience",
@@ -138,7 +138,7 @@
   "contact": {
     "hero": {
       "title": "Entrez en Contact",
-      "subtitle": "Prêt à transformer votre stratégie de contenu ? Discutons de la façon dont Nodematics peut vous aider à atteindre vos objectifs."
+      "subtitle": "Prêt à transformer votre stratégie de contenu ? Discutons de la façon dont InSighter peut vous aider à atteindre vos objectifs."
     },
     "form": {
       "title": "Envoyez-nous un message",
@@ -168,7 +168,7 @@
       },
       "error": {
         "title": "Erreur lors de l'envoi du message",
-        "description": "Veuillez réessayer ou nous contacter directement à contact@nodematics.com"
+        "description": "Veuillez réessayer ou nous contacter directement à contact@InSighter.com"
       }
     },
     "info": {
@@ -199,7 +199,7 @@
     }
   },
   "blog": {
-    "title": "Blog NodeMatics",
+    "title": "Blog InSighter",
     "subtitle": "Perspectives, conseils et stratégies pour la création de contenu moderne et l'optimisation SEO",
     "loading": "Chargement des articles de blog...",
     "newsletter": {
@@ -317,7 +317,7 @@
     "company": "Entreprise",
     "products": "Produits",
     "description": "Donner aux créateurs, équipes et entreprises les moyens d'agir avec des outils d'automatisation alimentés par l'IA et des solutions de génération de contenu.",
-    "copyright": "© 2024 Nodematics. Tous droits réservés.",
+    "copyright": "© 2024 InSighter. Tous droits réservés.",
     "links": {
       "about": "À propos",
       "services": "Services",
@@ -435,7 +435,7 @@
       "items": {
         "quote1": "Je l'utilise quotidiennement — fait économiser des heures !",
         "author1": "S.P., Créateur de Contenu",
-        "quote2": "NodeMatics nous a aidés à réduire le temps de création de contenu de 80 %. C'est comme avoir une équipe de contenu à temps plein.",
+        "quote2": "InSighter nous a aidés à réduire le temps de création de contenu de 80 %. C'est comme avoir une équipe de contenu à temps plein.",
         "author2": "A.M., Fondateur E-commerce",
         "quote3": "Leurs outils d'automatisation ont éliminé des heures de travail manuel chaque semaine. Nous pouvons enfin nous concentrer sur la stratégie.",
         "author3": "J.K., Responsable des Opérations"
