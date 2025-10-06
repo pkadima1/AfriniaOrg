@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth, UserRole } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -143,7 +143,7 @@ export function UserManagement() {
   /**
    * Update user role
    */
-  const handleRoleChange = async (userId: string, newRole: string) => {
+  const handleRoleChange = async (userId: string, newRole: UserRole) => {
     try {
       const { error } = await supabase
         .from('user_profiles')
@@ -407,11 +407,11 @@ export function UserManagement() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Select
-                      value={user.role}
-                      onValueChange={(newRole) => handleRoleChange(user.id, newRole)}
-                      disabled={user.id === userProfile?.id} // Can't change own role
-                    >
+                  <Select
+                    value={user.role}
+                    onValueChange={(newRole) => handleRoleChange(user.id, newRole as UserRole)}
+                    disabled={user.id === userProfile?.id} // Can't change own role
+                  >
                       <SelectTrigger className="w-40">
                         <Badge className={getRoleColor(user.role)}>
                           <span className="flex items-center gap-1">
