@@ -11,7 +11,7 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <Link to="/" className="flex items-center">
               <img 
-                src="/NodeMatics-logo.png" 
+                src="/NodeMatics_Logo.png"
                 alt="NodeMatics Logo" 
                 className="h-12 w-auto"
               />
