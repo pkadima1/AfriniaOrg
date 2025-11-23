@@ -28,8 +28,8 @@ const Header = () => {
         <div className="flex justify-between items-center py-4">
           <Link to="/" className="flex items-center">
             <img 
-              src="/insighter-logo.png" 
-              alt="InSighter Logo" 
+              src="/NodeMatics-logo.png" 
+              alt="NodeMatics Logo" 
               className="h-11 w-auto"
             />
           </Link>

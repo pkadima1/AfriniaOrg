@@ -5,17 +5,17 @@
 ### Option A: Using Supabase Dashboard (Recommended)
 
 1. **Go to your Supabase Dashboard**: https://supabase.com/dashboard
-2. **Select your project**: `InSighter-engage-ai-web`
+2. **Select your project**: `NodeMatics-engage-ai-web`
 3. **Navigate to SQL Editor** (left sidebar)
 
 #### Execute Migration 1: Core Authentication Setup
 1. **Create a new query**
-2. **Copy and paste** the contents of: `/workspaces/InSighter-engage-ai-web/supabase/migrations/20250930000001_create_auth_and_roles.sql`
+2. **Copy and paste** the contents of: `/workspaces/NodeMatics-engage-ai-web/supabase/migrations/20250930000001_create_auth_and_roles.sql`
 3. **Execute the query**
 
 #### Execute Migration 2: Setup Admin User
 1. **Create another new query**
-2. **Copy and paste** the contents of: `/workspaces/InSighter-engage-ai-web/supabase/migrations/20250930000002_setup_admin_user.sql`
+2. **Copy and paste** the contents of: `/workspaces/NodeMatics-engage-ai-web/supabase/migrations/20250930000002_setup_admin_user.sql`
 3. **Execute the query**
 
 ### Option B: Using Supabase CLI (If Available)

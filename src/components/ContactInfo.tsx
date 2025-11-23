@@ -12,7 +12,7 @@ const ContactInfo = () => {
         <div className="space-y-6">
           <div>
             <h4 className="font-medium mb-2">{t('contact.info.email')}</h4>
-            <p className="text-text-secondary">contact@InSighter.com</p>
+            <p className="text-text-secondary">contact@NodeMatics.com</p>
           </div>
           
           <div>

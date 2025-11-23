@@ -73,7 +73,7 @@ const Blog = () => {
           {
             title: "Getting Started with AI Content Creation",
             slug: "getting-started-ai-content",
-            author: "InSighter Team",
+            author: "NodeMatics Team",
             date: "2024-01-15",
             category: "AI Tools",
             summary: "Learn how to leverage AI for creating high-quality, engaging content that ranks well in search engines.",
