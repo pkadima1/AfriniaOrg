@@ -7,12 +7,21 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, User, ArrowLeft, MessageCircle, Reply } from 'lucide-react';
-import { fetchBlogPosts, fetchGoogleDocContent, type BlogPost as BlogPostType, Comment as GoogleComment } from '@/utils/googleSheetsApi';
+import { fetchBlogPosts as fetchGoogleSheetsPosts, fetchGoogleDocContent, type BlogPost as BlogPostType, Comment as GoogleComment } from '@/utils/googleSheetsApi';
 import { fetchCommentsForPost, addCommentToPost, type Comment } from '@/utils/supabaseComments';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchBlogPostBySlug } from '@/integrations/firebase/blogService';
 import { useToast } from '@/hooks/use-toast';
 import SocialShare from '@/components/SocialShare';
 import EmojiPickerComponent from '@/components/EmojiPicker';
+
+/** Format date for display; never returns "Invalid Date". */
+function formatPostDate(dateStr: string): string {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  return isNaN(d.getTime())
+    ? '—'
+    : d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
 
 const BlogPost = () => {
   const { t } = useTranslation();
@@ -42,37 +51,40 @@ const BlogPost = () => {
     try {
       let foundPost: BlogPostType | null = null;
 
-      // First try to find in Supabase
+      // Primary source: Firebase/Firestore (nodematics DB when VITE_FIRESTORE_DATABASE_ID=nodematics)
       try {
-        const { data: supabasePost, error } = await supabase
-          .from('blog_posts')
-          .select('*')
-          .eq('slug', slug)
-          .eq('status', 'published')
-          .single();
-
-        if (!error && supabasePost) {
+        const firebasePost = await fetchBlogPostBySlug(slug || '');
+        
+        if (firebasePost) {
           foundPost = {
-            title: supabasePost.title,
-            slug: supabasePost.slug,
-            author: supabasePost.author_name,
-            date: supabasePost.published_at ? new Date(supabasePost.published_at).toISOString().split('T')[0] : supabasePost.created_at.split('T')[0],
-            category: supabasePost.category || 'General',
-            summary: supabasePost.excerpt || supabasePost.content?.substring(0, 150) + '...' || '',
-            publishedDocURL: '', // Supabase posts don't use Google Docs
-            featuredImageURL: supabasePost.featured_image_url || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop"
+            title: firebasePost.title,
+            slug: firebasePost.slug,
+            author: firebasePost.author_name,
+            date: firebasePost.published_at ? firebasePost.published_at.split('T')[0] : firebasePost.created_at?.split('T')[0] ?? '',
+            category: firebasePost.category || 'General',
+            summary: firebasePost.excerpt || firebasePost.content?.substring(0, 150) + '...' || '',
+            publishedDocURL: '',
+            featuredImageURL: firebasePost.featured_image_url || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop"
           };
           setPost(foundPost);
-          setContent(supabasePost.content || '<p>No content available.</p>');
+          const hasStorageContent = !!firebasePost.content_storage_path;
+          const bodyContent = firebasePost.content?.trim();
+          if (bodyContent) {
+            setContent(bodyContent);
+          } else if (hasStorageContent) {
+            setContent('<p class="text-muted-foreground">Content is stored in Firebase Storage but could not be loaded (e.g. CORS from localhost). Run <code>gcloud storage buckets update gs://modified-hull-203004.firebasestorage.app --cors-file=storage-cors.json</code> after <code>gcloud auth login</code>.</p>');
+          } else {
+            setContent('<p>No content available.</p>');
+          }
           setLoading(false);
           return;
         }
-      } catch (supabaseError) {
-        console.error('Error loading from Supabase:', supabaseError);
+      } catch (firebaseError) {
+        console.error('Error loading from Firebase:', firebaseError);
       }
 
-      // If not found in Supabase, try Google Sheets
-      const blogPosts = await fetchBlogPosts();
+      // If not found in Firebase, try Google Sheets
+      const blogPosts = await fetchGoogleSheetsPosts();
       foundPost = blogPosts.find(p => p.slug === slug) || null;
       
       if (foundPost) {
@@ -270,31 +282,34 @@ const BlogPost = () => {
         </>
       )}
       
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Link to="/blog" className="inline-flex items-center text-accent-blue hover:text-accent-purple mb-8">
+      <div className="container mx-auto px-4 sm:px-6 py-10 max-w-4xl lg:max-w-5xl">
+        <Link to="/blog" className="inline-flex items-center text-accent-blue hover:text-accent-purple mb-8 text-base font-medium">
           <ArrowLeft className="w-4 h-4 mr-2" />
           {t('blog.backToBlog')}
         </Link>
 
-        <article className="mb-12">
-          <header className="mb-8">
-            <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-            <div className="flex items-center gap-6 text-gray-400 mb-6">
+        <article className="mb-14">
+          <header className="mb-10">
+            <h1 className="blog-article-title text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight tracking-tight">
+              {post.title}
+            </h1>
+            {post.summary && (
+              <p className="blog-article-summary text-lg sm:text-xl mb-6 leading-relaxed max-w-3xl">
+                {post.summary}
+              </p>
+            )}
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-muted-foreground text-base">
               <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" />
-                {new Date(post.date).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
+                <Calendar className="w-4 h-4 shrink-0" />
+                {formatPostDate(post.date)}
               </div>
               <div className="flex items-center gap-2">
-                <User className="w-4 h-4" />
+                <User className="w-4 h-4 shrink-0" />
                 {post.author}
               </div>
             </div>
             {post.featuredImageURL && (
-              <div className="aspect-video overflow-hidden rounded-lg mb-8">
+              <div className="aspect-video overflow-hidden rounded-xl mt-8 mb-10 shadow-lg">
                 <img 
                   src={post.featuredImageURL || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop"} 
                   alt={post.title}
@@ -306,12 +321,12 @@ const BlogPost = () => {
           </header>
 
           <div 
-            className="prose prose-invert prose-lg max-w-none"
+            className="blog-post-content prose prose-invert max-w-none"
             dangerouslySetInnerHTML={{ __html: content }}
           />
           
           {/* Social Share Section */}
-          <div className="mt-8 pt-6 border-t border-border">
+          <div className="mt-12 pt-8 border-t border-border">
             <SocialShare 
               title={post.title}
               url={currentUrl}

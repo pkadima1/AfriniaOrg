@@ -1,0 +1,27 @@
+{
+  "firestore": [
+    {
+      "database": "(default)",
+      "rules": "firestore.rules",
+      "indexes": "firestore.indexes.json"
+    },
+    {
+      "database": "nodematics",
+      "rules": "firestore.rules",
+      "indexes": "firestore.indexes.json"
+    }
+  ],
+  "storage": [
+    {
+      "bucket": "modified-hull-203004.appspot.com",
+      "rules": "storage.rules"
+    },
+    {
+      "bucket": "modified-hull-203004.firebasestorage.app",
+      "rules": "storage.rules"
+    }
+  ],
+  "projects": {
+    "default": "modified-hull-203004"
+  }
+}

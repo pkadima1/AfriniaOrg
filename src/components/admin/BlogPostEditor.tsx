@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { fetchBlogPostById, saveBlogPost, uploadBlogImage } from "@/integrations/firebase/blogService";
 import { ArrowLeft, Save, Eye, Upload, X } from "lucide-react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -28,6 +28,8 @@ interface BlogPost {
   meta_title: string;
   meta_description: string;
   published_at?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export const BlogPostEditor = () => {
@@ -57,30 +59,24 @@ export const BlogPostEditor = () => {
   const loadPost = async (postId: string) => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('id', postId)
-        .single() as unknown as { data: Record<string, unknown>; error: unknown };
-
-      if (error) throw error;
+      const data = await fetchBlogPostById(postId);
       if (data) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const typedData = data as any;
         setPost({
-          id: typedData.id,
-          title: typedData.title,
-          slug: typedData.slug,
-          author_name: typedData.author_name,
-          tags: typedData.tags || [],
-          status: typedData.status as 'draft' | 'published' | 'archived',
-          category: typedData.category || '',
-          content: typedData.content || '',
-          excerpt: typedData.excerpt || '',
-          featured_image_url: typedData.featured_image_url,
-          meta_title: typedData.meta_title || '',
-          meta_description: typedData.meta_description || '',
-          published_at: typedData.published_at
+          id: data.id,
+          title: data.title,
+          slug: data.slug,
+          author_name: data.author_name,
+          tags: data.tags || [],
+          status: data.status as 'draft' | 'published' | 'archived',
+          category: data.category || '',
+          content: data.content || '',
+          excerpt: data.excerpt || '',
+          featured_image_url: data.featured_image_url,
+          meta_title: data.meta_title || '',
+          meta_description: data.meta_description || '',
+          published_at: data.published_at,
+          created_at: data.created_at,
+          updated_at: data.updated_at
         });
       }
     } catch (error) {
@@ -123,21 +119,9 @@ export const BlogPostEditor = () => {
   const uploadImage = async (file: File) => {
     setImageUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `blog/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('blog-images')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage
-        .from('blog-images')
-        .getPublicUrl(filePath);
-
-      return data.publicUrl;
+      const imageUrl = await uploadBlogImage(file);
+      if (!imageUrl) throw new Error('Upload failed');
+      return imageUrl;
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
@@ -191,18 +175,8 @@ export const BlogPostEditor = () => {
         ...(status === 'published' && !post.published_at && { published_at: new Date().toISOString() })
       };
 
-      if (isEditing) {
-        const { error } = await supabase
-          .from('blog_posts')
-          .update(postData)
-          .eq('id', id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('blog_posts')
-          .insert([postData]);
-        if (error) throw error;
-      }
+      const docId = await saveBlogPost(postData, post.id);
+      if (!docId) throw new Error('Failed to save post');
 
       toast({
         title: "Success",
@@ -211,6 +185,8 @@ export const BlogPostEditor = () => {
 
       if (!isEditing) {
         navigate('/admin/blog');
+      } else {
+        setPost(prev => ({ ...prev, id: docId }));
       }
     } catch (error) {
       console.error('Error saving post:', error);
@@ -306,7 +282,7 @@ export const BlogPostEditor = () => {
 
               <div>
                 <Label htmlFor="content">Content *</Label>
-                <div className="quill-editor-wrapper">
+                <div className="quill-editor-wrapper text-base">
                   <ReactQuill
                     value={post.content}
                     onChange={(content) => setPost(prev => ({ ...prev, content }))}
@@ -330,7 +306,7 @@ export const BlogPostEditor = () => {
                       'list', 'bullet', 'indent', 'blockquote', 'code-block',
                       'link', 'image', 'align', 'color', 'background'
                     ]}
-                    style={{ height: '400px', marginBottom: '50px' }}
+                    style={{ height: '480px', marginBottom: '50px', fontSize: '1rem' }}
                   />
                 </div>
               </div>

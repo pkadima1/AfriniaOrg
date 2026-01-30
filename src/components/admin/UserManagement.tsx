@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { getAllUsers, updateUserRole, toggleUserActive } from '@/integrations/firebase/userService';
 import { 
   Users, 
   UserPlus, 
@@ -42,33 +42,21 @@ export function UserManagement() {
   const { isAdmin, userProfile } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isCreating, setIsCreating] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
 
   // Form state for creating new users
   const [newUser, setNewUser] = useState({
     email: '',
-    password: '',
     fullName: '',
     role: 'viewer' as 'admin' | 'contributor' | 'viewer',
   });
 
-  // Password reset form
-  const [resetEmail, setResetEmail] = useState('');
-  const [isResetting, setIsResetting] = useState(false);
-
   /**
-   * Load all users from the database
+   * Load all users from Firebase
    */
   const loadUsers = async () => {
     try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setUsers(data || []);
+      const data = await getAllUsers();
+      setUsers(data);
     } catch (error) {
       console.error('Error loading users:', error);
       toast({
@@ -81,83 +69,17 @@ export function UserManagement() {
     }
   };
 
-  /**
-   * Create a new user account
-   */
-  const handleCreateUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsCreating(true);
-
+  const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      // Create user in Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: newUser.email,
-        password: newUser.password,
-        email_confirm: true,
-        user_metadata: {
-          full_name: newUser.fullName,
-        },
-      });
-
-      if (authError) throw authError;
-
-      // Update user profile with role
-      if (authData.user) {
-        const { error: profileError } = await supabase
-          .from('user_profiles')
-          .update({
-            role: newUser.role,
-            full_name: newUser.fullName,
-          })
-          .eq('id', authData.user.id);
-
-        if (profileError) throw profileError;
-      }
-
-      toast({
-        title: 'Success',
-        description: `User ${newUser.email} created successfully`,
-      });
-
-      // Reset form
-      setNewUser({
-        email: '',
-        password: '',
-        fullName: '',
-        role: 'viewer',
-      });
-      setShowCreateForm(false);
-      loadUsers();
-    } catch (error: unknown) {
-      console.error('Error creating user:', error);
-      toast({
-        title: 'Error',
-        description: (error as Record<string, unknown>).message as string || 'Failed to create user',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  /**
-   * Update user role
-   */
-  const handleRoleChange = async (userId: string, newRole: UserRole) => {
-    try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ role: newRole })
-        .eq('id', userId);
-
-      if (error) throw error;
+      const success = await updateUserRole(userId, newRole as 'admin' | 'contributor' | 'viewer');
+      if (!success) throw new Error('Update failed');
 
       toast({
         title: 'Success',
         description: 'User role updated successfully',
       });
 
-      loadUsers();
+      void loadUsers();
     } catch (error) {
       console.error('Error updating role:', error);
       toast({
@@ -173,19 +95,15 @@ export function UserManagement() {
    */
   const handleToggleActive = async (userId: string, isActive: boolean) => {
     try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ is_active: !isActive })
-        .eq('id', userId);
-
-      if (error) throw error;
+      const success = await toggleUserActive(userId, !isActive);
+      if (!success) throw new Error('Update failed');
 
       toast({
         title: 'Success',
         description: `User ${!isActive ? 'activated' : 'deactivated'} successfully`,
       });
 
-      loadUsers();
+      void loadUsers();
     } catch (error) {
       console.error('Error toggling user status:', error);
       toast({
@@ -193,34 +111,6 @@ export function UserManagement() {
         description: 'Failed to update user status',
         variant: 'destructive',
       });
-    }
-  };
-
-  /**
-   * Send password reset email
-   */
-  const handlePasswordReset = async (email: string) => {
-    setIsResetting(true);
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: 'Success',
-        description: `Password reset email sent to ${email}`,
-      });
-    } catch (error: unknown) {
-      console.error('Error sending password reset:', error);
-      toast({
-        title: 'Error',
-        description: (error as Record<string, unknown>).message as string || 'Failed to send password reset email',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsResetting(false);
     }
   };
 
@@ -258,9 +148,10 @@ export function UserManagement() {
 
   useEffect(() => {
     if (isAdmin()) {
-      loadUsers();
+      void loadUsers();
     }
-  }, [isAdmin]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!isAdmin()) {
     return (
@@ -291,100 +182,14 @@ export function UserManagement() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">User Management</h2>
-          <p className="text-gray-400">Manage user accounts and permissions</p>
+          <p className="text-gray-400">Manage user accounts and permissions ({users.length} users)</p>
         </div>
-        <Button onClick={() => setShowCreateForm(!showCreateForm)}>
-          <UserPlus className="w-4 h-4 mr-2" />
-          Create User
-        </Button>
       </div>
-
-      {/* Create User Form */}
-      {showCreateForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Create New User</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleCreateUser} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={newUser.email}
-                    onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="user@example.com"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    value={newUser.fullName}
-                    onChange={(e) => setNewUser(prev => ({ ...prev, fullName: e.target.value }))}
-                    placeholder="John Doe"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password">Temporary Password *</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={newUser.password}
-                    onChange={(e) => setNewUser(prev => ({ ...prev, password: e.target.value }))}
-                    placeholder="Minimum 6 characters"
-                    minLength={6}
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
-                  <Select value={newUser.role} onValueChange={(value) => setNewUser(prev => ({ ...prev, role: value }))}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="viewer">Viewer</SelectItem>
-                      <SelectItem value="contributor">Contributor</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button type="submit" disabled={isCreating}>
-                  {isCreating ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <UserPlus className="w-4 h-4 mr-2" />
-                  )}
-                  Create User
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setShowCreateForm(false)}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Users Table */}
       <Card>
         <CardHeader>
-          <CardTitle>All Users ({users.length})</CardTitle>
+          <CardTitle>All Users</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
@@ -398,83 +203,78 @@ export function UserManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{user.full_name || 'No name'}</div>
-                      <div className="text-sm text-gray-400">{user.email}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                  <Select
-                    value={user.role}
-                    onValueChange={(newRole) => handleRoleChange(user.id, newRole as UserRole)}
-                    disabled={user.id === userProfile?.id} // Can't change own role
-                  >
-                      <SelectTrigger className="w-40">
-                        <Badge className={getRoleColor(user.role)}>
-                          <span className="flex items-center gap-1">
-                            {getRoleIcon(user.role)}
-                            {user.role}
-                          </span>
-                        </Badge>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="viewer">Viewer</SelectItem>
-                        <SelectItem value="contributor">Contributor</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleToggleActive(user.id, user.is_active)}
-                      disabled={user.id === userProfile?.id} // Can't deactivate self
-                      className={user.is_active ? 'text-green-400' : 'text-red-400'}
-                    >
-                      {user.is_active ? (
-                        <CheckCircle className="w-4 h-4" />
-                      ) : (
-                        <XCircle className="w-4 h-4" />
-                      )}
-                      {user.is_active ? 'Active' : 'Inactive'}
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm text-gray-400">
-                      {new Date(user.created_at).toLocaleDateString()}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handlePasswordReset(user.email)}
-                        disabled={isResetting}
-                        title="Send password reset email"
-                      >
-                        {isResetting ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <KeyRound className="w-4 h-4" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.open(`mailto:${user.email}`, '_blank')}
-                        title="Send email"
-                      >
-                        <Mail className="w-4 h-4" />
-                      </Button>
-                    </div>
+              {users.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8">
+                    <div className="text-muted-foreground">No users found</div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <div>
+                        <div className="font-medium">{user.full_name || 'No name'}</div>
+                        <div className="text-sm text-gray-400">{user.email}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={user.role}
+                        onValueChange={(newRole) => handleRoleChange(user.id, newRole)}
+                        disabled={user.id === userProfile?.id}
+                      >
+                        <SelectTrigger className="w-40">
+                          <Badge className={getRoleColor(user.role)}>
+                            <span className="flex items-center gap-1">
+                              {getRoleIcon(user.role)}
+                              {user.role}
+                            </span>
+                          </Badge>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="viewer">Viewer</SelectItem>
+                          <SelectItem value="contributor">Contributor</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleToggleActive(user.id, user.is_active)}
+                        disabled={user.id === userProfile?.id}
+                        className={user.is_active ? 'text-green-400' : 'text-red-400'}
+                      >
+                        {user.is_active ? (
+                          <CheckCircle className="w-4 h-4" />
+                        ) : (
+                          <XCircle className="w-4 h-4" />
+                        )}
+                        {user.is_active ? 'Active' : 'Inactive'}
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-gray-400">
+                        {new Date(user.created_at).toLocaleDateString()}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={user.id === userProfile?.id}
+                          title="User management actions"
+                        >
+                          <Mail className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -8,11 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { uploadProfileAvatar } from '@/integrations/firebase/blogService';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/integrations/firebase/config';
+import { COLLECTIONS } from '@/integrations/firebase/types';
 import { Loader2, Upload, User } from 'lucide-react';
 
 const Profile = () => {
-  const { user, userProfile, refreshProfile, isAuthenticated } = useAuth();
+  const { user, userProfile, refreshProfile, isAuthenticated, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -21,7 +24,7 @@ const Profile = () => {
   const [avatarUrl, setAvatarUrl] = useState('');
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!authLoading && !isAuthenticated) {
       navigate('/');
       return;
     }
@@ -30,42 +33,35 @@ const Profile = () => {
       setFullName(userProfile.full_name || '');
       setAvatarUrl(userProfile.avatar_url || '');
     }
-  }, [isAuthenticated, userProfile, navigate]);
+  }, [authLoading, isAuthenticated, userProfile, navigate]);
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files?.length || !user?.uid) return;
+
+    const file = event.target.files[0];
     try {
       setUploading(true);
-      
-      if (!event.target.files || event.target.files.length === 0) {
+
+      const downloadUrl = await uploadProfileAvatar(file, user.uid);
+      if (!downloadUrl) {
+        toast({
+          title: "Upload failed",
+          description: "Failed to upload your profile picture.",
+          variant: "destructive",
+        });
         return;
       }
 
-      const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('blog-images')
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('blog-images')
-        .getPublicUrl(filePath);
-
-      setAvatarUrl(publicUrl);
-
+      setAvatarUrl(downloadUrl);
       toast({
         title: "Avatar uploaded",
         description: "Your profile picture has been uploaded successfully.",
       });
-    } catch (error: unknown) {
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
       toast({
         title: "Upload failed",
-        description: (error as Record<string, unknown>).message as string,
+        description: "Failed to upload your profile picture.",
         variant: "destructive",
       });
     } finally {
@@ -78,15 +74,14 @@ const Profile = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({
-          full_name: fullName,
-          avatar_url: avatarUrl,
-        })
-        .eq('id', user?.id);
+      if (!user?.uid) throw new Error('User not authenticated');
 
-      if (error) throw error;
+      const userRef = doc(db, COLLECTIONS.USER_PROFILES, user.uid);
+      await updateDoc(userRef, {
+        full_name: fullName,
+        avatar_url: avatarUrl,
+        updated_at: new Date().toISOString(),
+      });
 
       await refreshProfile();
 
@@ -94,10 +89,11 @@ const Profile = () => {
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
       });
-    } catch (error: unknown) {
+    } catch (error) {
+      console.error('Error updating profile:', error);
       toast({
         title: "Update failed",
-        description: (error as Record<string, unknown>).message as string,
+        description: "Failed to update your profile.",
         variant: "destructive",
       });
     } finally {
@@ -111,6 +107,10 @@ const Profile = () => {
     }
     return user?.email?.charAt(0).toUpperCase() || 'U';
   };
+
+  if (authLoading) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return null;

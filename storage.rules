@@ -1,0 +1,86 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check user authentication
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to validate image files
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    // Helper function to check file size (max 5MB)
+    function isValidSize() {
+      return request.resource.size <= 5 * 1024 * 1024;
+    }
+
+    // Helper function to validate image constraints (for blog and profile images)
+    function isValidImage() {
+      return isImage() && isValidSize();
+    }
+
+    // Blog content (large HTML) - authenticated users can upload, anyone can read
+    match /blog-content/{fileName} {
+      allow create, update: if isAuthenticated();
+      allow read: if true;
+      allow delete: if isAuthenticated();
+    }
+
+    // Blog images - authenticated users can upload, anyone can read
+    // Path: blog-images/{filename}
+    match /blog-images/{imageId} {
+      // Authenticated users can upload blog images
+      allow create: if isAuthenticated() && isValidImage();
+      
+      // Anyone can read blog images (they are public/shared content)
+      allow read: if true;
+      
+      // Authenticated users can update images (replace)
+      allow update: if isAuthenticated() && isValidImage();
+      
+      // Authenticated users can delete images
+      allow delete: if isAuthenticated();
+    }
+
+    // Profile avatars - users can manage their own, anyone can read
+    // Path: profile-avatars/{userId}/{filename}
+    match /profile-avatars/{userId}/{imageId} {
+      // Users can create their own avatar
+      allow create: if isAuthenticated() && 
+                      request.auth.uid == userId && 
+                      isValidImage();
+      
+      // Anyone can read profile avatars (needed to display user avatars)
+      allow read: if true;
+      
+      // Users can update/replace their own avatars
+      allow update: if isAuthenticated() && 
+                     request.auth.uid == userId && 
+                     isValidImage();
+      
+      // Users can delete their own avatars
+      allow delete: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Public uploads directory - for shared/published content
+    match /public/{document=**} {
+      // Anyone can read
+      allow read: if true;
+      // Prevent writes to this path (read-only)
+      allow write: if false;
+    }
+
+    // Temporary uploads - for processing (user-specific)
+    match /temp/{userId}/{document=**} {
+      // Only authenticated users can access their own temp files
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Deny all other paths by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

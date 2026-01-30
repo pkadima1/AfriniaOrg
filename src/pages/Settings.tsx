@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { auth } from '@/integrations/firebase/config';
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { Loader2, KeyRound, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const Settings = () => {
-  const { isAuthenticated, signOut } = useAuth();
+  const { isAuthenticated, signOut, user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -31,8 +32,12 @@ const Settings = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  if (!isAuthenticated) {
+  if (!authLoading && !isAuthenticated) {
     navigate('/');
+    return null;
+  }
+
+  if (authLoading) {
     return null;
   }
 
@@ -60,11 +65,14 @@ const Settings = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
+      if (!user) throw new Error('User not authenticated');
 
-      if (error) throw error;
+      // Reauthenticate user with current password
+      const credential = EmailAuthProvider.credential(user.email || '', currentPassword);
+      await reauthenticateWithCredential(user, credential);
+
+      // Update password
+      await updatePassword(user, newPassword);
 
       toast({
         title: "Password updated",
@@ -74,10 +82,11 @@ const Settings = () => {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error: unknown) {
+    } catch (error) {
+      console.error('Error updating password:', error);
       toast({
         title: "Password update failed",
-        description: (error as Record<string, unknown>).message as string,
+        description: "Failed to update your password. Please check your current password.",
         variant: "destructive",
       });
     } finally {
@@ -87,16 +96,17 @@ const Settings = () => {
 
   const handleAccountDeletion = async () => {
     try {
-      // Note: Account deletion requires admin privileges or custom edge function
+      // Note: Account deletion requires admin privileges or custom cloud function
       toast({
         title: "Contact Administrator",
         description: "Please contact an administrator to delete your account.",
         variant: "destructive",
       });
-    } catch (error: unknown) {
+    } catch (error) {
+      console.error('Error:', error);
       toast({
         title: "Error",
-        description: (error as Record<string, unknown>).message as string,
+        description: "Failed to process account deletion request.",
         variant: "destructive",
       });
     }

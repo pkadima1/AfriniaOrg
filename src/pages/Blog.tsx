@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,8 +6,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar, User, Tag } from 'lucide-react';
-import { fetchBlogPosts, BlogPost } from '@/utils/googleSheetsApi';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchBlogPosts as fetchGoogleSheetsPosts, BlogPost as GoogleBlogPost } from '@/utils/googleSheetsApi';
+import { fetchBlogPosts } from '@/integrations/firebase/blogService';
+
+interface BlogPost {
+  id?: string;
+  title: string;
+  slug: string;
+  author: string;
+  date: string;
+  category: string;
+  summary: string;
+  publishedDocURL: string;
+  featuredImageURL: string;
+}
+
+/** Format date for display; never returns "Invalid Date". */
+function formatPostDate(dateStr: string): string {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  return isNaN(d.getTime()) ? '—' : d.toLocaleDateString();
+}
 
 const Blog = () => {
   const { t } = useTranslation();
@@ -26,34 +44,31 @@ const Blog = () => {
     try {
       const allPosts: BlogPost[] = [];
 
-      // Load from Supabase
+      // Primary source: Firebase/Firestore (nodematics DB when VITE_FIRESTORE_DATABASE_ID=nodematics)
       try {
-        const { data: supabasePosts, error } = await supabase
-          .from('blog_posts')
-          .select('*')
-          .eq('status', 'published')
-          .order('published_at', { ascending: false });
+        const firebasePosts = await fetchBlogPosts({ status: 'published' });
 
-        if (!error && supabasePosts && supabasePosts.length > 0) {
-          const convertedPosts: BlogPost[] = supabasePosts.map(post => ({
+        if (firebasePosts && firebasePosts.length > 0) {
+          const convertedPosts: BlogPost[] = firebasePosts.map(post => ({
+            id: post.id,
             title: post.title,
             slug: post.slug,
             author: post.author_name,
-            date: post.published_at ? new Date(post.published_at).toISOString().split('T')[0] : post.created_at.split('T')[0],
+            date: post.published_at ? post.published_at.split('T')[0] : post.created_at?.split('T')[0] ?? '',
             category: post.category || 'General',
             summary: post.excerpt || post.content?.substring(0, 150) + '...' || '',
-            publishedDocURL: `/blog/${post.slug}`, // Use internal blog post route
+            publishedDocURL: `/blog/${post.slug}`,
             featuredImageURL: post.featured_image_url || "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=400&fit=crop"
           }));
           allPosts.push(...convertedPosts);
         }
-      } catch (supabaseError) {
-        console.error('Error loading from Supabase:', supabaseError);
+      } catch (firebaseError) {
+        console.error('Error loading from Firebase:', firebaseError);
       }
 
       // Load from Google Sheets
       try {
-        const blogPosts = await fetchBlogPosts();
+        const blogPosts = await fetchGoogleSheetsPosts();
         if (blogPosts.length > 0) {
           allPosts.push(...blogPosts);
         }
@@ -64,7 +79,11 @@ const Blog = () => {
       // Sort all posts by date (newest first) and limit to 6
       if (allPosts.length > 0) {
         const sortedPosts = allPosts
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .sort((a, b) => {
+            const ta = new Date(a.date).getTime();
+            const tb = new Date(b.date).getTime();
+            return (isNaN(tb) ? 0 : tb) - (isNaN(ta) ? 0 : ta);
+          })
           .slice(0, 6);
         setPosts(sortedPosts);
       } else {
@@ -166,8 +185,8 @@ const Blog = () => {
 
         {/* Blog Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {posts.map((post) => (
-            <Card key={post.slug} className="glass-effect card-hover">
+          {posts.map((post, index) => (
+            <Card key={post.id ?? `${post.slug}-${index}`} className="glass-effect card-hover">
               {post.featuredImageURL && (
                 <div className="aspect-video overflow-hidden rounded-t-lg">
                   <img 
@@ -182,7 +201,7 @@ const Blog = () => {
                 <div className="flex items-center gap-4 text-sm text-gray-400 mb-2">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    {new Date(post.date).toLocaleDateString()}
+                    {formatPostDate(post.date)}
                   </div>
                   <div className="flex items-center gap-1">
                     <User className="w-4 h-4" />

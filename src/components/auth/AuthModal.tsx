@@ -53,19 +53,31 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     setError(null);
 
     try {
+      // Validate inputs
+      if (!loginForm.email || !loginForm.password) {
+        setError('Please enter both email and password');
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('[AuthModal] Starting login for:', loginForm.email);
       const { error } = await signIn(loginForm.email, loginForm.password);
 
       if (error) {
+        console.error('[AuthModal] Login error:', error.message);
         setError(error.message);
       } else {
+        console.log('[AuthModal] Login successful, closing modal');
         toast({
           title: 'Success',
-          description: 'Successfully signed in!',
+          description: 'Successfully signed in! Redirecting to your account...',
         });
-        onClose();
+        // Give a moment for UI to update before closing
+        setTimeout(() => onClose(), 500);
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      console.error('[AuthModal] Unexpected login error:', err);
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -93,7 +105,15 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
       return;
     }
 
+    // Validate required fields
+    if (!registerForm.email || !registerForm.password || !registerForm.fullName) {
+      setError('Please fill in all fields');
+      setIsLoading(false);
+      return;
+    }
+
     try {
+      console.log('[AuthModal] Starting signup for:', registerForm.email);
       const { error } = await signUp(
         registerForm.email,
         registerForm.password,
@@ -101,16 +121,20 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
       );
 
       if (error) {
+        console.error('[AuthModal] Signup error:', error.message);
         setError(error.message);
       } else {
+        console.log('[AuthModal] Signup successful, closing modal');
         toast({
           title: 'Success',
-          description: 'Account created! Please check your email to verify your account.',
+          description: 'Account created! Redirecting to your profile...',
         });
-        onClose();
+        // Give a moment for UI to update before closing
+        setTimeout(() => onClose(), 500);
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      console.error('[AuthModal] Unexpected signup error:', err);
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }

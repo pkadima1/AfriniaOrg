@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { fetchBlogPosts, saveBlogPost, deleteBlogPost } from "@/integrations/firebase/blogService";
 import { useAuth } from '@/contexts/AuthContext';
 import { Plus, Search, Edit, Trash2, Eye, Calendar, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
@@ -37,27 +37,14 @@ export const BlogPostList = () => {
   const loadPosts = async () => {
     setIsLoading(true);
     try {
-      let query = supabase
-        .from('blog_posts')
-        .select('*')
-        .order('created_at', { ascending: false });
+      const filters = {
+        status: statusFilter !== 'all' ? statusFilter : undefined,
+        category: categoryFilter !== 'all' ? categoryFilter : undefined,
+        searchTerm: searchTerm || undefined,
+      };
 
-      if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
-      }
-
-      if (categoryFilter !== 'all') {
-        query = query.eq('category', categoryFilter);
-      }
-
-      if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-      setPosts((data || []).map(post => ({
+      const data = await fetchBlogPosts(filters);
+      setPosts(data.map(post => ({
         ...post,
         status: post.status as 'draft' | 'published' | 'archived',
         category: post.category || '',
@@ -101,19 +88,15 @@ export const BlogPostList = () => {
     if (!confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) return;
 
     try {
-      const { error } = await supabase
-        .from('blog_posts')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      const success = await deleteBlogPost(id);
+      if (!success) throw new Error('Delete failed');
 
       toast({
         title: "Success",
         description: "Blog post deleted successfully"
       });
       
-      loadPosts();
+      void loadPosts();
     } catch (error) {
       console.error('Error deleting post:', error);
       toast({
@@ -126,24 +109,23 @@ export const BlogPostList = () => {
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
+      const post = posts.find(p => p.id === id);
+      if (!post) return;
+
       const updateData: Record<string, unknown> = { status: newStatus };
       if (newStatus === 'published') {
         updateData.published_at = new Date().toISOString();
       }
 
-      const { error } = await supabase
-        .from('blog_posts')
-        .update(updateData)
-        .eq('id', id);
-
-      if (error) throw error;
+      const success = await saveBlogPost(updateData, id);
+      if (!success) throw new Error('Update failed');
 
       toast({
         title: "Success",
         description: `Post ${newStatus} successfully`
       });
       
-      loadPosts();
+      void loadPosts();
     } catch (error) {
       console.error('Error updating post status:', error);
       toast({
