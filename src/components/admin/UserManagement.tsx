@@ -128,11 +128,11 @@ export function UserManagement() {
       });
       setShowCreateForm(false);
       loadUsers();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating user:', error);
       toast({
         title: 'Error',
-        description: error.message || 'Failed to create user',
+        description: (error as Record<string, unknown>).message as string || 'Failed to create user',
         variant: 'destructive',
       });
     } finally {
@@ -212,11 +212,11 @@ export function UserManagement() {
         title: 'Success',
         description: `Password reset email sent to ${email}`,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error sending password reset:', error);
       toast({
         title: 'Error',
-        description: error.message || 'Failed to send password reset email',
+        description: (error as Record<string, unknown>).message as string || 'Failed to send password reset email',
         variant: 'destructive',
       });
     } finally {
@@ -346,7 +346,7 @@ export function UserManagement() {
 
                 <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
-                  <Select value={newUser.role} onValueChange={(value: any) => setNewUser(prev => ({ ...prev, role: value }))}>
+                  <Select value={newUser.role} onValueChange={(value) => setNewUser(prev => ({ ...prev, role: value }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

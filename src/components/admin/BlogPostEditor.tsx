@@ -54,12 +54,6 @@ export const BlogPostEditor = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
 
-  useEffect(() => {
-    if (isEditing && id) {
-      loadPost(id);
-    }
-  }, [id, isEditing]);
-
   const loadPost = async (postId: string) => {
     setIsLoading(true);
     try {
@@ -67,19 +61,26 @@ export const BlogPostEditor = () => {
         .from('blog_posts')
         .select('*')
         .eq('id', postId)
-        .single();
+        .single() as unknown as { data: Record<string, unknown>; error: unknown };
 
       if (error) throw error;
       if (data) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const typedData = data as any;
         setPost({
-          ...data,
-          tags: data.tags || [],
-          status: data.status as 'draft' | 'published' | 'archived',
-          category: data.category || '',
-          content: data.content || '',
-          excerpt: data.excerpt || '',
-          meta_title: data.meta_title || '',
-          meta_description: data.meta_description || ''
+          id: typedData.id,
+          title: typedData.title,
+          slug: typedData.slug,
+          author_name: typedData.author_name,
+          tags: typedData.tags || [],
+          status: typedData.status as 'draft' | 'published' | 'archived',
+          category: typedData.category || '',
+          content: typedData.content || '',
+          excerpt: typedData.excerpt || '',
+          featured_image_url: typedData.featured_image_url,
+          meta_title: typedData.meta_title || '',
+          meta_description: typedData.meta_description || '',
+          published_at: typedData.published_at
         });
       }
     } catch (error) {
@@ -94,6 +95,13 @@ export const BlogPostEditor = () => {
       setIsLoading(false);
     }
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (isEditing && id) {
+      void loadPost(id);
+    }
+  }, [id, isEditing]);
 
   const generateSlug = (title: string) => {
     return title
@@ -361,7 +369,7 @@ export const BlogPostEditor = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="status">Status</Label>
-                  <Select value={post.status} onValueChange={(value: any) => setPost(prev => ({ ...prev, status: value }))}>
+                  <Select value={post.status} onValueChange={(value: 'draft' | 'published' | 'archived') => setPost(prev => ({ ...prev, status: value }))}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

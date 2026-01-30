@@ -62,10 +62,10 @@ const Profile = () => {
         title: "Avatar uploaded",
         description: "Your profile picture has been uploaded successfully.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Upload failed",
-        description: error.message,
+        description: (error as Record<string, unknown>).message as string,
         variant: "destructive",
       });
     } finally {
@@ -94,10 +94,10 @@ const Profile = () => {
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Update failed",
-        description: error.message,
+        description: (error as Record<string, unknown>).message as string,
         variant: "destructive",
       });
     } finally {

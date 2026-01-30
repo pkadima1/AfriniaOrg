@@ -34,10 +34,6 @@ export const BlogPostList = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
-  useEffect(() => {
-    loadPosts();
-  }, []);
-
   const loadPosts = async () => {
     setIsLoading(true);
     try {
@@ -80,8 +76,12 @@ export const BlogPostList = () => {
   };
 
   useEffect(() => {
+    void loadPosts();
+  }, []);
+
+  useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      loadPosts();
+      void loadPosts();
     }, 300);
 
     return () => clearTimeout(debounceTimer);
@@ -126,7 +126,7 @@ export const BlogPostList = () => {
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
-      const updateData: any = { status: newStatus };
+      const updateData: Record<string, unknown> = { status: newStatus };
       if (newStatus === 'published') {
         updateData.published_at = new Date().toISOString();
       }

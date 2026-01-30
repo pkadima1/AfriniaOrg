@@ -171,7 +171,7 @@ export const fetchGoogleDocContent = async (docUrl: string): Promise<string> => 
             doc.querySelectorAll('script, style').forEach(el => el.remove());
             
             // Get the main content
-            let bodyContent = doc.querySelector('#contents') || 
+            const bodyContent = doc.querySelector('#contents') || 
                              doc.querySelector('#doc-content') || 
                              doc.querySelector('.doc-content') ||
                              doc.querySelector('body');

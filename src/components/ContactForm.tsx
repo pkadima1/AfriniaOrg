@@ -47,7 +47,7 @@ const ContactForm = () => {
       });
       
       setFormData({ name: '', email: '', company: '', message: '' });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Contact form error:', error);
       toast({
         title: t('contact.form.error.title'),

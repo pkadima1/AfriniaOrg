@@ -55,9 +55,9 @@ const Index = () => {
     
     try {
       // Check if calendar object exists and we have a target element
-      if ((window as any).calendar && (window as any).calendar.schedulingButton && calendarTargetRef.current) {
+      if ((window as unknown as { calendar?: { schedulingButton?: { load: (config: unknown) => void } } }).calendar?.schedulingButton && calendarTargetRef.current) {
         console.log('Using calendar widget with target element');
-        (window as any).calendar.schedulingButton.load({
+        (window as unknown as { calendar: { schedulingButton: { load: (config: unknown) => void } } }).calendar.schedulingButton.load({
           url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true',
           color: '#039BE5',
           label: "Book Free Strategy Call",

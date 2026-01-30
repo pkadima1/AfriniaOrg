@@ -30,10 +30,11 @@ const BlogPost = () => {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (slug) {
-      loadBlogPost();
-      loadComments();
+      void loadBlogPost();
+      void loadComments();
     }
   }, [slug]);
 

@@ -74,10 +74,10 @@ const Settings = () => {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Password update failed",
-        description: error.message,
+        description: (error as Record<string, unknown>).message as string,
         variant: "destructive",
       });
     } finally {
@@ -93,10 +93,10 @@ const Settings = () => {
         description: "Please contact an administrator to delete your account.",
         variant: "destructive",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Error",
-        description: error.message,
+        description: (error as Record<string, unknown>).message as string,
         variant: "destructive",
       });
     }
