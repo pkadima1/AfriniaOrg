@@ -21,11 +21,17 @@ service firebase.storage {
       return isImage() && isValidSize();
     }
 
-    // Blog content (large HTML) - authenticated users can upload, anyone can read
-    match /blog-content/{fileName} {
-      allow create, update: if isAuthenticated();
+    // Blog content (large HTML) - ownership by path: blog-content/{userId}/{fileName}
+    // Only the owning user can create/update/delete; anyone can read (public content).
+    match /blog-content/{userId}/{fileName} {
+      allow create, update, delete: if isAuthenticated() && request.auth.uid == userId;
       allow read: if true;
-      allow delete: if isAuthenticated();
+    }
+
+    // Legacy path blog-content/{fileName} - read-only (no ownership; existing content still loads)
+    match /blog-content/{fileName} {
+      allow read: if true;
+      allow write: if false;
     }
 
     // Blog images - authenticated users can upload, anyone can read

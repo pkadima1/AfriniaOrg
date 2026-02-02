@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import Layout from '@/components/Layout';
+import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -118,6 +120,7 @@ const Profile = () => {
 
   return (
     <Layout>
+      <PageHeader title={t('profile.header.title')} subtitle={t('profile.header.subtitle')} />
       <div className="container mx-auto px-4 py-12 max-w-2xl">
         <Card>
           <CardHeader>

@@ -1,10 +1,12 @@
-
 import Layout from '../components/Layout';
+import PageHeader from '../components/PageHeader';
 import { Card } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const IndustrialAnalytics = () => {
+  const { t } = useTranslation();
   const [savingsCount, setSavingsCount] = useState(0);
   const [uptimeCount, setUptimeCount] = useState(0);
   const [alertsCount, setAlertsCount] = useState(0);
@@ -34,16 +36,9 @@ const IndustrialAnalytics = () => {
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="py-20 px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Optimize Your <span className="gradient-text">Operations</span>
-          </h1>
-          <p className="text-xl text-text-secondary mb-8">
-            Turn operational data into competitive advantage with real-time insights, 
-            predictive analytics, and intelligent automation.
-          </p>
+      <PageHeader title={t('industrialAnalytics.hero.title')} subtitle={t('industrialAnalytics.hero.subtitle')} />
+      <section className="py-6 px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
           <Link to="/contact" className="apple-button">
             Start Your Optimization
           </Link>

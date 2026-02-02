@@ -10,9 +10,13 @@ import Index from "./pages/Index";
 import About from "./pages/About";
 import Products from "./pages/Products";
 import Services from "./pages/Services";
+import ExampleSystems from "./pages/ExampleSystems";
+import BuiltBy from "./pages/BuiltBy";
 import Solutions from "./pages/Solutions";
 import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
@@ -35,10 +39,14 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/products" element={<Products />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/example-systems" element={<ExampleSystems />} />
+            <Route path="/built-by" element={<BuiltBy />} />
             <Route path="/solutions" element={<Solutions />} />
             <Route path="/industrial-analytics" element={<IndustrialAnalytics />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/profile" element={<Profile />} />

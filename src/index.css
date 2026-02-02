@@ -121,11 +121,16 @@
   }
   
   .apple-button {
-    @apply relative overflow-hidden bg-accent-blue hover:bg-accent-blue/90 text-white font-medium px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-accent-blue/20;
+    @apply relative overflow-hidden bg-accent-blue hover:bg-accent-blue/90 text-white font-medium px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-accent-blue/25;
   }
   
   .card-hover {
-    @apply transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-black/20;
+    @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-black/20;
+  }
+
+  .home-section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(214 90% 50% / 0.2), hsl(280 65% 55% / 0.2), transparent);
   }
 
   /* Custom Quill Editor Styles */

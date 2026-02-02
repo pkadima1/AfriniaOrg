@@ -14,162 +14,226 @@
   "navigation": {
     "home": "Home",
     "about": "About",
-    "products": "Products",
     "services": "Services",
-    "blog": "Blog",
+    "examples": "Examples",
+    "builtBy": "Built by NodeMatics",
     "contact": "Contact",
     "getStarted": "Get Started"
   },
   "home": {
     "hero": {
-      "title": "Work Less. Grow More.",
-      "subtitle": "NodeMatics helps small teams and creators automate content, operations, and analytics—so they can focus on what really matters.",
+      "headline": "We design systems that give time back.",
+      "subheadline": "NodeMatics helps small teams eliminate repetitive work by installing simple, reliable systems inside Google Workspace.",
+      "trustLine": "No SaaS. No lock-in. You own the system in your Drive.",
       "cta": {
-        "exploreProducts": "Explore EngagePerfect",
-        "learnAbout": "Learn About Us",
-        "bookCall": "Book Free Strategy Call"
+        "primary": "Book Your Free 15-Minute Time Audit",
+        "secondary": "See What We Install"
+      },
+      "trustBadges": {
+        "google": "Google Workspace",
+        "since": "Systems since 2017"
       }
     },
-    "solutions": {
-      "title": "Smart Tools for Real Results",
-      "items": {
-        "engagePerfect": {
-          "title": "EngagePerfect",
-          "description": "AI-powered content generation for blogs, captions, and product copy"
-        },
-        "skySparkRules": {
-          "title": "SkySpark Rules",
-          "description": "Custom SkySpark analytics and Axon scripts for building/facility optimization"
-        },
-        "smartAutomations": {
-          "title": "Smart Automations",
-          "description": "Small, remote-first tools that eliminate bottlenecks and save time"
-        }
+    "problem": {
+      "title": "Most teams don't lose time all at once. They lose it quietly.",
+      "body": {
+        "p1": "Emails get copied into spreadsheets.",
+        "p2": "Tasks live in people's heads.",
+        "p3": "Reports are rebuilt every week.",
+        "p4": "Files are duplicated, renamed, resent.",
+        "p5": "Individually, these feel small.",
+        "p6": "Together, they consume hours — every week.",
+        "p7": "NodeMatics exists to remove that friction."
       }
     },
-    "values": {
-      "title": "Why We Exist",
-      "items": {
-        "respectTime": {
-          "title": "We Respect Your Time",
-          "description": "Tools built to free you from repetitive work"
-        },
-        "keepPractical": {
-          "title": "We Keep It Practical",
-          "description": "Simple, lean, and scalable—not overbuilt or bloated"
-        },
-        "buildImpact": {
-          "title": "We Build for Impact",
-          "description": "Everything we do supports measurable growth"
-        }
+    "position": {
+      "title": "What NodeMatics Does",
+      "body": "NodeMatics is a systems engineering studio. We don't sell software licenses. We don't replace tools you already use. We don't add dashboards for the sake of dashboards. We design and install internal systems that:",
+      "bullets": {
+        "b1": "Remove repetitive manual work",
+        "b2": "Bring clarity to operations",
+        "b3": "Run quietly in the background"
+      },
+      "closing": "All inside Google Workspace."
+    },
+    "focus": {
+      "title": "Our Current Focus",
+      "body": "Right now, NodeMatics focuses on high-impact, small-scope systems built on Google Workspace:",
+      "bullets": {
+        "b1": "Google Sheets as control rooms",
+        "b2": "Gmail-based workflows and follow-ups",
+        "b3": "Drive-native document generation (PDFs, reports, quotes)",
+        "b4": "Role-based task assignment and tracking"
+      },
+      "closing": "This focus is intentional. Simple systems, done well, outperform complex platforms."
+    },
+    "offerings": {
+      "title": "Three Core Offerings",
+      "subtitle": "High-impact systems. Clear timelines.",
+      "card1": {
+        "title": "Automation Installs (48–72h)",
+        "outcome": "One repetitive workflow removed end-to-end."
+      },
+      "card2": {
+        "title": "Operations Control Rooms (1–2 weeks)",
+        "outcome": "Tasks, ownership, reminders, reporting — all in Sheets & Gmail."
+      },
+      "card3": {
+        "title": "Configurators & PDF Engines (1–3 weeks)",
+        "outcome": "Turn structured inputs into clean, branded outputs."
       }
     },
-    "clients": {
-      "title": "Trusted by Teams Like..."
+    "builtBy": {
+      "title": "Built by NodeMatics",
+      "intro": "When a system failure repeats at scale, we sometimes turn the solution into a product.",
+      "engagePerfect": {
+        "title": "EngagePerfect",
+        "description": "A content operating system for agencies managing multiple brands.",
+        "link": "Visit EngagePerfect →"
+      },
+      "veil": {
+        "title": "Veil",
+        "description": "A focused analytics engine for time-series and operational insight.",
+        "badge": "In Development"
+      }
+    },
+    "closing": {
+      "title": "Start Small. Save Time. Build from There.",
+      "body": "Most clients start with one workflow. One report that no longer needs rebuilding. One follow-up that no longer gets forgotten. One system that just works. From there, we build only what's needed.",
+      "cta": "Book Your Free 15-Minute Time Audit",
+      "subtext": "No commitment. Just clarity."
     },
     "testimonials": {
-      "title": "What Our Clients Say",
+      "title": "Teams trust NodeMatics",
       "items": {
-        "quote1": "NodeMatics helped us reduce content creation time by 80%. It's like having a full-time content team.",
-        "author1": "A.M., Ecommerce Founder",
-        "quote2": "Their automation tools eliminated hours of manual work every week. We can finally focus on strategy.",
-        "author2": "J.K., Operations Manager",
-        "quote3": "The SkySpark implementation optimized our facility management beyond our expectations.",
-        "author3": "R.L., Facility Director"
-      }
-    },
-    "finalCta": {
-      "title": "Let's Build Smarter, Together",
-      "subtitle": "Want to explore what's possible in just one hour? Book a free call—we'll map out ways to save time, automate tasks, and grow your business.",
-      "cta": "Book Your Free Strategy Call"
-    }
-  },
-  "about": {
-    "hero": {
-      "title": "About NodeMatics",
-      "subtitle": "NodeMatics helps solopreneurs, small teams with ambitions work smarter by building lean automation tools and solutions, that save time, reduce repetitive work, and drive growth. We focus on practicality over complexity—using AI and automation to simplify everyday business challenges."
-    },
-    "story": {
-      "title": "Who We Are",
-      "paragraph1": "Founded in 2017, NodeMatics started as a hands-on consulting service and has grown into a product-first digital firm. Today, we develop scalable tools like EngagePerfect and SkySpark rule packages that serve creators, consultants, and small businesses around the world.",
-      "paragraph2": "We are a growing team of developers, consultants, and creators who believe in one thing above all: your time is too valuable to be wasted on tasks that can be automated and improved.",
-      "stats": {
-        "experience": "Years of Experience",
-        "projects": "Projects Delivered",
-        "countries": "Countries Served"
-      }
-    },
-    "beliefs": {
-      "title": "What We Believe",
-      "items": {
-        "timeValue": {
-          "title": "Time is your most valuable asset",
-          "description": "Our tools are designed to give you more of it"
+        "1": {
+          "quote": "I use this daily — saves hours!",
+          "author": "S.P., Content Creator"
         },
-        "simplicityScales": {
-          "title": "Simplicity scales",
-          "description": "We don't overbuild. We design lean, practical solutions"
+        "2": {
+          "quote": "NodeMatics helped us reduce content creation time by 80%. It's like having a full-time content team.",
+          "author": "A.M., Ecommerce Founder"
         },
-        "improvementConstant": {
-          "title": "Improvement is constant",
-          "description": "We believe small, smart changes create lasting growth"
+        "3": {
+          "quote": "Their automation tools eliminated hours of manual work every week. We can finally focus on strategy.",
+          "author": "J.K., Operations Manager"
         }
       }
     },
+    "offeringsCta": "Include in my audit"
+  },
+  "about": {
+    "opening": {
+      "title": "What We Believe",
+      "subtitle": "The principles behind how NodeMatics designs systems.",
+      "manifesto": {
+        "p1": "Time is the most valuable asset. Not data. Not tools. Not technology. Small teams lose it quietly — one repeated task at a time.",
+        "p2": "Repetition quietly destroys focus. Emails copied into spreadsheets. Reports rebuilt every week. Tasks remembered instead of tracked. None of it is hard. It is unnecessary.",
+        "p3": "Systems beat effort. Working harder does not scale. Adding tools does not fix broken workflows. Clear systems do.",
+        "p4": "Use what already exists. Most businesses already pay for the tools they need. They do not use them as systems. We design inside — not on top.",
+        "p5": "Ownership matters. If a system runs your business, you own it. Your data. Your logic. No lock-in.",
+        "p6": "Automation should be quiet. The best system is the one you forget about. It does not announce itself. It works.",
+        "p7": "AI is a tool, not the point. It can draft, summarize, enrich. Logic comes first. Reliability always wins.",
+        "p8": "Focus creates authority. We do not chase every problem. We solve one class of problem well: wasted time caused by broken internal workflows."
+      }
+    },
+    "whatWeDo": {
+      "title": "What We Do",
+      "body": "NodeMatics designs and installs small, reliable internal systems that remove friction, create clarity, and give time back.",
+      "notDo": {
+        "item1": "Does not sell generic software",
+        "item2": "Does not chase every problem",
+        "item3": "Does not build complexity for its own sake"
+      }
+    },
+    "products": {
+      "title": "When Systems Repeat",
+      "body": "When a system failure repeats at scale, NodeMatics sometimes turns the solution into a product. EngagePerfect and Veil are examples — outcomes of systems thinking, not the business focus."
+    },
     "founders": {
-      "title": "Meet the Founders",
+      "intro": "Built and Maintained By",
       "patrick": {
         "name": "Patrick Kadima",
-        "role": "Co-Founder & Automation Lead",
-        "bio": "Automation & AI Consultant with 10+ years' experience helping businesses across Europe and Africa streamline operations. Creator of EngagePerfect. Passionate about process design and digital growth."
+        "role": "Systems & Automation",
+        "bio": "Designs and installs internal systems that remove repetitive work. Creator of EngagePerfect."
       },
       "sunita": {
         "name": "Sunita",
-        "role": "Co-Founder & Creative Lead",
-        "bio": "Creative strategist and project lead. Co-founder of CurioKids and advocate for education, storytelling, and accessible tech tools."
+        "role": "Creative Systems & Communication",
+        "bio": "Shapes how systems communicate clearly and work for people. Leads creative systems at NodeMatics."
       }
     },
-    "finalCta": {
-      "title": "Want to See What's Possible?",
-      "subtitle": "Let's talk about how automation can free up your time, improve your processes, and grow your business. The first hour is on us.",
-      "cta": "Book Your Free Consultation"
-    }
+    "closing": {
+      "line1": "NodeMatics is a systems studio.",
+      "line2": "We believe less work, done better, changes everything."
+    },
+    "cta": "Start with a Time Audit"
   },
   "contact": {
     "hero": {
-      "title": "Get in Touch",
-      "subtitle": "Ready to transform your content strategy? Let's discuss how NodeMatics can help you achieve your goals."
+      "title": "Book Your 15-Minute Time Audit",
+      "subtitle": "We'll identify one repetitive workflow that's costing you time — and show you how to fix it."
+    },
+    "whatToExpect": {
+      "title": "What to expect",
+      "b1": "15-minute conversation (no sales pitch)",
+      "b2": "We ask about your biggest time drains",
+      "b3": "We propose one specific system to install",
+      "b4": "You decide if it makes sense"
     },
     "form": {
-      "title": "Send us a message",
+      "title": "Request your time audit",
       "fields": {
         "name": {
-          "label": "Full Name",
-          "placeholder": "Your full name"
+          "label": "Name",
+          "placeholder": "Your name"
         },
         "email": {
-          "label": "Email Address", 
+          "label": "Email",
           "placeholder": "your@email.com"
         },
         "company": {
-          "label": "Company (Optional)",
-          "placeholder": "Your company name"
+          "label": "Company name",
+          "placeholder": "Your company"
         },
-        "message": {
-          "label": "Message",
-          "placeholder": "Tell us about your project and how we can help..."
+        "timeDrain": {
+          "label": "What's your biggest time drain?",
+          "placeholder": "e.g. copying emails into spreadsheets, rebuilding reports every week, forgotten follow-ups..."
+        },
+        "contactMethod": {
+          "label": "Preferred contact method",
+          "placeholder": "Choose one",
+          "email": "Email",
+          "phone": "Phone",
+          "video": "Video call"
         }
       },
-      "submit": "Send Message",
+      "submit": "Request Time Audit",
       "submitting": "Sending...",
       "success": {
-        "title": "Message sent successfully!",
-        "description": "We'll get back to you within 24 hours."
+        "title": "Request received",
+        "description": "We'll be in touch within 24 hours to schedule your 15-minute time audit."
       },
       "error": {
-        "title": "Error sending message",
-        "description": "Please try again or contact us directly at contact@NodeMatics.com"
+        "title": "Something went wrong",
+        "description": "Please try again or email us directly at contact@nodematics.com"
       }
+    },
+    "alternativeContact": {
+      "preferEmail": "Prefer email? Reach us at:",
+      "email": "contact@nodematics.com",
+      "linkedIn": "LinkedIn:",
+      "linkedInUrl": "https://uk.linkedin.com/company/nodematics-ltd"
+    },
+    "trustBuilders": {
+      "whatYouGet": "What you'll get:",
+      "get1": "Honest assessment (we don't sugarcoat)",
+      "get2": "Clear recommendation",
+      "get3": "No obligation to proceed",
+      "whatYouWontGet": "What you won't get:",
+      "wont1": "Generic consulting fluff",
+      "wont2": "Upsell pressure",
+      "wont3": "Tools you don't need"
     },
     "info": {
       "title": "Contact Information",
@@ -239,91 +303,209 @@
   },
   "services": {
     "hero": {
-      "title": "Our Services",
-      "subtitle": "Comprehensive AI-powered solutions to transform your content strategy and accelerate your business growth."
+      "title": "What We Install",
+      "subtitle": "Three focused service lines — all Google Workspace-native"
     },
-    "cards": {
-      "contentGeneration": {
-        "title": "AI Content Generation",
-        "description": "Transform your ideas into compelling, SEO-optimized content that engages your audience and drives results.",
-        "features": {
-          "blogPosts": "Blog posts and articles",
-          "socialMedia": "Social media content", 
-          "emailCampaigns": "Email campaigns",
-          "productDescriptions": "Product descriptions"
-        }
+    "offerings": {
+      "quickWin": {
+        "title": "QuickWin Automation Install",
+        "timeline": "48–72 hours",
+        "for": "Small businesses drowning in repetitive admin",
+        "outcome": "Save time weekly, visible immediately",
+        "includesLabel": "Includes (one of):",
+        "includes": {
+          "emailSheet": "Email → Sheet tracker + auto follow-ups",
+          "pdfGenerator": "PDF generator (quotes/reports) from Sheet data",
+          "driveOrganizer": "Drive auto-organizer (naming + routing)",
+          "formOnboarding": "Form → Folder → Doc onboarding system"
+        },
+        "pricing": "€250–€600 one-time",
+        "pricingOptional": "€50–€150/month maintenance"
       },
-      "seoOptimization": {
-        "title": "SEO Optimization",
-        "description": "Boost your search rankings with content that's specifically optimized for search engines and user engagement.",
-        "features": {
-          "keywordResearch": "Keyword research and optimization",
-          "metaTags": "Meta tags and descriptions",
-          "contentStructure": "Content structure optimization",
-          "readability": "Readability improvements"
-        }
+      "operationsControlRoom": {
+        "title": "Operations Control Room",
+        "timeline": "1–2 weeks",
+        "for": "Teams that need structure without Jira/Asana",
+        "outcome": "Role-based tasks + reporting + accountability",
+        "includesLabel": "Includes:",
+        "includes": {
+          "roleTasks": "Role-based task assignment (Sheet UI + triggers + notifications)",
+          "statusAudit": "Status tracking + audit log",
+          "weeklyReport": "Weekly report automation",
+          "ownership": "Clear ownership visibility"
+        },
+        "pricing": "€900–€2,500 one-time",
+        "pricingOptional": "€150–€300/month support"
       },
-      "contentStrategy": {
-        "title": "Content Strategy Consulting",
-        "description": "Work with our experts to develop a comprehensive content strategy that aligns with your business goals and audience needs.",
-        "features": {
-          "contentAudit": "Content audit and analysis",
-          "editorialCalendar": "Editorial calendar planning",
-          "audienceResearch": "Audience research",
-          "performanceOptimization": "Performance optimization"
-        }
-      },
-      "customIntegrations": {
-        "title": "Custom Integrations",
-        "description": "Seamlessly integrate our AI tools into your existing workflow with custom API solutions and enterprise features.",
-        "features": {
-          "apiDevelopment": "API development and integration",
-          "workflowAutomation": "Workflow automation",
-          "customModelTraining": "Custom model training",
-          "enterpriseSupport": "Enterprise support"
-        }
+      "configurator": {
+        "title": "Configurator & PDF Engine",
+        "timeline": "1–3 weeks",
+        "for": "Modular products / pricing / BOM / quotes / proposals",
+        "outcome": "Configure → price → generate branded PDF in minutes",
+        "includesLabel": "Includes:",
+        "includes": {
+          "validation": "Input validation + business constraints",
+          "calculation": "Automated calculation + breakdown tables",
+          "pdf": "Branded PDF generation",
+          "diagram": "Optional diagram/image generation",
+          "iterations": "Re-runnable iterations"
+        },
+        "pricing": "€2,000–€7,500 one-time",
+        "pricingOptional": "€200–€500/month support"
       }
     },
     "process": {
-      "title": "Our Process",
-      "subtitle": "A streamlined approach to delivering exceptional results for every client.",
+      "title": "How It Works",
       "steps": {
-        "discovery": {
-          "title": "Discovery",
-          "description": "We understand your goals, audience, and current content challenges."
+        "timeAudit": {
+          "title": "Time Audit (15 min)",
+          "description": "We identify one repetitive pain point."
         },
-        "strategy": {
-          "title": "Strategy", 
-          "description": "We develop a customized content strategy tailored to your needs."
+        "install": {
+          "title": "Install",
+          "description": "We build it inside your Google Workspace."
         },
-        "implementation": {
-          "title": "Implementation",
-          "description": "We execute the strategy using our advanced AI tools and expertise."
-        },
-        "optimization": {
-          "title": "Optimization",
-          "description": "We continuously monitor and optimize for better results."
+        "prove": {
+          "title": "Prove",
+          "description": "You see it run. You own it completely."
         }
       }
     },
-    "cta": {
-      "title": "Ready to Transform Your Content Strategy?",
-      "subtitle": "Let's discuss how our services can help you achieve your content goals.",
-      "button": "Schedule Consultation"
+    "deliverables": {
+      "title": "Deliverables (always included)",
+      "items": {
+        "sheet": "Google Sheet \"control room\" template",
+        "script": "Apps Script project installed + authorized",
+        "admin": "Admin settings tab + documentation",
+        "bugfix": "14-day bug-fix window"
+      }
     },
-    "learnMore": "Learn More"
+    "cta": {
+      "primary": "Book Your Time Audit",
+      "secondary": "See Example Systems",
+      "button": "Book Your Time Audit"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "items": {
+        "software": {
+          "question": "Do we need new software?",
+          "answer": "No. Everything runs inside your existing Google Workspace — Sheets, Drive, Gmail. No new logins, no new subscriptions."
+        },
+        "data": {
+          "question": "Do you store our data?",
+          "answer": "No. All data lives in your Google account. We build inside your Workspace; we don't host or store your data."
+        },
+        "ai": {
+          "question": "Is AI required?",
+          "answer": "No. Our systems are logic-first. AI is optional where it adds value (e.g. drafting or summarising); nothing depends on it."
+        }
+      }
+    }
+  },
+  "exampleSystems": {
+    "hero": {
+      "title": "Example Systems We've Installed",
+      "subtitle": "Real workflows we've automated for clients. Each installation is adapted to the specific business."
+    },
+    "cases": {
+      "taskAssignment": {
+        "title": "Role-Based Task Assignment System",
+        "problemLabel": "Problem it solved",
+        "problem": "Tasks were tracked informally, ownership was unclear, and follow-ups were missed.",
+        "systemLabel": "System installed",
+        "system": "A role-based task assignment system built in Google Sheets with automated reminders, status tracking, and weekly reporting.",
+        "outcomeLabel": "Why this matters",
+        "outcome": "The team gained clarity without introducing Jira or Asana. Everything runs inside their existing Google Workspace."
+      },
+      "configurator": {
+        "title": "Modular Stack Configurator",
+        "problemLabel": "Problem it solved",
+        "problem": "Manual configuration led to pricing errors and repeated document creation.",
+        "systemLabel": "System installed",
+        "system": "A Google Sheets-based configurator that validates inputs, applies business constraints, and generates branded PDFs automatically.",
+        "outcomeLabel": "Why this matters",
+        "outcome": "Sales cycles shortened, errors dropped, and outputs became consistent. The system is re-runnable and fully owned by the client."
+      },
+      "emailLogger": {
+        "title": "Email → Sheet Auto-Logger + Follow-Up System",
+        "problemLabel": "Problem it solved",
+        "problem": "Support emails were manually logged into spreadsheets, and follow-ups were often forgotten.",
+        "systemLabel": "System installed",
+        "system": "Incoming emails are automatically parsed, key fields extracted, and appended to a Google Sheet. Follow-up reminders are sent at +3, +7, and +14 days if no reply is received.",
+        "outcomeLabel": "Why this matters",
+        "outcome": "The team eliminated copy-paste work and never missed a follow-up again."
+      }
+    },
+    "note": {
+      "line1": "Each installation is adapted to the client's workflow.",
+      "line2": "Logic and structure vary by business.",
+      "line3": "These are examples of patterns we implement — not ready-made products."
+    },
+    "cta": {
+      "button": "Discuss Your Workflow"
+    }
+  },
+  "builtByPage": {
+    "hero": {
+      "title": "Built by NodeMatics",
+      "intro": "NodeMatics solves problems. When a solution repeats at scale, it may become a product. These products are not what most clients need — they are proof of how we think."
+    },
+    "products": {
+      "engagePerfect": {
+        "title": "EngagePerfect",
+        "description": "A content operating system for agencies managing multiple brands.",
+        "supportingLine": "Built to solve content inconsistency and workflow chaos inside agencies.",
+        "cta": "Visit EngagePerfect →"
+      },
+      "veil": {
+        "title": "Veil",
+        "description": "A focused analytics engine for time-series and operational insight.",
+        "badge": "In Development",
+        "supportingLine": "Currently in development as part of the NodeMatics Lab.",
+        "cta": ""
+      }
+    },
+    "closing": "NodeMatics designs time-saving systems. When a solution proves repeatable, we sometimes turn it into a product.",
+    "cta": "Explore Our Services"
   },
   "footer": {
     "company": "Company",
+    "services": "Services",
     "products": "Products",
-    "description": "Empowering creators, teams, and businesses with AI-powered automation tools and content generation solutions.",
-    "copyright": "© 2024 NodeMatics. All rights reserved.",
+    "contact": "Contact",
+    "legal": "Legal",
+    "description": "NodeMatics designs and installs time-saving systems inside Google Workspace. No SaaS. No lock-in. You own it.",
+    "copyright": "© 2026 NodeMatics. All rights reserved.",
     "links": {
       "about": "About",
-      "services": "Services", 
-      "contact": "Contact",
+      "philosophy": "Philosophy",
+      "whatWeInstall": "What We Install",
+      "exampleSystems": "Example Systems",
       "engagePerfect": "EngagePerfect",
-      "support": "Support"
+      "veilInDev": "Veil (In Development)",
+      "bookTimeAudit": "Book Time Audit",
+      "email": "Email",
+      "linkedIn": "LinkedIn",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
+    },
+    "urls": {
+      "engagePerfect": "https://engageperfect.com",
+      "linkedIn": "https://uk.linkedin.com/company/nodematics-ltd",
+      "email": "mailto:contact@nodematics.com"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "updated": "Last updated",
+      "placeholder": "Privacy policy content will be published here."
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "updated": "Last updated",
+      "placeholder": "Terms of service content will be published here."
     }
   },
   "products": {
@@ -446,6 +628,41 @@
       "subtitle": "Join thousands of creators and businesses transforming their content strategy.",
       "startTrial": "Start Free Trial",
       "requestDemo": "Request Demo"
+    }
+  },
+  "solutions": {
+    "hero": {
+      "title": "Complete Solutions",
+      "subtitle": "From industrial automation to content creation, we provide comprehensive solutions that drive real business transformation."
+    }
+  },
+  "pricing": {
+    "hero": {
+      "title": "Simple, Transparent Pricing",
+      "subtitle": "Choose the perfect plan for your content needs. Upgrade or downgrade at any time."
+    }
+  },
+  "industrialAnalytics": {
+    "hero": {
+      "title": "Optimize Your Operations",
+      "subtitle": "Turn operational data into competitive advantage with real-time insights, predictive analytics, and intelligent automation."
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Oops! Page not found.",
+    "backHome": "Return to Home"
+  },
+  "profile": {
+    "header": {
+      "title": "Profile",
+      "subtitle": "Manage your account"
+    }
+  },
+  "settings": {
+    "header": {
+      "title": "Settings",
+      "subtitle": "Security and preferences"
     }
   },
   "language": {

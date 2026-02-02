@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '@/components/Layout';
+import PageHeader from '@/components/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -174,15 +175,8 @@ const Blog = () => {
 
   return (
     <Layout>
+      <PageHeader title={t('blog.title')} subtitle={t('blog.subtitle')} />
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 gradient-text">{t('blog.title')}</h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            {t('blog.subtitle')}
-          </p>
-        </div>
-
         {/* Blog Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {posts.map((post, index) => (

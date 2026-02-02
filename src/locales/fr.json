@@ -14,162 +14,226 @@
   "navigation": {
     "home": "Accueil",
     "about": "À propos",
-    "products": "Produits",
     "services": "Services",
-    "blog": "Blog",
+    "examples": "Exemples",
+    "builtBy": "Créé par NodeMatics",
     "contact": "Contact",
     "getStarted": "Commencer"
   },
   "home": {
     "hero": {
-      "title": "Travaillez Moins. Grandissez Plus Vite.",
-      "subtitle": "NodeMatics aide les petites équipes et les créateurs à automatiser le contenu, les opérations et l'analyse—pour qu'ils puissent se concentrer sur ce qui compte vraiment.",
+      "headline": "Nous concevons des systèmes qui vous rendent du temps.",
+      "subheadline": "NodeMatics aide les petites équipes à éliminer le travail répétitif en installant des systèmes simples et fiables dans Google Workspace.",
+      "trustLine": "Pas de SaaS. Pas d'enfermement. Vous possédez le système dans votre Drive.",
       "cta": {
-        "exploreProducts": "Découvrir EngagePerfect",
-        "learnAbout": "En savoir plus",
-        "bookCall": "Réserver un appel gratuit"
+        "primary": "Réserver votre audit temps gratuit de 15 minutes",
+        "secondary": "Voir Ce Que Nous Installons"
+      },
+      "trustBadges": {
+        "google": "Google Workspace",
+        "since": "Systèmes depuis 2017"
       }
     },
-    "solutions": {
-      "title": "Outils Intelligents pour des Résultats Réels",
-      "items": {
-        "engagePerfect": {
-          "title": "EngagePerfect",
-          "description": "Génération de contenu alimentée par l'IA pour blogs, légendes et textes produits"
-        },
-        "skySparkRules": {
-          "title": "Règles SkySpark",
-          "description": "Analyses SkySpark personnalisées et scripts Axon pour l'optimisation des bâtiments/installations"
-        },
-        "smartAutomations": {
-          "title": "Automatisations Intelligentes",
-          "description": "Petits outils à distance qui éliminent les goulots d'étranglement et font gagner du temps"
-        }
+    "problem": {
+      "title": "La plupart des équipes ne perdent pas le temps d'un coup. Elles le perdent en silence.",
+      "body": {
+        "p1": "Les e-mails sont copiés dans des feuilles de calcul.",
+        "p2": "Les tâches vivent dans la tête des gens.",
+        "p3": "Les rapports sont reconstruits chaque semaine.",
+        "p4": "Les fichiers sont dupliqués, renommés, renvoyés.",
+        "p5": "Individuellement, cela semble minuscule.",
+        "p6": "Ensemble, cela consomme des heures — chaque semaine.",
+        "p7": "NodeMatics existe pour supprimer cette friction."
       }
     },
-    "values": {
-      "title": "Pourquoi Nous Existons",
-      "items": {
-        "respectTime": {
-          "title": "Nous Respectons Votre Temps",
-          "description": "Des outils conçus pour vous libérer du travail répétitif"
-        },
-        "keepPractical": {
-          "title": "Nous Restons Pratiques",
-          "description": "Simple, efficace et évolutif—pas surchargé ou gonflé"
-        },
-        "buildImpact": {
-          "title": "Nous Construisons pour l'Impact",
-          "description": "Tout ce que nous faisons soutient une croissance mesurable"
-        }
+    "position": {
+      "title": "Ce Que Fait NodeMatics",
+      "body": "NodeMatics est un studio d'ingénierie de systèmes. Nous ne vendons pas de licences logicielles. Nous ne remplaçons pas les outils que vous utilisez déjà. Nous n'ajoutons pas de tableaux de bord pour le plaisir. Nous concevons et installons des systèmes internes qui :",
+      "bullets": {
+        "b1": "Éliminent le travail manuel répétitif",
+        "b2": "Apportent de la clarté aux opérations",
+        "b3": "Fonctionnent discrètement en arrière-plan"
+      },
+      "closing": "Tout cela dans Google Workspace."
+    },
+    "focus": {
+      "title": "Notre Focus Actuel",
+      "body": "Actuellement, NodeMatics se concentre sur des systèmes à fort impact et de faible périmètre construits sur Google Workspace :",
+      "bullets": {
+        "b1": "Google Sheets comme salles de contrôle",
+        "b2": "Workflows et relances basés sur Gmail",
+        "b3": "Génération de documents natifs Drive (PDF, rapports, devis)",
+        "b4": "Affectation et suivi des tâches par rôle"
+      },
+      "closing": "Ce focus est intentionnel. Des systèmes simples, bien réalisés, surpassent les plateformes complexes."
+    },
+    "offerings": {
+      "title": "Trois Offres Principales",
+      "subtitle": "Systèmes à fort impact. Délais clairs.",
+      "card1": {
+        "title": "Installations d'Automatisation (48–72h)",
+        "outcome": "Un flux de travail répétitif supprimé de bout en bout."
+      },
+      "card2": {
+        "title": "Salles de Contrôle des Opérations (1–2 semaines)",
+        "outcome": "Tâches, responsabilités, rappels, reporting — le tout dans Sheets et Gmail."
+      },
+      "card3": {
+        "title": "Configurateurs et Moteurs PDF (1–3 semaines)",
+        "outcome": "Transformez des entrées structurées en sorties propres et branding."
       }
     },
-    "clients": {
-      "title": "Fait confiance par des équipes comme..."
+    "builtBy": {
+      "title": "Créé par NodeMatics",
+      "intro": "Quand un problème système se répète à grande échelle, nous le transformons parfois en produit.",
+      "engagePerfect": {
+        "title": "EngagePerfect",
+        "description": "Un système d'exploitation du contenu pour les agences gérant plusieurs marques.",
+        "link": "Visiter EngagePerfect →"
+      },
+      "veil": {
+        "title": "Veil",
+        "description": "Un moteur d'analytique focalisé pour les séries temporelles et l'insight opérationnel.",
+        "badge": "En Développement"
+      }
+    },
+    "closing": {
+      "title": "Commencez Petit. Gagnez du Temps. Construisez à Partir de Là.",
+      "body": "La plupart des clients commencent par un flux de travail. Un rapport qui n'a plus besoin d'être reconstruit. Une relance qui ne sera plus oubliée. Un système qui fonctionne tout simplement. À partir de là, nous construisons uniquement ce qui est nécessaire.",
+      "cta": "Réserver votre audit temps gratuit de 15 minutes",
+      "subtext": "Sans engagement. Juste de la clarté."
     },
     "testimonials": {
-      "title": "Ce que disent nos clients",
+      "title": "Les équipes font confiance à NodeMatics",
       "items": {
-        "quote1": "NodeMatics nous a aidés à réduire le temps de création de contenu de 80 %. C'est comme avoir une équipe de contenu à temps plein.",
-        "author1": "A.M., Fondateur E-commerce",
-        "quote2": "Leurs outils d'automatisation ont éliminé des heures de travail manuel chaque semaine. Nous pouvons enfin nous concentrer sur la stratégie.",
-        "author2": "J.K., Responsable des Opérations",
-        "quote3": "L'implémentation SkySpark a optimisé notre gestion des installations au-delà de nos attentes.",
-        "author3": "R.L., Directeur des Installations"
-      }
-    },
-    "finalCta": {
-      "title": "Construisons Plus Intelligemment, Ensemble",
-      "subtitle": "Vous voulez explorer ce qui est possible en une heure seulement ? Réservez un appel gratuit—nous tracerons des moyens d'économiser du temps, d'automatiser les tâches et de développer votre entreprise.",
-      "cta": "Réservez Votre Appel Stratégique Gratuit"
-    }
-  },
-  "about": {
-    "hero": {
-      "title": "À propos de NodeMatics",
-      "subtitle": "NodeMatics aide les solopreneurs et les petites équipes ambitieuses à travailler plus intelligemment en construisant des outils d'automatisation et des solutions efficaces qui font gagner du temps, réduisent le travail répétitif et stimulent la croissance. Nous nous concentrons sur la praticité plutôt que sur la complexité—utilisant l'IA et l'automatisation pour simplifier les défis commerciaux quotidiens."
-    },
-    "story": {
-      "title": "Qui Nous Sommes",
-      "paragraph1": "Fondée en 2017, NodeMatics a commencé comme un service de conseil pratique et s'est développée en une entreprise numérique axée sur les produits. Aujourd'hui, nous développons des outils évolutifs comme EngagePerfect et des packages de règles SkySpark qui servent les créateurs, consultants et petites entreprises du monde entier.",
-      "paragraph2": "Nous sommes une équipe croissante de développeurs, consultants et créateurs qui croient en une chose par-dessus tout : votre temps est trop précieux pour être gaspillé sur des tâches qui peuvent être automatisées et améliorées.",
-      "stats": {
-        "experience": "Années d'Expérience",
-        "projects": "Projets Livrés",
-        "countries": "Pays Servis"
-      }
-    },
-    "beliefs": {
-      "title": "Ce En Quoi Nous Croyons",
-      "items": {
-        "timeValue": {
-          "title": "Le temps est votre atout le plus précieux",
-          "description": "Nos outils sont conçus pour vous en donner plus"
+        "1": {
+          "quote": "Je l'utilise quotidiennement — fait économiser des heures !",
+          "author": "S.P., Créateur de contenu"
         },
-        "simplicityScales": {
-          "title": "La simplicité s'adapte",
-          "description": "Nous ne surchargeons pas. Nous concevons des solutions efficaces et pratiques"
+        "2": {
+          "quote": "NodeMatics nous a aidés à réduire le temps de création de contenu de 80 %. C'est comme avoir une équipe de contenu à temps plein.",
+          "author": "A.M., Fondateur E-commerce"
         },
-        "improvementConstant": {
-          "title": "L'amélioration est constante",
-          "description": "Nous croyons que de petits changements intelligents créent une croissance durable"
+        "3": {
+          "quote": "Leurs outils d'automatisation ont éliminé des heures de travail manuel chaque semaine. Nous pouvons enfin nous concentrer sur la stratégie.",
+          "author": "J.K., Responsable opérations"
         }
       }
     },
+    "offeringsCta": "Inclure dans mon audit"
+  },
+  "about": {
+    "opening": {
+      "title": "Ce en quoi nous croyons",
+      "subtitle": "Les principes qui guident la conception des systèmes chez NodeMatics.",
+      "manifesto": {
+        "p1": "Le temps est l'actif le plus précieux. Pas les données. Pas les outils. Pas la technologie. Les petites équipes le perdent en silence — une tâche répétée après l'autre.",
+        "p2": "La répétition détruit progressivement la concentration. E-mails copiés dans des feuilles de calcul. Rapports reconstruits chaque semaine. Tâches mémorisées au lieu d'être suivies. Rien de difficile. Juste inutile.",
+        "p3": "Les systèmes battent l'effort. Travailler plus ne scale pas. Ajouter des outils ne répare pas les workflows cassés. Des systèmes clairs, si.",
+        "p4": "Utilisez ce qui existe déjà. La plupart des entreprises paient déjà pour les outils dont elles ont besoin. Elles ne les utilisent pas comme des systèmes. Nous concevons à l'intérieur — pas par-dessus.",
+        "p5": "La propriété compte. Si un système fait tourner votre entreprise, vous le possédez. Vos données. Votre logique. Pas d'enfermement.",
+        "p6": "L'automatisation doit être silencieuse. Le meilleur système est celui qu'on oublie. Il ne s'annonce pas. Il fonctionne.",
+        "p7": "L'IA est un outil, pas une fin. Elle peut rédiger, résumer, enrichir. La logique d'abord. La fiabilité gagne toujours.",
+        "p8": "Le focus crée l'autorité. Nous ne poursuivons pas tous les problèmes. Nous résolvons bien une classe de problèmes : le temps perdu causé par des workflows internes cassés."
+      }
+    },
+    "whatWeDo": {
+      "title": "Ce que nous faisons",
+      "body": "NodeMatics conçoit et installe des systèmes internes petits et fiables qui éliminent la friction, créent la clarté et redonnent du temps.",
+      "notDo": {
+        "item1": "Ne vend pas de logiciels génériques",
+        "item2": "Ne poursuit pas tous les problèmes",
+        "item3": "Ne construit pas la complexité pour elle-même"
+      }
+    },
+    "products": {
+      "title": "Quand les systèmes se répètent",
+      "body": "Quand un échec de système se répète à grande échelle, NodeMatics en fait parfois un produit. EngagePerfect et Veil en sont des exemples — résultats d'une pensée systémique, pas le cœur du métier."
+    },
     "founders": {
-      "title": "Rencontrez les Fondateurs",
+      "intro": "Construit et maintenu par",
       "patrick": {
         "name": "Patrick Kadima",
-        "role": "Co-Fondateur & Responsable Automatisation",
-        "bio": "Consultant en Automatisation et IA avec plus de 10 ans d'expérience aidant les entreprises en Europe et en Afrique à rationaliser leurs opérations. Créateur d'EngagePerfect. Passionné par la conception de processus et la croissance numérique."
+        "role": "Systèmes & Automatisation",
+        "bio": "Conçoit et installe des systèmes internes qui éliminent le travail répétitif. Créateur d'EngagePerfect."
       },
       "sunita": {
         "name": "Sunita",
-        "role": "Co-Fondatrice & Responsable Créative",
-        "bio": "Stratège créative et chef de projet. Co-fondatrice de CurioKids et défenseure de l'éducation, de la narration et des outils technologiques accessibles."
+        "role": "Systèmes créatifs & Communication",
+        "bio": "Façonne la façon dont les systèmes communiquent clairement et servent les gens. Pilote les systèmes créatifs chez NodeMatics."
       }
     },
-    "finalCta": {
-      "title": "Vous Voulez Voir Ce Qui Est Possible ?",
-      "subtitle": "Parlons de la façon dont l'automatisation peut libérer votre temps, améliorer vos processus et développer votre entreprise. La première heure est offerte.",
-      "cta": "Réservez Votre Consultation Gratuite"
-    }
+    "closing": {
+      "line1": "NodeMatics est un studio de systèmes.",
+      "line2": "Nous croyons que moins de travail, mieux fait, change tout."
+    },
+    "cta": "Commencer par un audit temps"
   },
   "contact": {
     "hero": {
-      "title": "Entrez en Contact",
-      "subtitle": "Prêt à transformer votre stratégie de contenu ? Discutons de la façon dont NodeMatics peut vous aider à atteindre vos objectifs."
+      "title": "Réservez Votre Audit Temps de 15 Minutes",
+      "subtitle": "Nous identifierons un flux de travail répétitif qui vous coûte du temps — et nous vous montrerons comment le corriger."
+    },
+    "whatToExpect": {
+      "title": "À quoi s'attendre",
+      "b1": "Conversation de 15 minutes (sans argumentaire commercial)",
+      "b2": "Nous vous demandons quels sont vos plus gros voleurs de temps",
+      "b3": "Nous proposons un système précis à installer",
+      "b4": "Vous décidez si cela a du sens"
     },
     "form": {
-      "title": "Envoyez-nous un message",
+      "title": "Demander votre audit temps",
       "fields": {
         "name": {
-          "label": "Nom Complet",
-          "placeholder": "Votre nom complet"
+          "label": "Nom",
+          "placeholder": "Votre nom"
         },
         "email": {
-          "label": "Adresse Email",
+          "label": "Email",
           "placeholder": "votre@email.com"
         },
         "company": {
-          "label": "Entreprise (Optionnel)",
-          "placeholder": "Nom de votre entreprise"
+          "label": "Nom de l'entreprise",
+          "placeholder": "Votre entreprise"
         },
-        "message": {
-          "label": "Message",
-          "placeholder": "Parlez-nous de votre projet et comment nous pouvons vous aider..."
+        "timeDrain": {
+          "label": "Quel est votre plus gros voleur de temps ?",
+          "placeholder": "ex. copier des e-mails dans des feuilles, reconstruire des rapports chaque semaine, relances oubliées..."
+        },
+        "contactMethod": {
+          "label": "Méthode de contact préférée",
+          "placeholder": "Choisir",
+          "email": "Email",
+          "phone": "Téléphone",
+          "video": "Visio"
         }
       },
-      "submit": "Envoyer le Message",
+      "submit": "Demander l'Audit Temps",
       "submitting": "Envoi...",
       "success": {
-        "title": "Message envoyé avec succès !",
-        "description": "Nous vous répondrons dans les 24 heures."
+        "title": "Demande reçue",
+        "description": "Nous vous recontacterons sous 24 h pour planifier votre audit temps de 15 minutes."
       },
       "error": {
-        "title": "Erreur lors de l'envoi du message",
-        "description": "Veuillez réessayer ou nous contacter directement à contact@NodeMatics.com"
+        "title": "Une erreur s'est produite",
+        "description": "Veuillez réessayer ou nous écrire à contact@nodematics.com"
       }
+    },
+    "alternativeContact": {
+      "preferEmail": "Vous préférez l'email ? Écrivez-nous à :",
+      "email": "contact@nodematics.com",
+      "linkedIn": "LinkedIn :",
+      "linkedInUrl": "https://uk.linkedin.com/company/nodematics-ltd"
+    },
+    "trustBuilders": {
+      "whatYouGet": "Ce que vous obtiendrez :",
+      "get1": "Évaluation honnête (sans langue de bois)",
+      "get2": "Recommandation claire",
+      "get3": "Aucune obligation d'aller plus loin",
+      "whatYouWontGet": "Ce que vous n'obtiendrez pas :",
+      "wont1": "Consulting générique",
+      "wont2": "Pression commerciale",
+      "wont3": "Outils dont vous n'avez pas besoin"
     },
     "info": {
       "title": "Informations de Contact",
@@ -239,91 +303,209 @@
   },
   "services": {
     "hero": {
-      "title": "Nos Services",
-      "subtitle": "Des solutions complètes alimentées par l'IA pour transformer votre stratégie de contenu et accélérer la croissance de votre entreprise."
+      "title": "Ce Que Nous Installons",
+      "subtitle": "Trois lignes de services ciblées — toutes natives Google Workspace"
     },
-    "cards": {
-      "contentGeneration": {
-        "title": "Génération de Contenu IA",
-        "description": "Transformez vos idées en contenu convaincant et optimisé pour le SEO qui engage votre audience et génère des résultats.",
-        "features": {
-          "blogPosts": "Articles et billets de blog",
-          "socialMedia": "Contenu pour réseaux sociaux",
-          "emailCampaigns": "Campagnes email",
-          "productDescriptions": "Descriptions de produits"
-        }
+    "offerings": {
+      "quickWin": {
+        "title": "Install QuickWin Automation",
+        "timeline": "48–72 heures",
+        "for": "Petites entreprises noyées dans l'admin répétitif",
+        "outcome": "Gain de temps hebdo, visible immédiatement",
+        "includesLabel": "Inclut (un parmi) :",
+        "includes": {
+          "emailSheet": "Email → suivi Sheet + relances auto",
+          "pdfGenerator": "Générateur PDF (devis/rapports) à partir des données Sheet",
+          "driveOrganizer": "Auto-organisation Drive (nommage + routage)",
+          "formOnboarding": "Système Formulaire → Dossier → Doc onboarding"
+        },
+        "pricing": "250–600 € une fois",
+        "pricingOptional": "50–150 €/mois maintenance"
       },
-      "seoOptimization": {
-        "title": "Optimisation SEO",
-        "description": "Améliorez votre classement dans les moteurs de recherche avec du contenu spécifiquement optimisé pour les moteurs de recherche et l'engagement des utilisateurs.",
-        "features": {
-          "keywordResearch": "Recherche et optimisation de mots-clés",
-          "metaTags": "Balises méta et descriptions",
-          "contentStructure": "Optimisation de la structure du contenu",
-          "readability": "Améliorations de la lisibilité"
-        }
+      "operationsControlRoom": {
+        "title": "Salle de Contrôle des Opérations",
+        "timeline": "1–2 semaines",
+        "for": "Équipes qui veulent de la structure sans Jira/Asana",
+        "outcome": "Tâches par rôle + reporting + redevabilité",
+        "includesLabel": "Inclut :",
+        "includes": {
+          "roleTasks": "Affectation de tâches par rôle (UI Sheet + triggers + notifications)",
+          "statusAudit": "Suivi de statut + journal d'audit",
+          "weeklyReport": "Automatisation des rapports hebdomadaires",
+          "ownership": "Visibilité claire des responsables"
+        },
+        "pricing": "900–2 500 € une fois",
+        "pricingOptional": "150–300 €/mois support"
       },
-      "contentStrategy": {
-        "title": "Conseil en Stratégie de Contenu",
-        "description": "Travaillez avec nos experts pour développer une stratégie de contenu complète qui s'aligne avec vos objectifs commerciaux et les besoins de votre audience.",
-        "features": {
-          "contentAudit": "Audit et analyse de contenu",
-          "editorialCalendar": "Planification du calendrier éditorial",
-          "audienceResearch": "Recherche d'audience",
-          "performanceOptimization": "Optimisation des performances"
-        }
-      },
-      "customIntegrations": {
-        "title": "Intégrations Personnalisées",
-        "description": "Intégrez de manière transparente nos outils IA dans votre flux de travail existant avec des solutions API personnalisées et des fonctionnalités d'entreprise.",
-        "features": {
-          "apiDevelopment": "Développement et intégration d'API",
-          "workflowAutomation": "Automatisation du flux de travail",
-          "customModelTraining": "Formation de modèles personnalisés",
-          "enterpriseSupport": "Support entreprise"
-        }
+      "configurator": {
+        "title": "Configurateur & Moteur PDF",
+        "timeline": "1–3 semaines",
+        "for": "Produits modulaires / tarifs / nomenclatures / devis / propositions",
+        "outcome": "Configurer → tarifer → générer un PDF branding en minutes",
+        "includesLabel": "Inclut :",
+        "includes": {
+          "validation": "Validation des entrées + contraintes métier",
+          "calculation": "Calcul automatisé + tableaux de détail",
+          "pdf": "Génération de PDF branding",
+          "diagram": "Génération optionnelle de schémas/images",
+          "iterations": "Itérations rejouables"
+        },
+        "pricing": "2 000–7 500 € une fois",
+        "pricingOptional": "200–500 €/mois support"
       }
     },
     "process": {
-      "title": "Notre Processus",
-      "subtitle": "Une approche rationalisée pour fournir des résultats exceptionnels à chaque client.",
+      "title": "Comment Ça Marche",
       "steps": {
-        "discovery": {
-          "title": "Découverte",
-          "description": "Nous comprenons vos objectifs, votre audience et vos défis de contenu actuels."
+        "timeAudit": {
+          "title": "Audit Temps (15 min)",
+          "description": "Nous identifions un point de douleur répétitif."
         },
-        "strategy": {
-          "title": "Stratégie",
-          "description": "Nous développons une stratégie de contenu personnalisée adaptée à vos besoins."
+        "install": {
+          "title": "Installation",
+          "description": "Nous le construisons dans votre Google Workspace."
         },
-        "implementation": {
-          "title": "Mise en Œuvre",
-          "description": "Nous exécutons la stratégie en utilisant nos outils IA avancés et notre expertise."
-        },
-        "optimization": {
-          "title": "Optimisation",
-          "description": "Nous surveillons et optimisons continuellement pour de meilleurs résultats."
+        "prove": {
+          "title": "Preuve",
+          "description": "Vous le voyez tourner. Vous en êtes entièrement propriétaire."
         }
       }
     },
-    "cta": {
-      "title": "Prêt à Transformer Votre Stratégie de Contenu ?",
-      "subtitle": "Discutons de la façon dont nos services peuvent vous aider à atteindre vos objectifs de contenu.",
-      "button": "Planifier une Consultation"
+    "deliverables": {
+      "title": "Livrables (toujours inclus)",
+      "items": {
+        "sheet": "Modèle Google Sheet « salle de contrôle »",
+        "script": "Projet Apps Script installé + autorisé",
+        "admin": "Onglet paramètres admin + documentation",
+        "bugfix": "Fenêtre correctifs 14 jours"
+      }
     },
-    "learnMore": "En Savoir Plus"
+    "cta": {
+      "primary": "Réserver Votre Audit Temps",
+      "secondary": "Voir des Exemples de Systèmes",
+      "button": "Réserver Votre Audit Temps"
+    },
+    "faq": {
+      "title": "Questions Fréquentes",
+      "items": {
+        "software": {
+          "question": "Faut-il un nouveau logiciel ?",
+          "answer": "Non. Tout tourne dans votre Google Workspace existant — Sheets, Drive, Gmail. Pas de nouveaux comptes ni abonnements."
+        },
+        "data": {
+          "question": "Stockez-vous nos données ?",
+          "answer": "Non. Toutes les données restent dans votre compte Google. Nous construisons dans votre Workspace ; nous n'hébergeons ni ne stockons vos données."
+        },
+        "ai": {
+          "question": "L'IA est-elle obligatoire ?",
+          "answer": "Non. Nos systèmes sont d'abord basés sur la logique. L'IA est optionnelle là où elle apporte de la valeur (ex. rédaction ou synthèse) ; rien n'en dépend."
+        }
+      }
+    }
+  },
+  "exampleSystems": {
+    "hero": {
+      "title": "Exemples de Systèmes Que Nous Avons Installés",
+      "subtitle": "Vrais flux de travail automatisés pour des clients. Chaque installation est adaptée à l'entreprise."
+    },
+    "cases": {
+      "taskAssignment": {
+        "title": "Système d'Affectation de Tâches par Rôle",
+        "problemLabel": "Problème résolu",
+        "problem": "Les tâches étaient suivies de façon informelle, la responsabilité était floue et les relances oubliées.",
+        "systemLabel": "Système installé",
+        "system": "Un système d'affectation de tâches par rôle dans Google Sheets avec rappels automatiques, suivi de statut et rapports hebdomadaires.",
+        "outcomeLabel": "Pourquoi c'est important",
+        "outcome": "L'équipe a gagné en clarté sans introduire Jira ou Asana. Tout tourne dans leur Google Workspace existant."
+      },
+      "configurator": {
+        "title": "Configurateur de Stack Modulaire",
+        "problemLabel": "Problème résolu",
+        "problem": "La configuration manuelle entraînait des erreurs de tarification et une recréation répétée des documents.",
+        "systemLabel": "Système installé",
+        "system": "Un configurateur basé sur Google Sheets qui valide les entrées, applique les contraintes métier et génère des PDFs branding automatiquement.",
+        "outcomeLabel": "Pourquoi c'est important",
+        "outcome": "Cycles de vente raccourcis, erreurs en baisse, sorties cohérentes. Le système est rejouable et entièrement propriété du client."
+      },
+      "emailLogger": {
+        "title": "Email → Sheet Auto-Logger + Système de Relance",
+        "problemLabel": "Problème résolu",
+        "problem": "Les e-mails support étaient saisis manuellement dans des feuilles, et les relances souvent oubliées.",
+        "systemLabel": "Système installé",
+        "system": "Les e-mails entrants sont parsés automatiquement, les champs clés extraits et ajoutés à une Google Sheet. Des rappels de relance sont envoyés à J+3, J+7 et J+14 si aucune réponse.",
+        "outcomeLabel": "Pourquoi c'est important",
+        "outcome": "L'équipe a supprimé le copier-coller et n'a plus jamais manqué une relance."
+      }
+    },
+    "note": {
+      "line1": "Chaque installation est adaptée au flux de travail du client.",
+      "line2": "La logique et la structure varient selon l'entreprise.",
+      "line3": "Ce sont des exemples de patterns que nous mettons en place — pas des produits prêts à l'emploi."
+    },
+    "cta": {
+      "button": "Discuter de Votre Workflow"
+    }
+  },
+  "builtByPage": {
+    "hero": {
+      "title": "Créé par NodeMatics",
+      "intro": "NodeMatics résout des problèmes. Quand une solution se répète à l'échelle, elle peut devenir un produit. Ces produits ne sont pas ce dont la plupart des clients ont besoin — ils sont la preuve de notre façon de penser."
+    },
+    "products": {
+      "engagePerfect": {
+        "title": "EngagePerfect",
+        "description": "Un système d'exploitation du contenu pour les agences gérant plusieurs marques.",
+        "supportingLine": "Conçu pour résoudre l'incohérence de contenu et le chaos des workflows en agence.",
+        "cta": "Visiter EngagePerfect →"
+      },
+      "veil": {
+        "title": "Veil",
+        "description": "Un moteur d'analytique focalisé pour les séries temporelles et l'insight opérationnel.",
+        "badge": "En Développement",
+        "supportingLine": "Actuellement en développement au sein du NodeMatics Lab.",
+        "cta": ""
+      }
+    },
+    "closing": "NodeMatics conçoit des systèmes qui font gagner du temps. Quand une solution s'avère reproductible, nous en faisons parfois un produit.",
+    "cta": "Découvrir Nos Services"
   },
   "footer": {
     "company": "Entreprise",
+    "services": "Services",
     "products": "Produits",
-    "description": "Donner aux créateurs, équipes et entreprises les moyens d'agir avec des outils d'automatisation alimentés par l'IA et des solutions de génération de contenu.",
+    "contact": "Contact",
+    "legal": "Mentions légales",
+    "description": "NodeMatics conçoit et installe des systèmes qui font gagner du temps dans Google Workspace. Pas de SaaS. Pas d'enfermement. Vous en êtes propriétaire.",
     "copyright": "© 2024 NodeMatics. Tous droits réservés.",
     "links": {
       "about": "À propos",
-      "services": "Services",
-      "contact": "Contact", 
+      "philosophy": "Philosophie",
+      "whatWeInstall": "Ce Que Nous Installons",
+      "exampleSystems": "Exemples de Systèmes",
       "engagePerfect": "EngagePerfect",
-      "support": "Support"
+      "veilInDev": "Veil (En Développement)",
+      "bookTimeAudit": "Réserver l'Audit Temps",
+      "email": "Email",
+      "linkedIn": "LinkedIn",
+      "privacyPolicy": "Politique de Confidentialité",
+      "termsOfService": "Conditions d'Utilisation"
+    },
+    "urls": {
+      "engagePerfect": "https://engageperfect.com",
+      "linkedIn": "https://uk.linkedin.com/company/nodematics-ltd",
+      "email": "mailto:contact@nodematics.com"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Politique de Confidentialité",
+      "updated": "Dernière mise à jour",
+      "placeholder": "Le contenu de la politique de confidentialité sera publié ici."
+    },
+    "terms": {
+      "title": "Conditions d'Utilisation",
+      "updated": "Dernière mise à jour",
+      "placeholder": "Le contenu des conditions d'utilisation sera publié ici."
     }
   },
   "products": {
@@ -446,6 +628,41 @@
       "subtitle": "Rejoignez des milliers de créateurs et d'entreprises transformant leur stratégie de contenu.",
       "startTrial": "Commencer l'Essai Gratuit",
       "requestDemo": "Demander une Démo"
+    }
+  },
+  "solutions": {
+    "hero": {
+      "title": "Solutions Complètes",
+      "subtitle": "De l'automatisation industrielle à la création de contenu, nous offrons des solutions complètes qui transforment vraiment les entreprises."
+    }
+  },
+  "pricing": {
+    "hero": {
+      "title": "Tarification Simple et Transparente",
+      "subtitle": "Choisissez le forfait adapté à vos besoins. Passez à un autre plan à tout moment."
+    }
+  },
+  "industrialAnalytics": {
+    "hero": {
+      "title": "Optimisez Vos Opérations",
+      "subtitle": "Transformez les données opérationnelles en avantage concurrentiel grâce aux insights en temps réel et à l'automatisation intelligente."
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Oups ! Page introuvable.",
+    "backHome": "Retour à l'accueil"
+  },
+  "profile": {
+    "header": {
+      "title": "Profil",
+      "subtitle": "Gérer votre compte"
+    }
+  },
+  "settings": {
+    "header": {
+      "title": "Paramètres",
+      "subtitle": "Sécurité et préférences"
     }
   },
   "language": {

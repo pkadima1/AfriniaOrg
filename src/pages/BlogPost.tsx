@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '@/components/Layout';
+import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -229,6 +230,7 @@ const BlogPost = () => {
   if (loading) {
     return (
       <Layout>
+        <PageHeader title={t('blog.title')} />
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-300 rounded w-1/4 mb-4"></div>
@@ -247,8 +249,8 @@ const BlogPost = () => {
   if (!post) {
     return (
       <Layout>
+        <PageHeader title={t('blog.notFound.title')} />
         <div className="container mx-auto px-4 py-8 text-center">
-          <h1 className="text-2xl font-bold mb-4">{t('blog.notFound.title')}</h1>
           <Link to="/blog">
             <Button className="apple-button">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -281,7 +283,10 @@ const BlogPost = () => {
           <meta name="twitter:image" content={post.featuredImageURL} />
         </>
       )}
-      
+      <PageHeader
+        title={post.title}
+        subtitle={post.summary.length > 140 ? `${post.summary.slice(0, 140)}…` : post.summary}
+      />
       <div className="container mx-auto px-4 sm:px-6 py-10 max-w-4xl lg:max-w-5xl">
         <Link to="/blog" className="inline-flex items-center text-accent-blue hover:text-accent-purple mb-8 text-base font-medium">
           <ArrowLeft className="w-4 h-4 mr-2" />

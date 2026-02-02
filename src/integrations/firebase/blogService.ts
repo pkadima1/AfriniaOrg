@@ -16,7 +16,7 @@ import {
   DocumentData,
   QueryDocumentSnapshot,
 } from 'firebase/firestore';
-import { db, storage } from '@/integrations/firebase/config';
+import { db, storage, auth } from '@/integrations/firebase/config';
 import { BlogPost, COLLECTIONS, getCurrentTimestamp, convertTimestamp } from '@/integrations/firebase/types';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
@@ -170,7 +170,12 @@ export const saveBlogPost = async (post: Partial<BlogPost>, postId?: string): Pr
     let contentStoragePath: string | null | undefined;
 
     if (contentBytes > MAX_CONTENT_BYTES_IN_DOC) {
-      const storagePath = `${BLOG_CONTENT_STORAGE_PATH}/${docId}.html`;
+      const uid = auth.currentUser?.uid;
+      if (!uid) {
+        console.error('Cannot upload blog content: user not authenticated');
+        return null;
+      }
+      const storagePath = `${BLOG_CONTENT_STORAGE_PATH}/${uid}/${docId}.html`;
       const storageRef = ref(storage, storagePath);
       await uploadBytes(storageRef, new Blob([content], { type: 'text/html' }));
       contentToStore = '';

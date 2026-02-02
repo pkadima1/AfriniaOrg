@@ -1,22 +1,14 @@
-
 import Layout from '../components/Layout';
+import PageHeader from '../components/PageHeader';
 import { Card } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Pricing = () => {
+  const { t } = useTranslation();
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="py-20 px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Simple, <span className="gradient-text">Transparent</span> Pricing
-          </h1>
-          <p className="text-xl text-text-secondary mb-8">
-            Choose the perfect plan for your content needs. Upgrade or downgrade at any time.
-          </p>
-        </div>
-      </section>
+      <PageHeader title={t('pricing.hero.title')} subtitle={t('pricing.hero.subtitle')} />
 
       {/* Pricing Cards */}
       <section className="py-20 px-6 lg:px-8">

@@ -1,4 +1,5 @@
 import Layout from '../components/Layout';
+import PageHeader from '../components/PageHeader';
 import { Card } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,15 +9,11 @@ const Products = () => {
   
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="py-20 px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            <span className="gradient-text">{t('products.hero.title')}</span>
-          </h1>
-          <p className="text-xl text-text-secondary mb-8">
-            {t('products.hero.subtitle')}
-          </p>
+      <PageHeader title={t('products.hero.title')} subtitle={t('products.hero.subtitle')} />
+
+      {/* CTA below header */}
+      <section className="py-6 px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
           <a 
             href="https://engageperfect.com" 
             target="_blank" 

@@ -1,23 +1,14 @@
-
 import Layout from '../components/Layout';
+import PageHeader from '../components/PageHeader';
 import { Card } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Solutions = () => {
+  const { t } = useTranslation();
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="py-20 px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Complete <span className="gradient-text">Solutions</span>
-          </h1>
-          <p className="text-xl text-text-secondary mb-8">
-            From industrial automation to content creation, we provide comprehensive 
-            solutions that drive real business transformation.
-          </p>
-        </div>
-      </section>
+      <PageHeader title={t('solutions.hero.title')} subtitle={t('solutions.hero.subtitle')} />
 
       {/* Section 1: Industrial Efficiency & Analytics */}
       <section className="py-20 px-6 lg:px-8 bg-dark-surface">
