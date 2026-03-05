@@ -1,10 +1,9 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check user role (defaults to 'viewer' when profile doesn't exist yet, e.g. signup flow)
+    // Helper function to check user role
     function getUserRole() {
-      let profile = get(/databases/$(database)/documents/user_profiles/$(request.auth.uid));
-      return profile != null ? profile.data.get('role', 'viewer') : 'viewer';
+      return get(/databases/$(database)/documents/user_profiles/$(request.auth.uid)).data.role;
     }
 
     function isAdmin() {

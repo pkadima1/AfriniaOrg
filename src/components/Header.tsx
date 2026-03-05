@@ -17,6 +17,7 @@ const Header = () => {
     { name: t('navigation.services'), href: '/services' },
     { name: t('navigation.examples'), href: '/example-systems' },
     { name: t('navigation.builtBy'), href: '/built-by' },
+    { name: t('navigation.outreachOS'), href: '/outreachos' },
     { name: t('navigation.contact'), href: '/contact' },
   ];
 

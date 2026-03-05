@@ -1,0 +1,250 @@
+OutreachOS · NodeMatics.com Private Client Document — Not For Redistribution
+nodematics.com · OutreachOS Page
+N o d e M a t i c s · P r i v a t e C l i e n t D o c u m e n t
+OUTREACHOS
+Your Intelligent Outreach Engine
+─────────────────────────────────────────
+Personalized cold email and LinkedIn outreach — automated, intelligent, and running inside
+your own Google account.
+One-time purchase
+No subscription. Yours to keep.
+Zero infrastructure
+No servers. No hosting costs.
+Fully private
+Your data stays in your Google account.OutreachOS · NodeMatics.com Private Client Document — Not For Redistribution
+nodematics.com · OutreachOS Page
+T H E R E A L I T Y
+Most Outreach Fails Before It Starts
+You already know personalised outreach works. You've read the stats. You've seen the reply rates. The
+problem isn't knowing — it's execution. Doing it manually, at any meaningful scale, is simply impossible
+without sacrificing the quality that makes it work in the first place.
+✗ Generic templates get ignored
+Recipients can spot a mail merge from the subject line. If your opening line could apply to
+anyone, it will convert like it applies to no one.
+✗ Manual research doesn't scale
+Spending 15–20 minutes researching and writing one personalised email means 15 quality
+outreaches takes a full day. There are never enough hours.
+✗ Follow-ups get forgotten
+Studies consistently show 30–50% of replies come from follow-ups — not the first
+message. Yet follow-ups are the first thing that slips in a busy week.
+✗ Outreach becomes feast or famine
+Most consultants and agencies outreach hard when they need clients, stop when they're
+busy, and wonder why their pipeline is always unpredictable.
+The core problem is not effort. It's that quality personalisation and consistent
+volume are mutually exclusive — unless you have a system.
+OutreachOS is that system.OutreachOS · NodeMatics.com Private Client Document — Not For Redistribution
+nodematics.com · OutreachOS Page
+T H E S O L U T I O N
+What OutreachOS Does
+OutreachOS is a private automation tool that runs entirely inside your own Google account. There is no
+external platform, no monthly subscription, no third-party holding your data. It sits quietly in the
+background, sourcing leads, researching prospects, writing personalised messages, and sending them
+on schedule — every single day, without you needing to think about it.
+C O R E C A P A B I L I T I E S
+Intelligent Lead Sourcing
+Automatically finds and adds new prospects every day based on your exact target
+audience — by role, industry, and location. No manual searching required.
+Deep Prospect Research
+For each prospect, the system visits their company website and extracts real signals —
+growth announcements, product launches, hiring patterns — to create genuine
+personalisation hooks.
+AI-Written Personalised Messages
+Every email is uniquely written by AI using the enrichment data. Not a template with a
+name swapped in. An actual message that references something specific and real about
+each prospect.
+Automated Follow-Up Sequences
+A structured 3-message cadence fires automatically: initial outreach, follow-up on day 3,
+final message on day 8. Sequences stop the moment a reply is detected.
+LinkedIn DM Drafting Queue
+Personalised LinkedIn messages are drafted and queued for your review each morning.
+You copy, paste, and send manually — keeping your account completely safe from
+automation risks.
+Full Campaign Tracking
+Every action is logged. Every reply detected. Every status updated in real time. Your
+Google Sheet is your live campaign dashboard — no separate CRM needed.
+W H A T A T Y P I C A L M O N T H L O O K S L I K E
+450+
+Email touches / month
+240+
+LinkedIn DM drafts /
+month
+~10
+Minutes of daily effort
+50
+Unique search combosOutreachOS · NodeMatics.com Private Client Document — Not For Redistribution
+nodematics.com · OutreachOS Page
+T H E R I G H T F I T
+Who OutreachOS Is Built For
+OutreachOS is designed for a very specific type of professional. Not everyone needs this — but for the
+right person, it becomes the backbone of their entire business development operation.
+✓ Independent consultants and fractional executives
+You're selling a high-value service and you know who you're selling it to. You need
+consistent outreach but can't afford to spend 3 hours a day doing it manually.
+✓ Small agency owners (1–5 people)
+Your team doesn't have a dedicated BDM. You need a repeatable new-business engine
+that runs without requiring a senior person's time every morning.
+✓ Boutique recruiters and headhunters
+You live in LinkedIn, your placement fees make the ROI immediate, and you understand
+exactly how to define your target candidates or clients.
+✓ Founders running early-stage B2B sales
+You're doing founder-led sales and need to run a structured outbound motion without the
+overhead of hiring a full sales team.
+The one requirement
+You need to know who you're selling to and be able to describe your offer clearly. OutreachOS
+generates genuinely personalised messages — but the targeting and offer framing has to come
+from you. The clearer your ICP and value proposition, the better your results.OutreachOS · NodeMatics.com Private Client Document — Not For Redistribution
+nodematics.com · OutreachOS Page
+G E T T I N G S T A R T E D
+Setup Guide — Step by Step
+OutreachOS is set up once and then runs on its own. The process takes approximately 2–3 hours if
+you're doing it yourself for the first time. Below is exactly what's involved, without the technical jargon.
+1
+Create your Google Sheet database
+A template Sheet is provided with all the right tabs and column headers already in
+place. You duplicate it into your own Google Drive. This Sheet becomes your
+campaign's source of truth — prospects, statuses, settings, and activity logs all live
+here.
+2
+Configure your Campaign Settings
+Inside the Sheet, you fill in a simple form: who you're targeting (job titles, industries,
+location), a description of your offer, your daily sending limits, and your email details. No
+code. Just text fields.
+3
+Connect your API services
+OutreachOS uses three external services to do its work. Each requires a free or lowcost account and an API key that you paste into a secure settings area. Step-by-step
+instructions are provided for each one. These services are: an AI provider for message
+writing, a search API for finding prospects, and an email service for sending.
+4
+Paste the code into Google Apps Script
+Google Apps Script is Google's built-in automation tool — no installation required, it's
+already inside your Google account. You create a new project, paste in the provided
+code files (one per file, clearly labelled), and save.
+5
+Deploy as a Web App
+With two clicks inside Apps Script, you convert the project into a private web application.
+This gives you a URL you can open in any browser to access your OutreachOS
+dashboard — showing today's queue, LinkedIn drafts, campaign stats, and recent
+activity.
+6
+Install the automation schedule
+You run one function called installTriggers(). This sets up three automated schedules: a
+daily send batch at 9 AM, a reply check every 2 hours, and a follow-up processor at 10
+AM. After this step, everything runs automatically.
+7
+Add test prospects and do a dry run
+Before going live, you add 2–3 test rows to your Sheet and run the system manually to
+verify everything is connecting correctly — enrichment runs, messages generate, emails
+send. When it works cleanly, your daily automation is live.OutreachOS · NodeMatics.com Private Client Document — Not For Redistribution
+nodematics.com · OutreachOS Page
+Done-With-You option available
+If you'd prefer to have this set up correctly the first time without the learning curve, NodeMatics
+offers a 90-minute Zoom session where we configure everything together — ICP settings, API
+connections, first campaign launch — and hand it over running. Details in the pricing section.OutreachOS · NodeMatics.com Private Client Document — Not For Redistribution
+nodematics.com · OutreachOS Page
+D A I L Y L I F E W I T H O U T R E A C H O S
+What Your Day Actually Looks Like
+Once OutreachOS is running, your daily involvement shrinks to under 10 minutes. Here's the realistic
+picture of how a typical day works.
+☀
+9:00 AM — System runs automatically
+The daily batch fires. OutreachOS researches each prospect, writes personalised
+messages, and sends emails — all without you lifting a finger. You'll see new rows
+updating in your Sheet in real time if you happen to be watching.
+☕
+9:15 AM — Your LinkedIn Queue
+You open your OutreachOS dashboard in a browser. The LinkedIn tab shows today's
+DM drafts — one per prospect, each already personalised with a specific reference to
+their company or role. You spend 5–8 minutes: open each LinkedIn profile, paste the
+message, send. Done.
+📥
+Throughout the day — Replies come in
+The reply monitor checks your inbox every 2 hours. When a prospect responds, their
+sequence stops automatically. You handle replies manually — that's the conversation
+you actually want to have.
+📆
+Days 3 and 8 — Follow-ups fire
+The system sends follow-up messages on the cadence you've set. Each one is a reply
+to the original thread, adding a new angle — not repeating the pitch. No action needed
+from you.
+📋
+Weekly — Review your dashboard
+Once a week, spend 10 minutes reviewing your campaign stats: reply rate, interested
+prospects, follow-ups due. Adjust your offer description or tone in Settings if results
+need improving.OutreachOS · NodeMatics.com Private Client Document — Not For Redistribution
+nodematics.com · OutreachOS Page
+C O M P L I A N C E & S A F E T Y
+How It Stays Compliant
+OutreachOS is built around two non-negotiable principles: email compliance and LinkedIn safety. Both
+are baked into the architecture — not added as an afterthought.
+Your data never leaves your Google account
+All prospect data, campaign settings, and activity logs live in your personal Google Sheet.
+OutreachOS doesn't have a central server. There is no third-party platform holding your
+contacts or your IP.
+Email sending via a dedicated business address
+Outreach emails are sent through a separate business email account — not your
+personal Gmail. This protects your main inbox reputation and keeps cold outreach
+completely separate from your day-to-day communications.
+LinkedIn is always human-approved
+OutreachOS never automates LinkedIn sending. The system drafts the messages and
+queues them — you send each one manually. This is the only approach that keeps your
+LinkedIn account safe and within platform policy.
+Automatic sequence stops on reply
+The moment a prospect replies, their follow-up sequence is cancelled. No one receives a
+follow-up after already responding. This is enforced automatically with no manual
+intervention required.
+Daily sending limits you control
+You set your own daily volume cap. The system respects it strictly. This keeps sending
+patterns natural and protects your sender reputation over time.OutreachOS · NodeMatics.com Private Client Document — Not For Redistribution
+nodematics.com · OutreachOS Page
+I N V E S T M E N T
+Pricing
+OutreachOS is sold as a one-time purchase. No monthly subscription. No per-seat fees. No platform
+dependency. You buy it once, configure it in your own Google account, and it's yours permanently.
+Self-Install
+£397
+✓ Full source code
+✓ Deployment guide
+✓ Setup video walkthrough
+✓ You configure & launch
+Done-With-You
+£797
+✓ Everything in Self-Install
+✓ 90-min Zoom setup session
+✓ ICP configured together
+✓ First campaign live by end
+of call
+Done-For-You
+£1,497
+✓ Everything in Done-WithYou
+✓ Full setup handled by
+NodeMatics
+✓ Campaign running before
+handover
+✓ Priority onboarding support
+Optional: Maintenance Cover
+£97 / month
+Priority fixes if any connected service updates
+their API. One quarterly optimisation call.
+WhatsApp access for operational questions.
+Why maintenance matters
+The connected services (email, search, AI)
+occasionally update their APIs. When they do,
+something in the system needs adjusting.
+Maintenance clients get that fixed within 48
+hours. Without it, you handle it yourself.OutreachOS · NodeMatics.com Private Client Document — Not For Redistribution
+nodematics.com · OutreachOS Page
+T H E B O T T O M L I N E
+Why This Matters
+The consultants and agency owners who grow consistently are not better at sales. They're better at
+staying visible. They reach the right people, at the right time, with a message that feels like it was
+written specifically for them — and they do it week after week, whether they're busy or not.
+That consistency is what OutreachOS makes possible. Not by replacing the relationship — you still
+handle every reply, every call, every conversation. But by doing the heavy lifting that stops most people
+from showing up in enough inboxes to build real pipeline.
+Ten minutes a day. A running system. A full-time outreach engine.
+Ready to see it in action?
+Visit nodematics.com or reach out directly to discuss which option is the right fit for
+your situation.
+nodematics.com
+OutreachOS · Built by NodeMatics · Private internal tool — not a SaaS product
+This document is for prospective clients only. Please do not redistribute.

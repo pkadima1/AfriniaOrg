@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import Layout from '@/components/Layout';
-import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,7 +24,6 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const Settings = () => {
-  const { t } = useTranslation();
   const { isAuthenticated, signOut, user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -117,7 +114,6 @@ const Settings = () => {
 
   return (
     <Layout>
-      <PageHeader title={t('settings.header.title')} subtitle={t('settings.header.subtitle')} />
       <div className="container mx-auto px-4 py-12 max-w-2xl">
         <div className="space-y-6">
           {/* Password Change Section */}

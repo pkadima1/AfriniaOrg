@@ -12,14 +12,10 @@ import {
 import { 
   doc, 
   getDoc, 
-  setDoc,
-  updateDoc
+  setDoc
 } from 'firebase/firestore';
 import { auth, db } from '@/integrations/firebase/config';
 import { UserRole, COLLECTIONS, getCurrentTimestamp } from '@/integrations/firebase/types';
-
-/** UID for bootstrap admin (pkadima1@gmail.com) – gets admin role on create or first load */
-const BOOTSTRAP_ADMIN_UID = 'V3o9lw5lUMbpuP8jWedaJCz8gTx2';
 
 export type { UserRole };
 
@@ -104,12 +100,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const now = getCurrentTimestamp();
       const profileRef = doc(db, COLLECTIONS.USER_PROFILES, userId);
       
-      const isBootstrapAdmin = userId === BOOTSTRAP_ADMIN_UID;
       await setDoc(profileRef, {
         id: userId,
         email,
         full_name: fullName || '',
-        role: (isBootstrapAdmin ? 'admin' : 'viewer') as UserRole,
+        role: 'viewer' as UserRole,
         avatar_url: null,
         is_active: true,
         created_at: now,
@@ -137,13 +132,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               currentUser.email ?? '',
               currentUser.displayName ?? undefined
             );
-            profile = await fetchUserProfile(currentUser.uid);
-          }
-
-          // Ensure bootstrap admin UID always has admin role (one-time upgrade for existing profiles)
-          if (profile && currentUser.uid === BOOTSTRAP_ADMIN_UID && profile.role !== 'admin') {
-            const profileRef = doc(db, COLLECTIONS.USER_PROFILES, currentUser.uid);
-            await updateDoc(profileRef, { role: 'admin' as UserRole, updated_at: getCurrentTimestamp() });
             profile = await fetchUserProfile(currentUser.uid);
           }
 

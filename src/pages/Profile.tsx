@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import Layout from '@/components/Layout';
-import PageHeader from '@/components/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { uploadProfileAvatar } from '@/integrations/firebase/blogService';
+import { uploadBlogImage } from '@/integrations/firebase/blogService';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/integrations/firebase/config';
 import { COLLECTIONS } from '@/integrations/firebase/types';
@@ -38,23 +36,18 @@ const Profile = () => {
   }, [authLoading, isAuthenticated, userProfile, navigate]);
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files?.length || !user?.uid) return;
-
-    const file = event.target.files[0];
     try {
       setUploading(true);
-
-      const downloadUrl = await uploadProfileAvatar(file, user.uid);
-      if (!downloadUrl) {
-        toast({
-          title: "Upload failed",
-          description: "Failed to upload your profile picture.",
-          variant: "destructive",
-        });
+      
+      if (!event.target.files || event.target.files.length === 0) {
         return;
       }
 
+      const file = event.target.files[0];
+      const downloadUrl = await uploadBlogImage(file);
+
       setAvatarUrl(downloadUrl);
+
       toast({
         title: "Avatar uploaded",
         description: "Your profile picture has been uploaded successfully.",
@@ -120,7 +113,6 @@ const Profile = () => {
 
   return (
     <Layout>
-      <PageHeader title={t('profile.header.title')} subtitle={t('profile.header.subtitle')} />
       <div className="container mx-auto px-4 py-12 max-w-2xl">
         <Card>
           <CardHeader>

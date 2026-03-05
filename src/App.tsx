@@ -21,6 +21,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
 import IndustrialAnalytics from "./pages/IndustrialAnalytics";
+import OutreachOS from "./pages/OutreachOS";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import { BlogAdmin } from "./pages/admin/BlogAdmin";
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/built-by" element={<BuiltBy />} />
             <Route path="/solutions" element={<Solutions />} />
             <Route path="/industrial-analytics" element={<IndustrialAnalytics />} />
+            <Route path="/outreachos" element={<OutreachOS />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />
