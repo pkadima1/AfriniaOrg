@@ -308,6 +308,17 @@
       "subtitle": "Trois lignes de services ciblées — toutes natives Google Workspace"
     },
     "offerings": {
+      "forLabel": "Pour :",
+      "outcomeLabel": "Résultat :",
+      "outreachOS": {
+        "badge": "Produit — Achat unique",
+        "tagline": "Accompagné ou en autonomie · Fonctionne dans votre compte Google",
+        "for": "Consultants indépendants, dirigeants partiels et petites agences en vente B2B",
+        "outcome": "450+ contacts email personnalisés par mois + file DM LinkedIn — ~10 minutes d'effort quotidien",
+        "pricing": "À partir de £397 une fois",
+        "pricingOptional": "Pas de frais mensuels",
+        "cta": "Voir OutreachOS →"
+      },
       "quickWin": {
         "title": "Install QuickWin Automation",
         "timeline": "48–72 heures",
@@ -629,6 +640,121 @@
       "subtitle": "Rejoignez des milliers de créateurs et d'entreprises transformant leur stratégie de contenu.",
       "startTrial": "Commencer l'Essai Gratuit",
       "requestDemo": "Demander une Démo"
+    }
+  },
+  "outreachOSPage": {
+    "hero": {
+      "title": "OutreachOS",
+      "subtitle": "Prospection B2B automatisée qui fonctionne dans votre compte Google. Un seul paiement. Pas d'abonnement."
+    },
+    "badges": {
+      "emails": "✦ 450+ emails/mois",
+      "effort": "✦ ~10 min d'effort quotidien",
+      "payment": "✦ Paiement unique",
+      "account": "✦ Fonctionne dans votre compte Google"
+    },
+    "cta": {
+      "get": "Obtenir OutreachOS",
+      "download": "Télécharger l'Introduction"
+    },
+    "problem": {
+      "title": "La plupart des approches échouent pour l'une de ces deux raisons.",
+      "tooManual": {
+        "title": "Trop manuel",
+        "body": "Vous passez des heures à rechercher des prospects, rédiger des emails individuels, suivre vos contacts. C'est un second emploi. Et ça ne scale toujours pas."
+      },
+      "tooRobotic": {
+        "title": "Trop robotique",
+        "body": "Les campagnes en masse sont ignorées ou marquées comme spam. Les prospects voient que c'est un template. Votre taux de réponse s'effondre. La réputation de votre domaine en souffre."
+      },
+      "solution": "OutreachOS résout les deux. Volume ET personnalisation. Automatiquement."
+    },
+    "howItWorks": {
+      "title": "Six choses qu'OutreachOS fait chaque jour.",
+      "subtitle": "Tout dans votre compte Google. Rien ne quitte votre Drive.",
+      "features": {
+        "1": { "title": "Trouve des Prospects", "desc": "Lance des recherches ciblées par titre de poste, secteur et localisation — en parcourant automatiquement vos combinaisons de profils clients idéaux." },
+        "2": { "title": "Enrichit Chaque Prospect", "desc": "Récupère le nom, l'entreprise, le rôle et l'URL LinkedIn de chaque prospect trouvé — aucune recherche manuelle requise." },
+        "3": { "title": "Rédige des Emails Personnalisés", "desc": "Utilise l'IA pour rédiger un email unique par prospect. Pas un template avec un prénom remplacé — un message véritablement adapté." },
+        "4": { "title": "Envoie via Gmail ou Zoho Mail", "desc": "Les emails partent depuis votre propre adresse professionnelle — via Gmail ou Zoho Mail. Votre domaine, votre réputation, entièrement sous votre contrôle." },
+        "5": { "title": "Prépare les DMs LinkedIn", "desc": "Génère un message LinkedIn correspondant pour chaque prospect — prêt à être relu et envoyé en 10 minutes par jour." },
+        "6": { "title": "Journalise Tout", "desc": "Chaque prospect, email, statut et date de réponse sont suivis automatiquement dans votre salle de contrôle Google Sheet." }
+      }
+    },
+    "numbers": {
+      "title": "Ce qu'OutreachOS livre en 30 jours.",
+      "stats": {
+        "emails": { "value": "450+", "label": "Contacts email envoyés" },
+        "linkedin": { "value": "240+", "label": "DMs LinkedIn préparés" },
+        "effort": { "value": "~10 min", "label": "Effort quotidien requis" },
+        "fees": { "value": "£0", "label": "Frais d'abonnement mensuels" }
+      },
+      "disclaimer": "Basé sur une configuration ICP standard avec 15 prospects par lot quotidien."
+    },
+    "whoItsFor": {
+      "title": "OutreachOS est fait pour vous si...",
+      "items": {
+        "1": "Vous vendez des services B2B d'une valeur de £3 000 ou plus par contrat",
+        "2": "Vous êtes consultant indépendant, dirigeant partiel ou dirigez une agence de 1 à 5 personnes",
+        "3": "Vous utilisez déjà Gmail et Google Workspace",
+        "4": "Vous voulez une prospection régulière sans embaucher d'assistant ou de SDR",
+        "5": "Vous en avez assez de payer £300+/mois pour des outils qui nécessitent encore une équipe",
+        "6": "Vous voulez posséder votre système — pas le louer"
+      },
+      "notForLabel": "Pas pour vous si...",
+      "notFor": {
+        "1": "Vous vendez des produits B2C",
+        "2": "Vous avez besoin d'envoyer 1 000+ emails par jour",
+        "3": "Vous voulez un service entièrement géré (voir NodeMatics Fait-Pour-Vous)"
+      }
+    },
+    "pricing": {
+      "title": "Un système. Trois façons de l'obtenir.",
+      "subtitle": "Pas d'abonnement. Pas d'enfermement. Vous possédez tout.",
+      "oneTimePayment": "paiement unique",
+      "mostPopular": "Le Plus Populaire",
+      "optional": "Optionnel : Maintenance & optimisation mensuelle — £97/mois (corrections prioritaires, révision trimestrielle, support WhatsApp)",
+      "tiers": {
+        "selfInstall": {
+          "name": "Auto-Installation",
+          "price": "£397",
+          "items": {
+            "1": "Fichiers système OutreachOS complets",
+            "2": "Guide de déploiement étape par étape",
+            "3": "Vidéo de configuration guidée",
+            "4": "Support corrections 14 jours"
+          },
+          "cta": "Obtenir Auto-Installation"
+        },
+        "doneWithYou": {
+          "name": "Fait-Avec-Vous",
+          "price": "£797",
+          "items": {
+            "1": "Tout inclus dans Auto-Installation",
+            "2": "Session Zoom de configuration de 90 minutes",
+            "3": "Nous configurons votre ICP en direct avec vous",
+            "4": "Campagne active avant la fin de la session"
+          },
+          "cta": "Obtenir Fait-Avec-Vous"
+        },
+        "doneForYou": {
+          "name": "Fait-Pour-Vous",
+          "price": "£1 497",
+          "items": {
+            "1": "Tout inclus dans Fait-Avec-Vous",
+            "2": "NodeMatics installe et configure tout",
+            "3": "Campagne active avant la remise",
+            "4": "Support prioritaire 30 jours"
+          },
+          "cta": "Obtenir Fait-Pour-Vous"
+        }
+      }
+    },
+    "downloadCta": {
+      "title": "Pas encore prêt ? Lisez d'abord l'introduction complète.",
+      "subtitle": "L'Introduction OutreachOS explique exactement comment fonctionne le système, pour qui il est conçu et ce à quoi s'attendre — en langage clair, sans jargon technique.",
+      "button": "⬇ Télécharger l'Introduction OutreachOS (PDF)",
+      "footnote": "Gratuit. Pas d'email requis. Téléchargement instantané."
     }
   },
   "solutions": {

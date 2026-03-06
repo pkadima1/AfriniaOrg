@@ -1,5 +1,9 @@
-import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import Layout from '../components/Layout';
+import PageHeader from '../components/PageHeader';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
 
 declare global {
   interface Window {
@@ -90,9 +94,8 @@ function generatePDF() {
     doc.addPage(); header('OutreachOS Introduction');
     sf('bold', 24, dark); doc.text('Why most B2B outreach fails', margin, 36);
     doc.setDrawColor(blue[0], blue[1], blue[2]); doc.setLineWidth(0.4); doc.line(margin, 40, margin + 40, 40);
-    sf('normal', 11, dark);
     const p2body = 'Manual outreach doesn\'t scale. Blast campaigns don\'t convert. Most consultants and small agencies are stuck choosing between spending hours researching and writing individual emails, or sending robotic bulk messages that get ignored or flagged as spam.\n\nOutreachOS solves both problems simultaneously — delivering genuine personalisation at consistent volume, running automatically in the background every day.';
-    doc.text(doc.splitTextToSize(p2body, contentW), margin, 54);
+    sf('normal', 11, dark); doc.text(doc.splitTextToSize(p2body, contentW), margin, 54);
     const boxY = 110;
     fillRect(margin, boxY, contentW / 2 - 6, 52, 4, [255, 251, 240]);
     doc.setDrawColor(245, 158, 11); doc.setLineWidth(0.8); doc.line(margin, boxY, margin, boxY + 52);
@@ -213,310 +216,214 @@ function generatePDF() {
   }).catch(() => alert('PDF library failed to load. Please check your internet connection.'));
 }
 
-// ---- SPARK ICON SVG ----
-const SparkIcon = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-    <circle cx="16" cy="16" r="16" fill="#0F172A" />
-    <path d="M16 4L17.5 13.5L26 10L19.5 17L28 18.5L19.5 20L26 26L17.5 19.5L16 28L14.5 19.5L6 26L12.5 20L4 18.5L12.5 17L6 10L14.5 13.5L16 4Z" fill="url(#spark-o)" />
-    <defs>
-      <linearGradient id="spark-o" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#3B82F6" /><stop offset="1" stopColor="#8B5CF6" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
-// ---- CHECK ICON ----
-const CheckIcon = () => (
-  <span style={{ width: 22, height: 22, background: '#10B981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-      <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  </span>
-);
+const FEATURE_KEYS = ['1', '2', '3', '4', '5', '6'] as const;
+const TIER_KEYS = ['selfInstall', 'doneWithYou', 'doneForYou'] as const;
+const TIER_ITEM_KEYS = ['1', '2', '3', '4'] as const;
+const PRICING_FEATURED: Record<string, boolean> = { selfInstall: false, doneWithYou: true, doneForYou: false };
 
 const OutreachOS = () => {
-  const menuRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
-  useEffect(() => {
-    document.title = 'OutreachOS — Automated B2B Outreach by NodeMatics';
-    return () => { document.title = 'NodeMatics'; };
-  }, []);
-
-  const toggleMenu = () => {
-    menuRef.current?.classList.toggle('open');
-  };
+  const STATS_KEYS = ['emails', 'linkedin', 'effort', 'fees'] as const;
+  const FOR_ITEM_KEYS = ['1', '2', '3', '4', '5', '6'] as const;
+  const NOT_FOR_KEYS = ['1', '2', '3'] as const;
 
   return (
-    <div style={{ fontFamily: "'Inter', system-ui, sans-serif", WebkitFontSmoothing: 'antialiased' }}>
+    <Layout>
+      <PageHeader
+        title={t('outreachOSPage.hero.title')}
+        subtitle={t('outreachOSPage.hero.subtitle')}
+      />
 
-      {/* ======== NAV ======== */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, background: 'rgba(15,23,42,0.96)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <SparkIcon />
-            <span style={{ fontSize: 18, fontWeight: 700, background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.3px' }}>NodeMatics</span>
-          </Link>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 32 }} className="outreach-desktop-nav">
-            {[['/', 'Home'], ['/products', 'Products'], ['/services', 'Services'], ['/contact', 'Contact']].map(([href, label]) => (
-              <Link key={href} to={href} style={{ color: 'rgba(255,255,255,0.75)', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>{label}</Link>
+      {/* ======== PROOF BADGES + CTAs ======== */}
+      <section className="py-8 px-6 lg:px-8 bg-dark-surface">
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
+            {(['emails', 'effort', 'payment', 'account'] as const).map(key => (
+              <span key={key} className="px-4 py-1.5 rounded-full text-sm font-semibold bg-accent-blue/10 border border-accent-blue/25 text-white/90">
+                {t(`outreachOSPage.badges.${key}`)}
+              </span>
             ))}
           </div>
-          <a href="#pricing" style={{ background: '#3B82F6', color: '#fff', border: 'none', padding: '10px 22px', borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }} className="outreach-desktop-nav">
-            Get OutreachOS
-          </a>
-          <button onClick={toggleMenu} style={{ display: 'none', flexDirection: 'column', gap: 5, cursor: 'pointer', padding: 4, background: 'none', border: 'none' }} className="outreach-hamburger" aria-label="Open menu">
-            <span style={{ display: 'block', width: 24, height: 2, background: '#fff', borderRadius: 2 }} />
-            <span style={{ display: 'block', width: 24, height: 2, background: '#fff', borderRadius: 2 }} />
-            <span style={{ display: 'block', width: 24, height: 2, background: '#fff', borderRadius: 2 }} />
-          </button>
-        </div>
-        <div ref={menuRef} style={{ background: '#0F172A', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '0 24px', maxHeight: 0, overflow: 'hidden', transition: 'max-height 0.3s ease' }} className="outreach-mobile-menu">
-          {[['/', 'Home'], ['/products', 'Products'], ['/services', 'Services'], ['/contact', 'Contact']].map(([href, label]) => (
-            <Link key={href} to={href} style={{ display: 'block', padding: '12px 0', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', fontSize: 15, fontWeight: 500, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>{label}</Link>
-          ))}
-          <a href="#pricing" style={{ display: 'inline-block', marginTop: 16, marginBottom: 16, background: '#3B82F6', color: '#fff', padding: '10px 22px', borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Get OutreachOS</a>
-        </div>
-      </nav>
-
-      <style>{`
-        @media (max-width: 640px) {
-          .outreach-desktop-nav { display: none !important; }
-          .outreach-hamburger { display: flex !important; }
-        }
-        .outreach-mobile-menu.open { max-height: 320px !important; }
-        .outreach-section-divider { height: 1px; background: rgba(0,0,0,0.06); }
-        html { scroll-behavior: smooth; }
-      `}</style>
-
-      {/* ======== HERO ======== */}
-      <section id="hero" style={{ background: '#0F172A', padding: 'clamp(80px,12vw,120px) 24px 80px', textAlign: 'center', scrollMarginTop: 68 }}>
-        <div style={{ maxWidth: 800, margin: '0 auto' }}>
-          <h1 style={{ fontSize: 'clamp(2.2rem,6vw,3.8rem)', fontWeight: 800, color: '#fff', lineHeight: 1.15, letterSpacing: '-1px', marginBottom: 24 }}>
-            Your outreach runs while you sleep.
-          </h1>
-          <p style={{ fontSize: 'clamp(1rem,2.5vw,1.2rem)', color: '#94A3B8', maxWidth: 640, margin: '0 auto 32px', lineHeight: 1.7 }}>
-            OutreachOS finds your prospects, writes personalised emails, and fills your pipeline — automatically. Runs in your Google account. One payment. No subscriptions.
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 40 }}>
-            {['✦ 450+ emails/month', '✦ ~10 min daily effort', '✦ One-time payment'].map(b => (
-              <span key={b} style={{ background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.3)', color: 'rgba(255,255,255,0.9)', padding: '8px 18px', borderRadius: 50, fontSize: 13, fontWeight: 600 }}>{b}</span>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="#pricing" style={{ background: '#3B82F6', color: '#fff', padding: '16px 32px', borderRadius: 12, fontSize: 16, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 20px rgba(59,130,246,0.35)' }}>
-              Get OutreachOS
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#pricing" className="apple-button bg-accent-blue hover:bg-accent-blue/90 shadow-lg shadow-accent-blue/20">
+              {t('outreachOSPage.cta.get')}
             </a>
-            <button onClick={generatePDF} style={{ background: 'transparent', color: '#fff', border: '2px solid rgba(255,255,255,0.35)', padding: '14px 30px', borderRadius: 12, fontSize: 16, fontWeight: 600, cursor: 'pointer' }}>
-              Download the Introduction
+            <button
+              onClick={generatePDF}
+              className="px-8 py-4 border-2 border-white/25 text-white font-semibold rounded-2xl hover:bg-white/10 hover:border-accent-purple/50 transition-all duration-300"
+            >
+              {t('outreachOSPage.cta.download')}
             </button>
           </div>
         </div>
       </section>
 
       {/* ======== PROBLEM ======== */}
-      <section id="problem" style={{ background: '#fff', padding: '96px 24px', scrollMarginTop: 68 }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(1.6rem,4vw,2.4rem)', fontWeight: 800, color: '#1E293B', textAlign: 'center', marginBottom: 56, letterSpacing: '-0.5px' }}>
-            Most outreach fails for one of two reasons.
+      <section className="py-20 px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-white">
+            {t('outreachOSPage.problem.title')}
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 28, marginBottom: 48 }}>
-            {[
-              { title: 'Too manual', body: 'You spend hours researching prospects, writing individual emails, tracking who you contacted. It\'s a second job. And it still doesn\'t scale.' },
-              { title: 'Too robotic', body: 'Blast campaigns get ignored or flagged as spam. Prospects can tell it\'s a template. Your reply rate collapses. Your domain reputation suffers.' },
-            ].map(c => (
-              <div key={c.title} style={{ borderLeft: '4px solid #F59E0B', padding: '28px 28px 28px 24px', background: '#FFFBF0', borderRadius: '0 12px 12px 0' }}>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#1E293B', marginBottom: 12 }}>{c.title}</h3>
-                <p style={{ color: '#64748B', lineHeight: 1.7, fontSize: '0.95rem' }}>{c.body}</p>
-              </div>
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            {(['tooManual', 'tooRobotic'] as const).map(key => (
+              <Card key={key} className="p-8 bg-dark-card border-l-4 border-l-amber-500 border-t-white/10 border-r-white/10 border-b-white/10">
+                <h3 className="text-xl font-bold text-white mb-3">{t(`outreachOSPage.problem.${key}.title`)}</h3>
+                <p className="text-text-secondary leading-relaxed">{t(`outreachOSPage.problem.${key}.body`)}</p>
+              </Card>
             ))}
           </div>
-          <p style={{ textAlign: 'center', fontSize: '1.15rem', fontWeight: 700, color: '#1E293B' }}>
-            OutreachOS solves both. Volume AND personalisation. Automatically.
+          <p className="text-center text-xl font-bold text-white">
+            {t('outreachOSPage.problem.solution')}
           </p>
         </div>
       </section>
 
-      <div className="outreach-section-divider" />
-
       {/* ======== HOW IT WORKS ======== */}
-      <section id="how-it-works" style={{ background: '#F8FAFC', padding: '96px 24px', scrollMarginTop: 68 }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(1.6rem,4vw,2.4rem)', fontWeight: 800, color: '#1E293B', textAlign: 'center', marginBottom: 12, letterSpacing: '-0.5px' }}>
-            Six things OutreachOS does every day.
+      <section id="how-it-works" className="py-20 px-6 lg:px-8 bg-dark-surface scroll-mt-20">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-white">
+            {t('outreachOSPage.howItWorks.title')}
           </h2>
-          <p style={{ textAlign: 'center', color: '#64748B', marginBottom: 56, fontSize: '1rem' }}>
-            All inside your Google account. Nothing leaves your Drive.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 24 }}>
-            {[
-              { n: '1', title: 'Finds Prospects', desc: 'Runs targeted searches by job title, industry, and location — automatically cycling through your ideal customer profile combinations.' },
-              { n: '2', title: 'Enriches Each Lead', desc: 'Captures name, company, role, and LinkedIn URL for every prospect found — no manual research required.' },
-              { n: '3', title: 'Writes Personalised Emails', desc: 'Uses AI to write a unique email for each prospect. Not a template with a name swapped in — a genuinely tailored message based on their role and company.' },
-              { n: '4', title: 'Sends via Gmail or Zoho Mail', desc: 'Emails go out from your own dedicated business address — via Gmail or Zoho Mail. Your domain, your reputation, fully under your control.' },
-              { n: '5', title: 'Drafts LinkedIn DMs', desc: 'Generates a matching LinkedIn message for each prospect — ready for you to review and send in a 10-minute daily queue.' },
-              { n: '6', title: 'Logs Everything', desc: 'Every prospect, email, status, and reply date tracked automatically in your Google Sheet control room.' },
-            ].map(f => (
-              <div key={f.n} style={{ background: '#fff', borderRadius: 16, padding: 28, border: '1px solid rgba(0,0,0,0.06)', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
-                <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#3B82F6', lineHeight: 1, marginBottom: 12 }}>{f.n}</div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#1E293B', marginBottom: 8 }}>{f.title}</h3>
-                <p style={{ fontSize: '0.875rem', color: '#64748B', lineHeight: 1.65 }}>{f.desc}</p>
-              </div>
+          <p className="text-center text-text-secondary mb-16">{t('outreachOSPage.howItWorks.subtitle')}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {FEATURE_KEYS.map(n => (
+              <Card key={n} className="p-6 bg-dark-card border-white/10 card-hover">
+                <div className="text-4xl font-black text-accent-blue leading-none mb-3">{n}</div>
+                <h3 className="text-base font-bold text-white mb-2">{t(`outreachOSPage.howItWorks.features.${n}.title`)}</h3>
+                <p className="text-sm text-text-secondary leading-relaxed">{t(`outreachOSPage.howItWorks.features.${n}.desc`)}</p>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
       {/* ======== NUMBERS ======== */}
-      <section id="numbers" style={{ background: '#0F172A', padding: '96px 24px', textAlign: 'center', scrollMarginTop: 68 }}>
-        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(1.6rem,4vw,2.4rem)', fontWeight: 800, color: '#fff', textAlign: 'center', marginBottom: 64, letterSpacing: '-0.5px' }}>
-            What OutreachOS delivers in 30 days.
+      <section id="numbers" className="py-20 px-6 lg:px-8 scroll-mt-20">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-16 text-white">
+            {t('outreachOSPage.numbers.title')}
           </h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 32, marginBottom: 32 }}>
-            {[
-              { value: '450+', label: 'Email touches sent' },
-              { value: '240+', label: 'LinkedIn DMs drafted' },
-              { value: '~10 min', label: 'Daily effort required' },
-              { value: '£0', label: 'Monthly subscription fees' },
-            ].map(s => (
-              <div key={s.label}>
-                <div style={{ fontSize: 'clamp(2.2rem,5vw,3.2rem)', fontWeight: 900, color: '#fff', lineHeight: 1, marginBottom: 8 }}>{s.value}</div>
-                <div style={{ fontSize: '0.8rem', color: '#94A3B8', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{s.label}</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            {STATS_KEYS.map(key => (
+              <div key={key}>
+                <div className="text-4xl md:text-5xl font-black text-white mb-2">{t(`outreachOSPage.numbers.stats.${key}.value`)}</div>
+                <div className="text-xs text-text-secondary uppercase tracking-wide font-medium">{t(`outreachOSPage.numbers.stats.${key}.label`)}</div>
               </div>
             ))}
           </div>
-          <p style={{ fontSize: '0.8rem', color: '#64748B' }}>Based on standard ICP configuration with 15 prospects per daily batch.</p>
+          <p className="text-sm text-text-secondary">{t('outreachOSPage.numbers.disclaimer')}</p>
         </div>
       </section>
 
       {/* ======== WHO IT'S FOR ======== */}
-      <section id="who-its-for" style={{ background: '#fff', padding: '96px 24px', scrollMarginTop: 68 }}>
-        <div style={{ maxWidth: 700, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(1.6rem,4vw,2.4rem)', fontWeight: 800, color: '#1E293B', textAlign: 'center', marginBottom: 48, letterSpacing: '-0.5px' }}>
-            OutreachOS is for you if...
+      <section id="who-its-for" className="py-20 px-6 lg:px-8 bg-dark-surface scroll-mt-20">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
+            {t('outreachOSPage.whoItsFor.title')}
           </h2>
-          <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: 16, marginBottom: 48 }}>
-            {[
-              'You sell B2B services worth £3,000 or more per deal',
-              'You\'re a solo consultant, fractional executive, or run a 1–5 person agency',
-              'You use Gmail and Google Workspace already',
-              'You want consistent outreach without hiring a VA or SDR',
-              'You\'re tired of paying £300+/month for tools that still need a team to run',
-              'You want to own your system — not rent it',
-            ].map(item => (
-              <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, fontSize: '1rem', color: '#1E293B', fontWeight: 500 }}>
-                <CheckIcon />
-                {item}
+          <ul className="space-y-4 mb-10">
+            {FOR_ITEM_KEYS.map(key => (
+              <li key={key} className="flex items-start gap-3 text-white font-medium">
+                <span className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                {t(`outreachOSPage.whoItsFor.items.${key}`)}
               </li>
             ))}
           </ul>
-          <div style={{ background: '#F8FAFC', borderRadius: 16, padding: '28px 32px' }}>
-            <h3 style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#64748B', marginBottom: 16 }}>Not for you if...</h3>
-            <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: 10 }}>
-              {['You sell B2C products', 'You need to send 1,000+ emails per day', 'You want a fully managed service (see NodeMatics Done-For-You)'].map(item => (
-                <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, fontSize: '0.9rem', color: '#64748B' }}>
-                  <span style={{ fontWeight: 700 }}>✗</span>{item}
+          <Card className="p-6 bg-dark-card border-white/10">
+            <p className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-4">{t('outreachOSPage.whoItsFor.notForLabel')}</p>
+            <ul className="space-y-2">
+              {NOT_FOR_KEYS.map(key => (
+                <li key={key} className="flex items-start gap-3 text-sm text-text-secondary">
+                  <span className="font-bold text-white/40">✗</span>{t(`outreachOSPage.whoItsFor.notFor.${key}`)}
                 </li>
               ))}
             </ul>
-          </div>
+          </Card>
         </div>
       </section>
 
-      <div className="outreach-section-divider" />
-
       {/* ======== PRICING ======== */}
-      <section id="pricing" style={{ background: '#F8FAFC', padding: '96px 24px', scrollMarginTop: 68 }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(1.6rem,4vw,2.4rem)', fontWeight: 800, color: '#1E293B', textAlign: 'center', marginBottom: 12, letterSpacing: '-0.5px' }}>
-            One system. Three ways to get it.
+      <section id="pricing" className="py-20 px-6 lg:px-8 scroll-mt-20">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-3 text-white">
+            {t('outreachOSPage.pricing.title')}
           </h2>
-          <p style={{ textAlign: 'center', color: '#64748B', marginBottom: 64, fontSize: '0.95rem' }}>
-            No subscriptions. No lock-in. You own everything.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 24, alignItems: 'start', maxWidth: 980, margin: '0 auto 32px' }}>
-            {[
-              { name: 'Self-Install', price: '£397', featured: false, items: ['Complete OutreachOS system files', 'Step-by-step deployment guide', 'Setup walkthrough video', '14-day bug-fix support'], cta: 'Get Self-Install' },
-              { name: 'Done-With-You', price: '£797', featured: true, items: ['Everything in Self-Install', '90-minute Zoom setup session', 'We configure your ICP live with you', 'Campaign live before session ends'], cta: 'Get Done-With-You' },
-              { name: 'Done-For-You', price: '£1,497', featured: false, items: ['Everything in Done-With-You', 'NodeMatics installs and configures everything', 'Campaign running before handover', '30-day priority support'], cta: 'Get Done-For-You' },
-            ].map(tier => (
-              <div key={tier.name} style={{ position: 'relative', background: '#fff', borderRadius: 20, padding: 32, border: tier.featured ? '2px solid #3B82F6' : '1px solid rgba(0,0,0,0.08)', boxShadow: tier.featured ? '0 8px 40px rgba(59,130,246,0.18)' : '0 2px 12px rgba(0,0,0,0.04)', transform: tier.featured ? 'scale(1.03)' : 'none' }}>
-                {tier.featured && (
-                  <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: '#3B82F6', color: '#fff', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, padding: '5px 16px', borderRadius: 50, whiteSpace: 'nowrap' }}>
-                    Most Popular
-                  </div>
-                )}
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1E293B', marginBottom: 8 }}>{tier.name}</h3>
-                <div style={{ fontSize: '2.2rem', fontWeight: 900, color: '#1E293B', lineHeight: 1, marginBottom: 4 }}>{tier.price}</div>
-                <div style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: 24 }}>one-time payment</div>
-                <ul style={{ listStyle: 'none', padding: 0, display: 'grid', gap: 10, marginBottom: 28 }}>
-                  {tier.items.map(item => (
-                    <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontSize: '0.875rem', color: '#475569', lineHeight: 1.5 }}>
-                      <span style={{ width: 6, height: 6, background: '#3B82F6', borderRadius: '50%', flexShrink: 0, marginTop: 6 }} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/contact" style={{ display: 'block', width: '100%', textAlign: 'center', padding: tier.featured ? '14px 24px' : '12px 24px', borderRadius: 10, fontSize: 15, fontWeight: 700, textDecoration: 'none', background: tier.featured ? '#3B82F6' : 'transparent', color: tier.featured ? '#fff' : '#3B82F6', border: tier.featured ? 'none' : '2px solid #3B82F6', boxSizing: 'border-box' }}>
-                  {tier.cta}
-                </Link>
-              </div>
-            ))}
+          <p className="text-center text-text-secondary mb-16">{t('outreachOSPage.pricing.subtitle')}</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start mb-8">
+            {TIER_KEYS.map(tierKey => {
+              const featured = PRICING_FEATURED[tierKey];
+              return (
+                <Card
+                  key={tierKey}
+                  className={`p-8 flex flex-col relative ${
+                    featured
+                      ? 'bg-dark-card border-accent-blue/60 shadow-xl shadow-accent-blue/10 scale-[1.03]'
+                      : 'bg-dark-card border-white/10'
+                  }`}
+                >
+                  {featured && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent-blue text-white text-xs px-3 py-1 rounded-full">
+                      {t('outreachOSPage.pricing.mostPopular')}
+                    </Badge>
+                  )}
+                  <h3 className="text-lg font-bold text-white mb-2">{t(`outreachOSPage.pricing.tiers.${tierKey}.name`)}</h3>
+                  <div className="text-4xl font-black text-white mb-1">{t(`outreachOSPage.pricing.tiers.${tierKey}.price`)}</div>
+                  <div className="text-xs text-text-secondary mb-6">{t('outreachOSPage.pricing.oneTimePayment')}</div>
+                  <ul className="space-y-2.5 mb-8 flex-grow">
+                    {TIER_ITEM_KEYS.map(itemKey => (
+                      <li key={itemKey} className="flex items-start gap-2.5 text-sm text-text-secondary">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent-blue flex-shrink-0 mt-1.5" />
+                        {t(`outreachOSPage.pricing.tiers.${tierKey}.items.${itemKey}`)}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    to="/contact"
+                    className={`text-center py-3 px-6 rounded-xl text-sm font-bold transition-all duration-200 ${
+                      featured
+                        ? 'bg-accent-blue text-white hover:bg-accent-blue/90'
+                        : 'border border-accent-blue text-accent-blue hover:bg-accent-blue/10'
+                    }`}
+                  >
+                    {t(`outreachOSPage.pricing.tiers.${tierKey}.cta`)}
+                  </Link>
+                </Card>
+              );
+            })}
           </div>
-          <p style={{ textAlign: 'center', fontSize: '0.875rem', color: '#64748B', maxWidth: 560, margin: '0 auto' }}>
-            Optional: Monthly maintenance &amp; optimisation — <strong>£97/month</strong> (priority fixes, quarterly review, WhatsApp support)
+
+          <p className="text-center text-sm text-text-secondary">
+            {t('outreachOSPage.pricing.optional')}
           </p>
         </div>
       </section>
 
       {/* ======== DOWNLOAD CTA ======== */}
-      <section id="download" style={{ background: '#0F172A', padding: '96px 24px', textAlign: 'center', scrollMarginTop: 68 }}>
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 'clamp(1.6rem,4vw,2.4rem)', fontWeight: 800, color: '#fff', marginBottom: 24, letterSpacing: '-0.5px' }}>
-            Not ready to buy? Read the full introduction first.
+      <section id="download" className="py-20 px-6 lg:px-8 bg-dark-surface scroll-mt-20">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            {t('outreachOSPage.downloadCta.title')}
           </h2>
-          <p style={{ color: '#94A3B8', maxWidth: 520, margin: '0 auto 40px', lineHeight: 1.7, fontSize: '1rem' }}>
-            The OutreachOS Introduction covers exactly how the system works, who it's designed for, and what to expect — in plain language, no technical jargon.
+          <p className="text-text-secondary mb-10 leading-relaxed">
+            {t('outreachOSPage.downloadCta.subtitle')}
           </p>
-          <button onClick={generatePDF} style={{ background: '#10B981', color: '#fff', border: 'none', padding: '18px 40px', borderRadius: 14, fontSize: 17, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 20px rgba(16,185,129,0.35)' }}>
-            ⬇ Download the OutreachOS Introduction (PDF)
+          <button
+            onClick={generatePDF}
+            className="apple-button bg-green-500 hover:bg-green-600 shadow-lg shadow-green-500/20 w-full sm:w-auto"
+          >
+            {t('outreachOSPage.downloadCta.button')}
           </button>
-          <p style={{ fontSize: '0.8rem', color: '#64748B', marginTop: 16 }}>Free. No email required. Instant download.</p>
+          <p className="text-xs text-text-secondary mt-4">{t('outreachOSPage.downloadCta.footnote')}</p>
         </div>
       </section>
 
-      {/* ======== FOOTER ======== */}
-      <footer id="footer" style={{ background: '#1E293B', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '48px 24px 32px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 24, marginBottom: 28 }}>
-          <div>
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-              <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                <circle cx="16" cy="16" r="16" fill="#1E293B" />
-                <path d="M16 4L17.5 13.5L26 10L19.5 17L28 18.5L19.5 20L26 26L17.5 19.5L16 28L14.5 19.5L6 26L12.5 20L4 18.5L12.5 17L6 10L14.5 13.5L16 4Z" fill="url(#spark-f)" />
-                <defs>
-                  <linearGradient id="spark-f" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#3B82F6" /><stop offset="1" stopColor="#8B5CF6" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <span style={{ fontSize: 16, fontWeight: 700, background: 'linear-gradient(135deg,#3B82F6,#8B5CF6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>NodeMatics</span>
-            </Link>
-            <p style={{ fontSize: '0.8rem', color: '#64748B', marginTop: 8 }}>Systems that give time back.</p>
-          </div>
-          <nav style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center' }}>
-            {[['/', 'Home'], ['/products', 'Products'], ['/services', 'Services'], ['/contact', 'Contact'], ['/privacy', 'Privacy Policy']].map(([href, label]) => (
-              <Link key={href} to={href} style={{ color: '#94A3B8', textDecoration: 'none', fontSize: '0.85rem' }}>{label}</Link>
-            ))}
-          </nav>
-          <p style={{ fontSize: '0.8rem', color: '#64748B', textAlign: 'right' }}>A NodeMatics product — nodematics.com</p>
-        </div>
-        <div style={{ maxWidth: 1100, margin: '0 auto', paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)', textAlign: 'center', fontSize: '0.78rem', color: '#64748B' }}>
-          © 2026 NodeMatics. All rights reserved.
-        </div>
-      </footer>
-
-    </div>
+    </Layout>
   );
 };
 

@@ -308,6 +308,17 @@
       "subtitle": "Three focused service lines — all Google Workspace-native"
     },
     "offerings": {
+      "forLabel": "For:",
+      "outcomeLabel": "Outcome:",
+      "outreachOS": {
+        "badge": "Product — One-time purchase",
+        "tagline": "Done-with-you or self-install · Runs in your Google account",
+        "for": "Solo consultants, fractional executives, and small agencies doing B2B sales",
+        "outcome": "450+ personalised email touches per month + LinkedIn DM queue — ~10 minutes of daily effort",
+        "pricing": "From £397 one-time",
+        "pricingOptional": "No monthly fees",
+        "cta": "See OutreachOS →"
+      },
       "quickWin": {
         "title": "QuickWin Automation Install",
         "timeline": "48–72 hours",
@@ -629,6 +640,121 @@
       "subtitle": "Join thousands of creators and businesses transforming their content strategy.",
       "startTrial": "Start Free Trial",
       "requestDemo": "Request Demo"
+    }
+  },
+  "outreachOSPage": {
+    "hero": {
+      "title": "OutreachOS",
+      "subtitle": "Automated B2B outreach that runs inside your Google account. One payment. No subscriptions."
+    },
+    "badges": {
+      "emails": "✦ 450+ emails/month",
+      "effort": "✦ ~10 min daily effort",
+      "payment": "✦ One-time payment",
+      "account": "✦ Runs in your Google account"
+    },
+    "cta": {
+      "get": "Get OutreachOS",
+      "download": "Download the Introduction"
+    },
+    "problem": {
+      "title": "Most outreach fails for one of two reasons.",
+      "tooManual": {
+        "title": "Too manual",
+        "body": "You spend hours researching prospects, writing individual emails, tracking who you contacted. It's a second job. And it still doesn't scale."
+      },
+      "tooRobotic": {
+        "title": "Too robotic",
+        "body": "Blast campaigns get ignored or flagged as spam. Prospects can tell it's a template. Your reply rate collapses. Your domain reputation suffers."
+      },
+      "solution": "OutreachOS solves both. Volume AND personalisation. Automatically."
+    },
+    "howItWorks": {
+      "title": "Six things OutreachOS does every day.",
+      "subtitle": "All inside your Google account. Nothing leaves your Drive.",
+      "features": {
+        "1": { "title": "Finds Prospects", "desc": "Runs targeted searches by job title, industry, and location — automatically cycling through your ideal customer profile combinations." },
+        "2": { "title": "Enriches Each Lead", "desc": "Captures name, company, role, and LinkedIn URL for every prospect found — no manual research required." },
+        "3": { "title": "Writes Personalised Emails", "desc": "Uses AI to write a unique email for each prospect. Not a template with a name swapped in — a genuinely tailored message." },
+        "4": { "title": "Sends via Gmail or Zoho Mail", "desc": "Emails go out from your own dedicated business address — via Gmail or Zoho Mail. Your domain, your reputation, fully under your control." },
+        "5": { "title": "Drafts LinkedIn DMs", "desc": "Generates a matching LinkedIn message for each prospect — ready for you to review and send in a 10-minute daily queue." },
+        "6": { "title": "Logs Everything", "desc": "Every prospect, email, status, and reply date tracked automatically in your Google Sheet control room." }
+      }
+    },
+    "numbers": {
+      "title": "What OutreachOS delivers in 30 days.",
+      "stats": {
+        "emails": { "value": "450+", "label": "Email touches sent" },
+        "linkedin": { "value": "240+", "label": "LinkedIn DMs drafted" },
+        "effort": { "value": "~10 min", "label": "Daily effort required" },
+        "fees": { "value": "£0", "label": "Monthly subscription fees" }
+      },
+      "disclaimer": "Based on standard ICP configuration with 15 prospects per daily batch."
+    },
+    "whoItsFor": {
+      "title": "OutreachOS is for you if...",
+      "items": {
+        "1": "You sell B2B services worth £3,000 or more per deal",
+        "2": "You're a solo consultant, fractional executive, or run a 1–5 person agency",
+        "3": "You use Gmail and Google Workspace already",
+        "4": "You want consistent outreach without hiring a VA or SDR",
+        "5": "You're tired of paying £300+/month for tools that still need a team to run",
+        "6": "You want to own your system — not rent it"
+      },
+      "notForLabel": "Not for you if...",
+      "notFor": {
+        "1": "You sell B2C products",
+        "2": "You need to send 1,000+ emails per day",
+        "3": "You want a fully managed service (see NodeMatics Done-For-You)"
+      }
+    },
+    "pricing": {
+      "title": "One system. Three ways to get it.",
+      "subtitle": "No subscriptions. No lock-in. You own everything.",
+      "oneTimePayment": "one-time payment",
+      "mostPopular": "Most Popular",
+      "optional": "Optional: Monthly maintenance & optimisation — £97/month (priority fixes, quarterly review, WhatsApp support)",
+      "tiers": {
+        "selfInstall": {
+          "name": "Self-Install",
+          "price": "£397",
+          "items": {
+            "1": "Complete OutreachOS system files",
+            "2": "Step-by-step deployment guide",
+            "3": "Setup walkthrough video",
+            "4": "14-day bug-fix support"
+          },
+          "cta": "Get Self-Install"
+        },
+        "doneWithYou": {
+          "name": "Done-With-You",
+          "price": "£797",
+          "items": {
+            "1": "Everything in Self-Install",
+            "2": "90-minute Zoom setup session",
+            "3": "We configure your ICP live with you",
+            "4": "Campaign live before session ends"
+          },
+          "cta": "Get Done-With-You"
+        },
+        "doneForYou": {
+          "name": "Done-For-You",
+          "price": "£1,497",
+          "items": {
+            "1": "Everything in Done-With-You",
+            "2": "NodeMatics installs and configures everything",
+            "3": "Campaign running before handover",
+            "4": "30-day priority support"
+          },
+          "cta": "Get Done-For-You"
+        }
+      }
+    },
+    "downloadCta": {
+      "title": "Not ready to buy? Read the full introduction first.",
+      "subtitle": "The OutreachOS Introduction covers exactly how the system works, who it's designed for, and what to expect — in plain language, no technical jargon.",
+      "button": "⬇ Download the OutreachOS Introduction (PDF)",
+      "footnote": "Free. No email required. Instant download."
     }
   },
   "solutions": {

@@ -10,7 +10,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Zap, LayoutDashboard, FileText } from 'lucide-react';
+import { Zap, LayoutDashboard, FileText, Mail } from 'lucide-react';
 
 const OFFERING_ICONS = {
   quickWin: Zap,
@@ -126,11 +126,11 @@ const Services = () => {
                     {t(`${base}.timeline`)}
                   </p>
                   <p className="text-text-secondary text-sm mb-2">
-                    <span className="font-medium text-white/90">For: </span>
+                    <span className="font-medium text-white/90">{t('services.offerings.forLabel')} </span>
                     {t(`${base}.for`)}
                   </p>
                   <p className="text-text-secondary text-sm mb-4">
-                    <span className="font-medium text-white/90">Outcome: </span>
+                    <span className="font-medium text-white/90">{t('services.offerings.outcomeLabel')} </span>
                     {t(`${base}.outcome`)}
                   </p>
                   <p className="text-xs font-medium text-white/80 mb-2">{t(`${base}.includesLabel`)}</p>
@@ -149,6 +149,48 @@ const Services = () => {
                 </Card>
               );
             })}
+          </div>
+
+          {/* OutreachOS — Product card */}
+          <div className="mt-8">
+            <Card className="p-8 bg-dark-card border-accent-blue/30 card-hover">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-8">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-accent-blue/20 rounded-2xl flex items-center justify-center mb-4 lg:mb-0">
+                    <Mail className="text-accent-blue" size={24} />
+                  </div>
+                </div>
+                <div className="flex-grow">
+                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                    <h2 className="text-2xl font-semibold">OutreachOS</h2>
+                    <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-accent-blue/15 border border-accent-blue/30 text-accent-blue">
+                      {t('services.offerings.outreachOS.badge')}
+                    </span>
+                  </div>
+                  <p className="text-sm text-text-secondary/90 mb-3 font-medium">{t('services.offerings.outreachOS.tagline')}</p>
+                  <p className="text-text-secondary text-sm mb-1">
+                    <span className="font-medium text-white/90">{t('services.offerings.forLabel')} </span>
+                    {t('services.offerings.outreachOS.for')}
+                  </p>
+                  <p className="text-text-secondary text-sm">
+                    <span className="font-medium text-white/90">{t('services.offerings.outcomeLabel')} </span>
+                    {t('services.offerings.outreachOS.outcome')}
+                  </p>
+                </div>
+                <div className="flex-shrink-0 flex flex-col sm:flex-row lg:flex-col gap-3 lg:text-right">
+                  <div className="lg:text-right mb-1">
+                    <p className="text-white font-medium">{t('services.offerings.outreachOS.pricing')}</p>
+                    <p className="text-sm text-text-secondary">{t('services.offerings.outreachOS.pricingOptional')}</p>
+                  </div>
+                  <Link
+                    to="/outreachos"
+                    className="apple-button bg-accent-blue hover:bg-accent-blue/90 text-center whitespace-nowrap"
+                  >
+                    {t('services.offerings.outreachOS.cta')}
+                  </Link>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </section>
