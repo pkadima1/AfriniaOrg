@@ -1,12 +1,12 @@
 {
   "firestore": [
     {
-      "database": "(default)",
+      "database": "afrinia",
       "rules": "firestore.rules",
       "indexes": "firestore.indexes.json"
     },
     {
-      "database": "afrinia",
+      "database": "(default)",
       "rules": "firestore.rules",
       "indexes": "firestore.indexes.json"
     }

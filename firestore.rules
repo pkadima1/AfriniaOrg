@@ -29,17 +29,16 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // ── Bilingual blog post rules (shared macro) ──────────────────────────
-    // Applies identically to posts_en and posts_fr.
-    // Public: read published posts only.
-    // Contributors/admins: full read + write.
-    // Delete: admin only.
+    // ── Bilingual blog post rules ─────────────────────────────────────────
+    // Public read pattern: using `allow read` with resource.data.status lets
+    // Firestore permit a query ONLY when the query itself filters to published
+    // (e.g. where('status','==','published')). The query in blogService.ts always
+    // includes that filter for public routes. Contributors bypass via isContributor().
+    // This replaces the broken allow list + request.query.limit pattern which
+    // evaluated to false when no explicit limit() was set in the query.
 
     match /posts_en/{postId} {
-      allow get:    if resource.data.status == 'published'
-                    || isContributor();
-      allow list:   if isContributor()
-                    || (request.query.limit <= 50);
+      allow read:   if resource.data.status == 'published' || isContributor();
       allow create: if isContributor();
       allow update: if isAdmin()
                     || isContributor()
@@ -48,10 +47,7 @@ service cloud.firestore {
     }
 
     match /posts_fr/{postId} {
-      allow get:    if resource.data.status == 'published'
-                    || isContributor();
-      allow list:   if isContributor()
-                    || (request.query.limit <= 50);
+      allow read:   if resource.data.status == 'published' || isContributor();
       allow create: if isContributor();
       allow update: if isAdmin()
                     || isContributor()
@@ -61,10 +57,7 @@ service cloud.firestore {
 
     // ── Legacy blog_posts collection (read-only for migration reference) ──
     match /blog_posts/{postId} {
-      allow get:    if resource.data.status == 'published'
-                    || isContributor();
-      allow list:   if isContributor()
-                    || (request.query.limit <= 50);
+      allow read:   if resource.data.status == 'published' || isContributor();
       allow create: if isContributor();
       allow update: if isAdmin()
                     || isContributor()
@@ -73,25 +66,19 @@ service cloud.firestore {
     }
 
     // ── Audio episodes (bilingual) ────────────────────────────────────────
-    // Public: read published episodes only.
-    // Contributors/admins: full read + write.
-    // Delete: admin only.
+    // Same pattern as blog posts: public can list/get published episodes;
+    // contributors see all. audioService.ts always queries with
+    // where('status','==','published') so the rule is satisfied.
 
     match /audio_en/{episodeId} {
-      allow get:    if resource.data.status == 'published'
-                    || isContributor();
-      allow list:   if isContributor()
-                    || (request.query.limit <= 20);
+      allow read:   if resource.data.status == 'published' || isContributor();
       allow create: if isContributor();
       allow update: if isAdmin() || isContributor();
       allow delete: if isAdmin();
     }
 
     match /audio_fr/{episodeId} {
-      allow get:    if resource.data.status == 'published'
-                    || isContributor();
-      allow list:   if isContributor()
-                    || (request.query.limit <= 20);
+      allow read:   if resource.data.status == 'published' || isContributor();
       allow create: if isContributor();
       allow update: if isAdmin() || isContributor();
       allow delete: if isAdmin();
@@ -141,7 +128,7 @@ service cloud.firestore {
       allow update: if false;
     }
 
-    // ── Deny everything else ──────────────────────────────────────────────
+    // ── Deny everything else (catch-all) ─────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }
