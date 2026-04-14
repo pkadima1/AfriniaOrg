@@ -1,20 +1,20 @@
-import React from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { BlogPostList } from '@/components/admin/BlogPostList';
 import { BlogPostEditor } from '@/components/admin/BlogPostEditor';
 import { UserManagement } from '@/components/admin/UserManagement';
+import { AudioEpisodeList } from '@/components/admin/AudioEpisodeList';
+import { AudioUpload } from '@/components/admin/AudioUpload';
 import { ContributorRoute, AdminRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, FileText, Settings, Users, Crown, Edit3 } from "lucide-react";
+import { ArrowLeft, FileText, Settings, Users, Crown, Edit3, Mic } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { userProfile, isAdmin, isContributor } = useAuth();
+  const { userProfile, isAdmin } = useAuth();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -43,7 +43,7 @@ const AdminDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/blog')}>
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/admin/blog?lang=en')}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="w-5 h-5" />
@@ -88,6 +88,27 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
 
+        <Card
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => navigate('/admin/audio')}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Mic className="w-5 h-5" />
+              Audio Episodes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Upload and manage bilingual audio episodes. Files go to Firebase
+              Storage; metadata to Firestore.
+            </p>
+            <Button className="mt-3" variant="outline" size="sm">
+              Manage Audio
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card className={isAdmin() ? "cursor-pointer hover:shadow-lg transition-shadow" : "opacity-50"}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -98,7 +119,7 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">
-              {isAdmin() 
+              {isAdmin()
                 ? 'Configure site settings and preferences. (Coming soon)'
                 : 'Only administrators can modify settings.'
               }
@@ -112,15 +133,24 @@ const AdminDashboard = () => {
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4">
-            <Button onClick={() => navigate('/admin/blog/new')}>
-              Create New Post
+          <div className="flex flex-wrap gap-4">
+            <Button onClick={() => navigate('/admin/blog/new?lang=en')}>
+              Create New Post (EN)
             </Button>
-            <Button variant="outline" onClick={() => navigate('/admin/blog')}>
+            <Button onClick={() => navigate('/admin/blog/new?lang=fr')}>
+              Create New Post (FR)
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/blog?lang=en')}>
               View All Posts
             </Button>
-            <Button variant="outline" onClick={() => navigate('/blog')}>
+            <Button variant="outline" onClick={() => window.open('/en/blog', '_blank')}>
               View Blog
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/audio/new?lang=en')}>
+              Upload Audio (EN)
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/audio/new?lang=fr')}>
+              Upload Audio (FR)
             </Button>
           </div>
         </CardContent>
@@ -174,6 +204,24 @@ export const BlogAdmin = () => {
           </AdminRoute>
         } 
       />
+      {/* Audio management routes */}
+      <Route
+        path="/audio"
+        element={
+          <ContributorRoute>
+            <AudioEpisodeList />
+          </ContributorRoute>
+        }
+      />
+      <Route
+        path="/audio/new"
+        element={
+          <ContributorRoute>
+            <AudioUpload />
+          </ContributorRoute>
+        }
+      />
+
       <Route path="*" element={<Navigate to="/admin" replace />} />
     </Routes>
   );

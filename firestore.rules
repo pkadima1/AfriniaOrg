@@ -1,78 +1,147 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check user role
+
+    // ── Helper functions ─────────────────────────────────────────────────
     function getUserRole() {
       return get(/databases/$(database)/documents/user_profiles/$(request.auth.uid)).data.role;
     }
 
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
     function isAdmin() {
-      return request.auth != null && getUserRole() == 'admin';
+      return isSignedIn() && getUserRole() == 'admin';
     }
 
     function isContributor() {
-      return request.auth != null && getUserRole() in ['admin', 'contributor'];
+      return isSignedIn() && getUserRole() in ['admin', 'contributor'];
     }
 
-    function isOwnProfile() {
-      return request.auth.uid == resource.id;
-    }
-
-    // User profiles - allow first-time creation, own read/write, admin full access
+    // ── User profiles ─────────────────────────────────────────────────────
     match /user_profiles/{userId} {
-      // Allow user to create their own profile on first login
-      allow create: if request.auth.uid == userId && 
-                       request.resource.data.email == request.auth.token.email;
-      
-      // Allow user to read their own profile
-      allow read: if request.auth.uid == userId || isAdmin();
-      
-      // Allow user to update their own profile
-      allow update: if request.auth.uid == userId || isAdmin();
-      
-      // Only admins can delete user profiles
+      allow create: if isSignedIn()
+                    && request.auth.uid == userId
+                    && request.resource.data.email == request.auth.token.email;
+      allow read:   if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       allow delete: if isAdmin();
     }
 
-    // Blog posts - public read, authenticated write
+    // ── Bilingual blog post rules (shared macro) ──────────────────────────
+    // Applies identically to posts_en and posts_fr.
+    // Public: read published posts only.
+    // Contributors/admins: full read + write.
+    // Delete: admin only.
+
+    match /posts_en/{postId} {
+      allow get:    if resource.data.status == 'published'
+                    || isContributor();
+      allow list:   if isContributor()
+                    || (request.query.limit <= 50);
+      allow create: if isContributor();
+      allow update: if isAdmin()
+                    || isContributor()
+                    || (isSignedIn() && resource.data.author_id == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    match /posts_fr/{postId} {
+      allow get:    if resource.data.status == 'published'
+                    || isContributor();
+      allow list:   if isContributor()
+                    || (request.query.limit <= 50);
+      allow create: if isContributor();
+      allow update: if isAdmin()
+                    || isContributor()
+                    || (isSignedIn() && resource.data.author_id == request.auth.uid);
+      allow delete: if isAdmin();
+    }
+
+    // ── Legacy blog_posts collection (read-only for migration reference) ──
     match /blog_posts/{postId} {
-      // Public read all published blog posts
-      allow read: if resource.data.status == 'published' || 
-                     (request.auth != null && (isAdmin() || isContributor()));
-      
-      // Only contributors and admins can create
-      allow create: if request.auth != null && isContributor();
-      
-      // Only post author, contributors, or admins can edit
-      allow update: if request.auth != null && 
-                       (isAdmin() || 
-                        isContributor() ||
-                        resource.data.author_id == request.auth.uid);
-      
-      // Only admins can delete
+      allow get:    if resource.data.status == 'published'
+                    || isContributor();
+      allow list:   if isContributor()
+                    || (request.query.limit <= 50);
+      allow create: if isContributor();
+      allow update: if isAdmin()
+                    || isContributor()
+                    || (isSignedIn() && resource.data.author_id == request.auth.uid);
       allow delete: if isAdmin();
     }
 
-    // Comments - public read, public create, author/admin edit/delete
-    match /comments/{commentId} {
-      // Public read all comments
-      allow read: if true;
-      
-      // Anyone can create comments
-      allow create: if true;
-      
-      // Author or admin can edit
-      allow update: if request.auth != null &&
-                       (isAdmin() || 
-                        resource.data.author_email == request.auth.token.email);
-      
-      // Author or admin can delete
-      allow delete: if request.auth != null &&
-                       (isAdmin() || 
-                        resource.data.author_email == request.auth.token.email);
+    // ── Audio episodes (bilingual) ────────────────────────────────────────
+    // Public: read published episodes only.
+    // Contributors/admins: full read + write.
+    // Delete: admin only.
+
+    match /audio_en/{episodeId} {
+      allow get:    if resource.data.status == 'published'
+                    || isContributor();
+      allow list:   if isContributor()
+                    || (request.query.limit <= 20);
+      allow create: if isContributor();
+      allow update: if isAdmin() || isContributor();
+      allow delete: if isAdmin();
     }
 
-    // Deny access to any other collections by default
+    match /audio_fr/{episodeId} {
+      allow get:    if resource.data.status == 'published'
+                    || isContributor();
+      allow list:   if isContributor()
+                    || (request.query.limit <= 20);
+      allow create: if isContributor();
+      allow update: if isAdmin() || isContributor();
+      allow delete: if isAdmin();
+    }
+
+    // ── Comments (bilingual) ──────────────────────────────────────────────
+    // comments_en and comments_fr mirror the blog post split.
+    // Public read + create (no auth required to comment).
+    // Update/delete restricted to admins or the commenter's email.
+
+    match /comments_en/{commentId} {
+      allow read:   if true;
+      allow create: if true;
+      allow update: if isSignedIn()
+                    && (isAdmin()
+                        || resource.data.email == request.auth.token.email);
+      allow delete: if isSignedIn()
+                    && (isAdmin()
+                        || resource.data.email == request.auth.token.email);
+    }
+
+    match /comments_fr/{commentId} {
+      allow read:   if true;
+      allow create: if true;
+      allow update: if isSignedIn()
+                    && (isAdmin()
+                        || resource.data.email == request.auth.token.email);
+      allow delete: if isSignedIn()
+                    && (isAdmin()
+                        || resource.data.email == request.auth.token.email);
+    }
+
+    // ── Legacy comments (read-only — historical data) ─────────────────────
+    match /comments/{commentId} {
+      allow read:   if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    // ── Newsletter subscribers ────────────────────────────────────────────
+    match /newsletter_subscribers/{docId} {
+      allow create: if request.resource.data.email is string
+                    && request.resource.data.email.size() > 0;
+      allow read:   if isAdmin();
+      allow delete: if isAdmin();
+      allow update: if false;
+    }
+
+    // ── Deny everything else ──────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }

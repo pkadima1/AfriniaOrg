@@ -84,6 +84,28 @@ service firebase.storage {
       allow read, write: if isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Audio episode cover images — stored under audio-thumbnails/{lang}/{filename}
+    match /audio-thumbnails/{lang}/{fileName} {
+      allow read: if true;
+      allow create, update: if isAuthenticated() && isValidImage();
+      allow delete: if isAuthenticated();
+    }
+
+    // Audio episodes — stored under audio/{lang}/{filename}
+    // lang is 'en' or 'fr' (enforced at the React/admin layer; Storage rules keep it simple)
+    // Public read so the audio player works without auth.
+    // Write requires Firebase Auth (contributors and admins are authenticated).
+    function isValidAudio() {
+      return request.resource.contentType.matches('audio/.*')
+          && request.resource.size <= 200 * 1024 * 1024; // 200 MB max
+    }
+
+    match /audio/{lang}/{fileName} {
+      allow read: if true;
+      allow create, update: if isAuthenticated() && isValidAudio();
+      allow delete: if isAuthenticated();
+    }
+
     // Deny all other paths by default
     match /{allPaths=**} {
       allow read, write: if false;

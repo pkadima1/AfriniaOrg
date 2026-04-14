@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -7,9 +8,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { getAlternateUrl, type Lang } from '@/utils/languageUtils';
 
 const LanguageSwitcher = () => {
   const { i18n, t } = useTranslation();
+  const navigate = useNavigate();
 
   const languages = [
     { code: 'en', name: t('language.en'), flag: '🇺🇸' },
@@ -17,12 +20,14 @@ const LanguageSwitcher = () => {
   ];
 
   const handleLanguageChange = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
-    
-    // Update URL parameter without refresh
-    const url = new URL(window.location.href);
-    url.searchParams.set('lang', languageCode);
-    window.history.replaceState({}, '', url.toString());
+    const targetLang = languageCode as Lang;
+    void i18n.changeLanguage(targetLang);
+
+    // Navigate to the equivalent URL in the target language.
+    // /en/blog/my-post → /fr/blog/my-post
+    // /about → /about (no change for non-blog pages)
+    const newPath = getAlternateUrl(window.location.pathname, targetLang);
+    navigate(newPath, { replace: true });
   };
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
@@ -30,9 +35,9 @@ const LanguageSwitcher = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           className="flex items-center gap-2 text-gray-300 hover:text-white hover:bg-white/10"
           aria-label={t('language.switch')}
         >

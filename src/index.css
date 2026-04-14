@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -131,6 +133,274 @@
   .home-section-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, hsl(214 90% 50% / 0.2), hsl(280 65% 55% / 0.2), transparent);
+  }
+
+  /* ── Afrinia design components ── */
+  .afrinia-serif {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .afrinia-sans {
+    font-family: 'Jost', 'Helvetica Neue', sans-serif;
+  }
+
+  .afrinia-tag {
+    @apply inline-block font-sans text-[10px] font-medium tracking-[2.5px] uppercase text-afrinia-gold border border-afrinia-gold/20 px-3 py-1 rounded-[2px];
+  }
+
+  .afrinia-divider {
+    width: 40px;
+    height: 1px;
+    background: #B8912A;
+    opacity: 0.5;
+  }
+
+  .afrinia-btn-gold {
+    @apply inline-block font-sans text-[11px] font-medium tracking-[2.5px] uppercase text-afrinia-bg bg-afrinia-gold hover:bg-afrinia-gold-lt px-8 py-[14px] transition-colors duration-200 cursor-pointer border-none;
+  }
+
+  .afrinia-btn-outline {
+    @apply inline-block font-sans text-[11px] font-medium tracking-[2.5px] uppercase text-afrinia-gold bg-transparent hover:bg-afrinia-gold hover:text-afrinia-bg px-8 py-[13px] border border-afrinia-gold transition-all duration-200 cursor-pointer;
+  }
+
+  .afrinia-pillar {
+    @apply bg-afrinia-bg2 border border-afrinia-gold/20 p-12 relative overflow-hidden transition-colors duration-300 hover:border-afrinia-gold/40;
+  }
+
+  .afrinia-article-card {
+    @apply bg-afrinia-bg2 border border-afrinia-gold/20 overflow-hidden transition-colors duration-300 hover:border-afrinia-gold/40 cursor-pointer;
+  }
+
+  .afrinia-episode {
+    @apply bg-afrinia-bg border border-afrinia-gold/20 p-5 flex items-center gap-5 cursor-pointer transition-colors duration-200 hover:border-afrinia-gold/40;
+  }
+
+  .afrinia-grid-bg {
+    background-image:
+      linear-gradient(rgba(184,145,42,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(184,145,42,0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  .page-container {
+    max-width: 1140px;
+    width: min(100%, 1140px);
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .section-center-sm {
+    max-width: 900px;
+    width: min(100%, 900px);
+    margin: 0 auto;
+  }
+
+  .section-center-md {
+    max-width: 760px;
+    width: min(100%, 760px);
+    margin: 0 auto;
+  }
+
+  .section-center-xs {
+    max-width: 600px;
+    width: min(100%, 600px);
+    margin: 0 auto;
+  }
+
+  .section-compact {
+    padding: 36px 24px;
+    box-sizing: border-box;
+  }
+  @media (min-width: 900px) {
+    .section-compact {
+      padding: 36px 40px;
+    }
+  }
+
+  .section-md {
+    padding: 80px 24px;
+    box-sizing: border-box;
+  }
+  @media (min-width: 900px) {
+    .section-md {
+      padding: 80px 40px;
+    }
+  }
+
+  .section-xl {
+    padding: 100px 24px;
+    box-sizing: border-box;
+  }
+  @media (min-width: 900px) {
+    .section-xl {
+      padding: 100px 40px;
+    }
+  }
+
+  .blog-hero-wrap {
+    width: min(100%, 1040px);
+    margin: 0 auto;
+    padding: 48px 24px 56px;
+    box-sizing: border-box;
+  }
+  @media (min-width: 900px) {
+    .blog-hero-wrap {
+      padding: 48px 40px 56px;
+    }
+  }
+
+  .blog-section {
+    padding: 48px 24px 80px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  @media (min-width: 900px) {
+    .blog-section {
+      padding: 48px 40px 80px;
+    }
+  }
+
+  .blog-article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 28px;
+  }
+
+  .newsletter-block {
+    padding: 72px 24px;
+    box-sizing: border-box;
+  }
+  @media (min-width: 900px) {
+    .newsletter-block {
+      padding: 72px 40px;
+    }
+  }
+
+  .blog-title {
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+
+  .comment-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  @media (min-width: 640px) {
+    .comment-form-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  @media (min-width: 768px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+    }
+  }
+
+  .hero-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  @media (min-width: 900px) {
+    .hero-section {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .hero-text {
+    padding: 80px 24px 48px;
+  }
+  @media (min-width: 900px) {
+    .hero-text {
+      padding: 100px 60px 100px 80px;
+    }
+  }
+
+  .hero-image-col {
+    padding: 24px 16px 40px;
+  }
+  @media (min-width: 900px) {
+    .hero-image-col {
+      padding: 60px 48px;
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  @media (min-width: 1024px) {
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .pillars-grid,
+  .builder-grid,
+  .audio-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  @media (min-width: 900px) {
+    .pillars-grid,
+    .builder-grid,
+    .audio-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .pillars-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  @media (min-width: 900px) {
+    .cat-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1200px) {
+    .cat-grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+
+  .articles-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  @media (min-width: 900px) {
+    .articles-grid.article-count-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .articles-grid.article-count-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .builder-grid > div:first-child {
+    aspect-ratio: 4 / 3;
   }
 
   /* Custom Quill Editor Styles */

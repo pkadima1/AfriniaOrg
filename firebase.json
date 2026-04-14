@@ -6,7 +6,7 @@
       "indexes": "firestore.indexes.json"
     },
     {
-      "database": "nodematics",
+      "database": "afrinia",
       "rules": "firestore.rules",
       "indexes": "firestore.indexes.json"
     }

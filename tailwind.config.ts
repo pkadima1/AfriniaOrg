@@ -68,7 +68,15 @@ export default {
 				'dark-card': '#1a1a1a',
 				'accent-blue': '#007AFF',
 				'accent-purple': '#AF52DE',
-				'text-secondary': '#8E8E93'
+				'text-secondary': '#8E8E93',
+				// Afrinia design system tokens
+				'afrinia-bg':      '#0f172a',
+				'afrinia-bg2':     '#131f35',
+				'afrinia-bg3':     '#1a2744',
+				'afrinia-gold':    '#B8912A',
+				'afrinia-gold-lt': '#d4a83a',
+				'afrinia-cream':   '#F5F0E8',
+				'afrinia-muted':   '#8a9bb5',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

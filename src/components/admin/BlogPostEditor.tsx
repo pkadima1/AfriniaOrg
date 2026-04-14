@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,9 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { fetchBlogPostById, saveBlogPost, uploadBlogImage } from "@/integrations/firebase/blogService";
-import { ArrowLeft, Save, Eye, Upload, X } from "lucide-react";
+import { ArrowLeft, Save, Eye, X } from "lucide-react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import type { Lang } from "@/utils/languageUtils";
 
 interface BlogPost {
   id?: string;
@@ -35,7 +36,12 @@ interface BlogPost {
 export const BlogPostEditor = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const isEditing = Boolean(id);
+
+  // Read language from ?lang= query param — defaults to 'en'
+  const langParam = searchParams.get('lang');
+  const lang: Lang = langParam === 'fr' ? 'fr' : 'en';
 
   const [post, setPost] = useState<BlogPost>({
     title: '',
@@ -53,13 +59,12 @@ export const BlogPostEditor = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setSaving] = useState(false);
   const [tagInput, setTagInput] = useState('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
 
   const loadPost = async (postId: string) => {
     setIsLoading(true);
     try {
-      const data = await fetchBlogPostById(postId);
+      const data = await fetchBlogPostById(postId, lang);
       if (data) {
         setPost({
           id: data.id,
@@ -86,7 +91,7 @@ export const BlogPostEditor = () => {
         description: "Failed to load blog post",
         variant: "destructive"
       });
-      navigate('/admin/blog');
+      navigate(`/admin/blog?lang=${lang}`);
     } finally {
       setIsLoading(false);
     }
@@ -124,11 +129,7 @@ export const BlogPostEditor = () => {
       return imageUrl;
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast({
-        title: "Error",
-        description: "Failed to upload image",
-        variant: "destructive"
-      });
+      toast({ title: "Error", description: "Failed to upload image", variant: "destructive" });
       return null;
     } finally {
       setImageUploading(false);
@@ -138,32 +139,22 @@ export const BlogPostEditor = () => {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const imageUrl = await uploadImage(file);
     if (imageUrl) {
       setPost(prev => ({ ...prev, featured_image_url: imageUrl }));
-      toast({
-        title: "Success",
-        description: "Image uploaded successfully"
-      });
+      toast({ title: "Success", description: "Image uploaded successfully" });
     }
   };
 
   const addTag = () => {
     if (tagInput.trim() && !post.tags.includes(tagInput.trim())) {
-      setPost(prev => ({
-        ...prev,
-        tags: [...prev.tags, tagInput.trim()]
-      }));
+      setPost(prev => ({ ...prev, tags: [...prev.tags, tagInput.trim()] }));
       setTagInput('');
     }
   };
 
   const removeTag = (tagToRemove: string) => {
-    setPost(prev => ({
-      ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
-    }));
+    setPost(prev => ({ ...prev, tags: prev.tags.filter(tag => tag !== tagToRemove) }));
   };
 
   const handleSave = async (status?: 'draft' | 'published') => {
@@ -175,7 +166,8 @@ export const BlogPostEditor = () => {
         ...(status === 'published' && !post.published_at && { published_at: new Date().toISOString() })
       };
 
-      const docId = await saveBlogPost(postData, post.id);
+      // Save to the language-specific collection (posts_en or posts_fr)
+      const docId = await saveBlogPost(postData, post.id, lang);
       if (!docId) throw new Error('Failed to save post');
 
       toast({
@@ -184,17 +176,13 @@ export const BlogPostEditor = () => {
       });
 
       if (!isEditing) {
-        navigate('/admin/blog');
+        navigate(`/admin/blog?lang=${lang}`);
       } else {
         setPost(prev => ({ ...prev, id: docId }));
       }
     } catch (error) {
       console.error('Error saving post:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save blog post",
-        variant: "destructive"
-      });
+      toast({ title: "Error", description: "Failed to save blog post", variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -208,24 +196,31 @@ export const BlogPostEditor = () => {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate('/admin/blog')}>
+          <Button variant="ghost" onClick={() => navigate(`/admin/blog?lang=${lang}`)}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Posts
           </Button>
           <h1 className="text-2xl font-bold">
             {isEditing ? 'Edit Post' : 'Create New Post'}
           </h1>
+          {/* Language indicator badge */}
+          <Badge
+            variant="outline"
+            className={lang === 'fr' ? 'border-blue-400 text-blue-400' : 'border-green-400 text-green-400'}
+          >
+            {lang === 'fr' ? '🇫🇷 Français → posts_fr' : '🇺🇸 English → posts_en'}
+          </Badge>
         </div>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => handleSave('draft')}
             disabled={isSaving}
           >
             <Save className="w-4 h-4 mr-2" />
             Save Draft
           </Button>
-          <Button 
+          <Button
             onClick={() => handleSave('published')}
             disabled={isSaving}
           >
@@ -324,9 +319,9 @@ export const BlogPostEditor = () => {
                 <Label htmlFor="featured-image">Featured Image</Label>
                 <div className="space-y-2">
                   {post.featured_image_url && (
-                    <img 
-                      src={post.featured_image_url} 
-                      alt="Featured" 
+                    <img
+                      src={post.featured_image_url}
+                      alt="Featured"
                       className="w-full max-w-md h-48 object-cover rounded-lg"
                     />
                   )}
@@ -385,25 +380,17 @@ export const BlogPostEditor = () => {
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       placeholder="Add a tag..."
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addTag();
-                        }
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') { e.preventDefault(); addTag(); }
                       }}
                     />
-                    <Button type="button" onClick={addTag} variant="outline">
-                      Add
-                    </Button>
+                    <Button type="button" onClick={addTag} variant="outline">Add</Button>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map((tag, index) => (
                       <Badge key={index} variant="secondary" className="flex items-center gap-1">
                         {tag}
-                        <X 
-                          className="w-3 h-3 cursor-pointer" 
-                          onClick={() => removeTag(tag)}
-                        />
+                        <X className="w-3 h-3 cursor-pointer" onClick={() => removeTag(tag)} />
                       </Badge>
                     ))}
                   </div>
@@ -428,9 +415,7 @@ export const BlogPostEditor = () => {
                   placeholder="SEO title (max 60 characters)"
                   maxLength={60}
                 />
-                <p className="text-sm text-muted-foreground mt-1">
-                  {post.meta_title.length}/60 characters
-                </p>
+                <p className="text-sm text-muted-foreground mt-1">{post.meta_title.length}/60 characters</p>
               </div>
 
               <div>
@@ -443,9 +428,7 @@ export const BlogPostEditor = () => {
                   maxLength={160}
                   rows={3}
                 />
-                <p className="text-sm text-muted-foreground mt-1">
-                  {post.meta_description.length}/160 characters
-                </p>
+                <p className="text-sm text-muted-foreground mt-1">{post.meta_description.length}/160 characters</p>
               </div>
             </CardContent>
           </Card>

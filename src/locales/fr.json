@@ -12,116 +12,89 @@
     "previous": "Précédent"
   },
   "navigation": {
-    "home": "Accueil",
+    "ideas": "Idées",
+    "builders": "Bâtisseurs",
+    "audio": "Audio",
     "about": "À propos",
-    "services": "Services",
-    "examples": "Exemples",
-    "builtBy": "Créé par NodeMatics",
-    "outreachOS": "OutreachOS",
     "contact": "Contact",
-    "getStarted": "Commencer"
+    "subscribe": "S'abonner"
   },
   "home": {
     "hero": {
-      "headline": "Nous concevons des systèmes qui vous rendent du temps.",
-      "subheadline": "NodeMatics aide les petites équipes à éliminer le travail répétitif en installant des systèmes simples et fiables dans Google Workspace.",
-      "trustLine": "Pas de SaaS. Pas d'enfermement. Vous possédez le système dans votre Drive.",
+      "eyebrow": "L'Afrique Construit. L'Afrique Mène.",
+      "headline": "L'Afrique n'a pas besoin<br>de rattraper son retard.<br>Elle doit construire<br><em style=\"font-style:italic;color:#B8912A\">autrement.</em>",
+      "sub": "Idées, systèmes et portraits de bâtisseurs pour les entrepreneurs et technologues africains. Une idée rigoureuse, chaque semaine. Portée par la conviction que 1,4 milliard de personnes est le plus grand atout inexploité au monde.",
       "cta": {
-        "primary": "Réserver votre audit temps gratuit de 15 minutes",
-        "secondary": "Voir Ce Que Nous Installons"
-      },
-      "trustBadges": {
-        "google": "Google Workspace",
-        "since": "Systèmes depuis 2017"
+        "primary": "Lire la première idée",
+        "secondary": "Recevoir le brief"
       }
     },
-    "problem": {
-      "title": "La plupart des équipes ne perdent pas le temps d'un coup. Elles le perdent en silence.",
-      "body": {
-        "p1": "Les e-mails sont copiés dans des feuilles de calcul.",
-        "p2": "Les tâches vivent dans la tête des gens.",
-        "p3": "Les rapports sont reconstruits chaque semaine.",
-        "p4": "Les fichiers sont dupliqués, renommés, renvoyés.",
-        "p5": "Individuellement, cela semble minuscule.",
-        "p6": "Ensemble, cela consomme des heures — chaque semaine.",
-        "p7": "NodeMatics existe pour supprimer cette friction."
+    "stats": {
+      "s1": "Pays. Une conversation.",
+      "s2": "Personnes. Le plus grand atout de l'Afrique.",
+      "s3": "Idée. Chaque jeudi.",
+      "s4": "Récit de victime. Jamais."
+    },
+    "pillars": {
+      "eyebrow": "Ce qu'est Afrinia",
+      "title": "Trois choses.<br><em style=\"font-style:italic;color:#B8912A\">Une direction.</em>",
+      "ideas": {
+        "label": "Idées",
+        "headline": "Une pensée rigoureuse pour les bâtisseurs africains",
+        "body": "Nous prenons les questions les plus importantes sur l'avenir technologique et entrepreneurial de l'Afrique et y répondons avec profondeur, pas avec des opinions. Chaque article transforme un écart en solution structurelle. Chaque contenu donne quelque chose d'utilisable à un bâtisseur."
+      },
+      "builders": {
+        "label": "Bâtisseurs",
+        "headline": "Les personnes qui construisent le prochain chapitre africain",
+        "body": "Pas des histoires inspirantes. Des études de cas décisionnels. Nous dressons le portrait des entrepreneurs et technologues qui construisent l'économie numérique africaine — en posant non pas « comment ont-ils réussi ? » mais « quelle décision précise a tout changé, et pourquoi a-t-elle fonctionné ? »"
+      },
+      "audio": {
+        "label": "Audio",
+        "headline": "Chaque idée, aussi une conversation",
+        "body": "Chaque article sur Afrinia est aussi un épisode audio de 6 à 8 minutes. Le Brief Afrinia — distribué sur Spotify et Apple Podcasts. Lisez-le à votre bureau. Écoutez-le dans vos déplacements. L'idée voyage avec vous."
       }
     },
-    "position": {
-      "title": "Ce Que Fait NodeMatics",
-      "body": "NodeMatics est un studio d'ingénierie de systèmes. Nous ne vendons pas de licences logicielles. Nous ne remplaçons pas les outils que vous utilisez déjà. Nous n'ajoutons pas de tableaux de bord pour le plaisir. Nous concevons et installons des systèmes internes qui :",
-      "bullets": {
-        "b1": "Éliminent le travail manuel répétitif",
-        "b2": "Apportent de la clarté aux opérations",
-        "b3": "Fonctionnent discrètement en arrière-plan"
-      },
-      "closing": "Tout cela dans Google Workspace."
+    "belief": {
+      "quote": "« Nous ne pleurons pas les lacunes de l'Afrique — nous les <strong style=\"font-style:normal;color:#B8912A;font-weight:400\">transformons en solutions structurelles.</strong> Nous ne réagissons pas aux gros titres — nous en extrayons l'opportunité et la remettons aux bâtisseurs. L'Afrique n'a pas besoin de rattraper son retard. Elle doit construire autrement — avec l'IA, l'intelligence collective, et <strong style=\"font-style:normal;color:#B8912A;font-weight:400\">1,4 milliard de personnes comme plus grand atout.</strong> »",
+      "attr": "La conviction Afrinia"
     },
-    "focus": {
-      "title": "Notre Focus Actuel",
-      "body": "Actuellement, NodeMatics se concentre sur des systèmes à fort impact et de faible périmètre construits sur Google Workspace :",
-      "bullets": {
-        "b1": "Google Sheets comme salles de contrôle",
-        "b2": "Workflows et relances basés sur Gmail",
-        "b3": "Génération de documents natifs Drive (PDF, rapports, devis)",
-        "b4": "Affectation et suivi des tâches par rôle"
-      },
-      "closing": "Ce focus est intentionnel. Des systèmes simples, bien réalisés, surpassent les plateformes complexes."
+    "latest": {
+      "eyebrow": "Dernières publications",
+      "title": "Des idées sur lesquelles<br><em style=\"font-style:italic;color:#B8912A\">bâtir</em>",
+      "viewAll": "Voir toutes les idées",
+      "readMore": "Lire l'analyse"
     },
-    "offerings": {
-      "title": "Trois Offres Principales",
-      "subtitle": "Systèmes à fort impact. Délais clairs.",
-      "card1": {
-        "title": "Installations d'Automatisation (48–72h)",
-        "outcome": "Un flux de travail répétitif supprimé de bout en bout."
-      },
-      "card2": {
-        "title": "Salles de Contrôle des Opérations (1–2 semaines)",
-        "outcome": "Tâches, responsabilités, rappels, reporting — le tout dans Sheets et Gmail."
-      },
-      "card3": {
-        "title": "Configurateurs et Moteurs PDF (1–3 semaines)",
-        "outcome": "Transformez des entrées structurées en sorties propres et branding."
-      }
+    "categories": {
+      "eyebrow": "Explorer par thème",
+      "title": "Cinq piliers.<br><em style=\"font-style:italic;color:#B8912A\">Une plateforme.</em>"
     },
-    "builtBy": {
-      "title": "Créé par NodeMatics",
-      "intro": "Quand un problème système se répète à grande échelle, nous le transformons parfois en produit.",
-      "engagePerfect": {
-        "title": "EngagePerfect",
-        "description": "Un système d'exploitation du contenu pour les agences gérant plusieurs marques.",
-        "link": "Visiter EngagePerfect →"
-      },
-      "veil": {
-        "title": "Veil",
-        "description": "Un moteur d'analytique focalisé pour les séries temporelles et l'insight opérationnel.",
-        "badge": "En Développement"
-      }
+    "builder": {
+      "eyebrow": "Bâtisseur de la semaine",
+      "title": "Les personnes qui<br><em style=\"font-style:italic;color:#B8912A\">font le travail</em>",
+      "featuredTag": "Bâtisseur à la une",
+      "quote": "« J'ai arrêté de demander ce qui n'allait pas en Afrique et j'ai commencé à demander ce qui pouvait être construit. Ce seul changement a transformé toute ma façon de travailler. »",
+      "name": "Amara Diallo",
+      "role": "Fondateur, TechSahe · Dakar, Sénégal",
+      "bio": "En 2021, Amara a quitté une carrière stable dans le conseil pour construire une plateforme d'automatisation no-code pour les PME d'Afrique de l'Ouest. Trois ans plus tard, elle sert 400+ entreprises dans 11 pays. Ce n'est pas une histoire inspirante. C'est une carte de décisions.",
+      "cta": "Lire l'étude de cas complète"
     },
-    "closing": {
-      "title": "Commencez Petit. Gagnez du Temps. Construisez à Partir de Là.",
-      "body": "La plupart des clients commencent par un flux de travail. Un rapport qui n'a plus besoin d'être reconstruit. Une relance qui ne sera plus oubliée. Un système qui fonctionne tout simplement. À partir de là, nous construisons uniquement ce qui est nécessaire.",
-      "cta": "Réserver votre audit temps gratuit de 15 minutes",
-      "subtext": "Sans engagement. Juste de la clarté."
+    "audio": {
+      "eyebrow": "Le Brief Afrinia",
+      "title": "Chaque idée.<br><em style=\"font-style:italic;color:#B8912A\">Aussi une conversation.</em>",
+      "body": "Chaque article sur Afrinia est aussi un épisode audio de 6 à 8 minutes. Lisez-le à votre bureau. Écoutez-le dans vos déplacements. L'idée voyage avec vous. Disponible sur Spotify et Apple Podcasts.",
+      "cta": "Parcourir tous les épisodes"
     },
-    "testimonials": {
-      "title": "Les équipes font confiance à NodeMatics",
-      "items": {
-        "1": {
-          "quote": "Je l'utilise quotidiennement — fait économiser des heures !",
-          "author": "S.P., Créateur de contenu"
-        },
-        "2": {
-          "quote": "NodeMatics nous a aidés à réduire le temps de création de contenu de 80 %. C'est comme avoir une équipe de contenu à temps plein.",
-          "author": "A.M., Fondateur E-commerce"
-        },
-        "3": {
-          "quote": "Leurs outils d'automatisation ont éliminé des heures de travail manuel chaque semaine. Nous pouvons enfin nous concentrer sur la stratégie.",
-          "author": "J.K., Responsable opérations"
-        }
-      }
-    },
-    "offeringsCta": "Inclure dans mon audit"
+    "newsletter": {
+      "eyebrow": "Le Brief Afrinia — Hebdomadaire",
+      "headline": "Une idée.",
+      "sub": "Chaque jeudi.",
+      "desc": "Une idée profondément analysée pour les bâtisseurs africains — livrée dans votre boîte mail avant la fin de la semaine. Pas une revue de presse. Pas un rapport de tendances. Une pensée complète sur laquelle vous pouvez agir. Lue par des entrepreneurs, technologues et penseurs dans plus de 30 pays africains.",
+      "placeholder": "Votre adresse e-mail",
+      "cta": "Recevoir le brief",
+      "promise": "Pas de bruit. Pas de spam. Désinscription à tout moment.",
+      "successMsg": "Vous êtes inscrit. Le premier brief arrive ce jeudi.",
+      "errorMsg": "Une erreur est survenue. Veuillez réessayer."
+    }
   },
   "about": {
     "opening": {
@@ -264,8 +237,9 @@
     }
   },
   "blog": {
-    "title": "Blog NodeMatics",
-    "subtitle": "Perspectives, conseils et stratégies pour la création de contenu moderne et l'optimisation SEO",
+    "eyebrow": "Flux d'Intelligence",
+    "title": "L'opportunité africaine, clairement expliquée",
+    "subtitle": "Des signaux clés sur les affaires, la technologie, la finance et l'innovation en Afrique — pour les bâtisseurs, investisseurs et décideurs.",
     "loading": "Chargement des articles de blog...",
     "newsletter": {
       "title": "Abonnez-vous aux Articles Hebdomadaires",
@@ -797,5 +771,39 @@
     "switch": "Changer de langue",
     "en": "English",
     "fr": "Français"
+  },
+  "audio_page": {
+    "eyebrow": "Le Bref Afrinia — Audio",
+    "coming_title": "Chaque idée, aussi une conversation.",
+    "coming_body": "Les épisodes audio sont en production. Chaque article d'Afrinia deviendra un épisode ciblé de 6 à 8 minutes, disponible sur Spotify et Apple Podcasts. Abonnez-vous à la newsletter pour être notifié du lancement.",
+    "coming_cta": "S'abonner au bref",
+    "episodes_title": "Le Bref Afrinia",
+    "episodes_subtitle": "Les idées, en audio.",
+    "episode_label": "Épisode",
+    "listen": "Écouter l'épisode",
+    "no_episodes": "Aucun épisode disponible pour l'instant.",
+    "loading": "Chargement des épisodes…"
+  },
+  "afrinia_footer": {
+    "tagline": "L'Afrique Construit. L'Afrique Mène.",
+    "description": "Une plateforme de réflexion pour les entrepreneurs, technologues et bâtisseurs africains. Idées, systèmes et études de cas pour les personnes qui construisent l'avenir numérique de l'Afrique.",
+    "content": "Contenu",
+    "platform": "Plateforme",
+    "follow": "Suivre",
+    "links": {
+      "ideas": "Idées",
+      "builders": "Bâtisseurs",
+      "opportunity": "Opportunité",
+      "education": "Éducation",
+      "roots": "Racines + Avenir",
+      "about": "À propos d'Afrinia",
+      "podcast": "Le Brief — Podcast",
+      "subscribe": "S'abonner",
+      "writeForUs": "Écrire pour Afrinia",
+      "contact": "Contact",
+      "privacy": "Confidentialité",
+      "terms": "Mentions légales"
+    },
+    "copyright": "Afrinia. Tous droits réservés."
   }
 }

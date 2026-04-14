@@ -11,7 +11,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-dark-bg">
       <Header />
-      <main className="pt-20">
+      <main className="pt-[68px]">
         {children}
       </main>
       <Footer />
