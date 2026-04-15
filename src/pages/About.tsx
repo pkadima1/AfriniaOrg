@@ -1,218 +1,444 @@
 import Layout from '../components/Layout';
-import PageHeader from '../components/PageHeader';
-import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+const PATRICK_PHOTO =
+  'https://firebasestorage.googleapis.com/v0/b/modified-hull-203004.firebasestorage.app/o/Afrinia%2FAfriniaMedia%2FMe%20LinkedIn.png?alt=media&token=b7119c05-1405-40e9-a3a4-b489d1a2fa52';
+
 const About = () => {
-  const calendarTargetRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    const link = document.createElement('link');
-    link.href = 'https://calendar.google.com/calendar/scheduling-button-script.css';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
+  const beliefs = [
+    { num: '01', key: 'b1' },
+    { num: '02', key: 'b2' },
+    { num: '03', key: 'b3' },
+    { num: '04', key: 'b4' },
+  ] as const;
 
-    const script = document.createElement('script');
-    script.src = 'https://calendar.google.com/calendar/scheduling-button-script.js';
-    script.async = true;
-
-    script.onload = () => {};
-
-    script.onerror = () => {
-      console.error('Failed to load Google Calendar script');
-    };
-
-    document.head.appendChild(script);
-
-    return () => {
-      try {
-        document.head.removeChild(link);
-        document.head.removeChild(script);
-      } catch {
-        // Expected on unmount
-      }
-    };
-  }, []);
-
-  const handleCalendarClick = () => {
-    try {
-      const calendar = (window as unknown as { calendar?: { schedulingButton?: { load: (config: unknown) => void } } }).calendar;
-      if (calendar?.schedulingButton && calendarTargetRef.current) {
-        calendar.schedulingButton.load({
-          url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true',
-          color: '#039BE5',
-          label: 'Start with a Time Audit',
-          target: calendarTargetRef.current
-        });
-
-        setTimeout(() => {
-          const googleButton = calendarTargetRef.current?.querySelector('button');
-          if (googleButton) {
-            googleButton.click();
-          } else {
-            window.open(
-              'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true',
-              'calendar-popup',
-              'width=800,height=600,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no'
-            );
-          }
-        }, 500);
-      } else {
-        window.open(
-          'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true',
-          'calendar-popup',
-          'width=800,height=600,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no'
-        );
-      }
-    } catch {
-      window.open(
-        'https://calendar.google.com/calendar/appointments/schedules/AcZssZ0jPSL5lWFs921ITjSqM9lccdsQD0vDmFDY_RErbgAbwLn9gZF4JaB5EMCpN05tR_rebTIPw4EV?gv=true',
-        'calendar-popup',
-        'width=800,height=600,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no'
-      );
-    }
-  };
-
-  const manifestoKeys = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8'] as const;
+  const aspirations = ['a1', 'a2', 'a3'] as const;
 
   return (
     <Layout>
-      <div ref={calendarTargetRef} className="fixed -top-96 left-0 opacity-0 pointer-events-none" aria-hidden="true" />
+      <div
+        style={{
+          maxWidth: 1100,
+          margin: '0 auto',
+          padding: '0 24px 80px',
+          fontFamily: "'Jost', sans-serif",
+        }}
+      >
+        {/* ── HERO ── */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 64,
+            alignItems: 'center',
+            padding: '64px 0 72px',
+            borderBottom: '1px solid rgba(184,145,42,0.2)',
+          }}
+        >
+          {/* Text */}
+          <div>
+            <p
+              style={{
+                fontFamily: "'Jost', sans-serif",
+                fontSize: 10,
+                fontWeight: 500,
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                color: '#B8912A',
+                marginBottom: 20,
+              }}
+            >
+              {t('about.eyebrow')}
+            </p>
 
-      <article className="min-h-screen bg-dark-bg">
-        <PageHeader title={t('about.opening.title')} subtitle={t('about.opening.subtitle')} />
+            <h1
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 'clamp(42px, 5vw, 60px)',
+                fontWeight: 300,
+                lineHeight: 1.1,
+                color: '#F5F0E8',
+                marginBottom: 8,
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Patrick K.
+              <br />
+              Tshimanga
+            </h1>
 
-        {/* Manifesto — philosophy dominates */}
-        <section className="py-16 md:py-24 px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto">
-            <div className="space-y-12">
-              {manifestoKeys.map((key, index) => (
+            <p
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 'clamp(16px, 2vw, 20px)',
+                fontWeight: 400,
+                fontStyle: 'italic',
+                color: '#B8912A',
+                marginBottom: 32,
+              }}
+            >
+              {t('about.hero.title')}
+            </p>
+
+            <p
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 'clamp(20px, 2.5vw, 26px)',
+                fontWeight: 300,
+                fontStyle: 'italic',
+                lineHeight: 1.55,
+                color: '#d4c9a8',
+                marginBottom: 32,
+                borderLeft: '2px solid #B8912A',
+                paddingLeft: 20,
+              }}
+            >
+              {t('about.hero.lead')}
+            </p>
+
+            <p
+              style={{
+                fontSize: 15,
+                fontWeight: 300,
+                lineHeight: 1.8,
+                color: '#8a9bb5',
+              }}
+            >
+              {t('about.hero.body')}
+            </p>
+          </div>
+
+          {/* Photo */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <div style={{ position: 'relative', width: 340, height: 420 }}>
+              {/* Gold offset border */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: -12,
+                  left: 12,
+                  width: '100%',
+                  height: '100%',
+                  border: '1px solid #B8912A',
+                  borderRadius: 1,
+                  zIndex: 0,
+                }}
+              />
+              <img
+                src={PATRICK_PHOTO}
+                alt="Patrick K. Tshimanga"
+                style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'top center',
+                  borderRadius: 1,
+                  display: 'block',
+                }}
+              />
+              <p
+                style={{
+                  position: 'absolute',
+                  bottom: -36,
+                  left: 0,
+                  right: 0,
+                  textAlign: 'center',
+                  fontFamily: "'Jost', sans-serif",
+                  fontSize: 11,
+                  fontWeight: 300,
+                  letterSpacing: '0.1em',
+                  color: '#5c7090',
+                  zIndex: 1,
+                }}
+              >
+                {t('about.photoCaption')}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── BELIEFS ── */}
+        <div
+          style={{
+            padding: '72px 0',
+            borderBottom: '1px solid rgba(184,145,42,0.2)',
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              fontSize: 10,
+              fontWeight: 500,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: '#B8912A',
+              marginBottom: 40,
+            }}
+          >
+            {t('about.beliefs.label')}
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: 48,
+            }}
+          >
+            {beliefs.map(({ num, key }) => (
+              <div
+                key={key}
+                style={{
+                  borderTop: '1px solid rgba(184,145,42,0.2)',
+                  paddingTop: 24,
+                }}
+              >
                 <p
-                  key={key}
-                  className="text-lg md:text-xl leading-relaxed text-white font-normal animate-fade-in"
-                  style={{ animationDelay: `${index * 40}ms` }}
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: 42,
+                    fontWeight: 300,
+                    color: 'rgba(184,145,42,0.18)',
+                    lineHeight: 1,
+                    marginBottom: 12,
+                  }}
                 >
-                  {t(`about.opening.manifesto.${key}`)}
+                  {num}
                 </p>
+                <h3
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: 22,
+                    fontWeight: 400,
+                    color: '#F5F0E8',
+                    marginBottom: 12,
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {t(`about.beliefs.${key}.headline`)}
+                </h3>
+                <p
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 300,
+                    lineHeight: 1.75,
+                    color: '#8a9bb5',
+                  }}
+                >
+                  {t(`about.beliefs.${key}.body`)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── MISSION QUOTE ── */}
+        <div
+          style={{
+            padding: '72px 0',
+            borderBottom: '1px solid rgba(184,145,42,0.2)',
+            textAlign: 'center',
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 'clamp(26px, 3.5vw, 40px)',
+              fontWeight: 300,
+              fontStyle: 'italic',
+              lineHeight: 1.45,
+              color: '#F5F0E8',
+              maxWidth: 820,
+              margin: '0 auto 24px',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            {t('about.mission.quote')}
+          </p>
+          <p
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              fontSize: 12,
+              fontWeight: 300,
+              letterSpacing: '0.12em',
+              color: '#B8912A',
+            }}
+          >
+            {t('about.mission.attr')}
+          </p>
+        </div>
+
+        {/* ── ASPIRATIONS ── */}
+        <div
+          style={{
+            padding: '72px 0',
+            borderBottom: '1px solid rgba(184,145,42,0.2)',
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "'Jost', sans-serif",
+              fontSize: 10,
+              fontWeight: 500,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: '#B8912A',
+              marginBottom: 40,
+            }}
+          >
+            {t('about.aspirations.label')}
+          </p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 280px) 1fr',
+              gap: 64,
+              alignItems: 'start',
+            }}
+            className="asp-layout"
+          >
+            <div>
+              <h2
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: 'clamp(32px, 4vw, 48px)',
+                  fontWeight: 300,
+                  lineHeight: 1.15,
+                  color: '#F5F0E8',
+                  marginBottom: 24,
+                }}
+              >
+                {t('about.aspirations.heading')}
+              </h2>
+              <p
+                style={{
+                  fontSize: 14,
+                  fontWeight: 300,
+                  lineHeight: 1.8,
+                  color: '#8a9bb5',
+                }}
+              >
+                {t('about.aspirations.body')}
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {aspirations.map((key, i) => (
+                <div
+                  key={key}
+                  style={{
+                    display: 'flex',
+                    gap: 24,
+                    padding: i === 0 ? '0 0 28px' : '28px 0',
+                    borderBottom:
+                      i < aspirations.length - 1
+                        ? '1px solid rgba(184,145,42,0.2)'
+                        : 'none',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      background: '#B8912A',
+                      marginTop: 8,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <div>
+                    <p
+                      style={{
+                        fontFamily: "'Cormorant Garamond', serif",
+                        fontSize: 20,
+                        fontWeight: 400,
+                        color: '#F5F0E8',
+                        marginBottom: 6,
+                      }}
+                    >
+                      {t(`about.aspirations.${key}.title`)}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: 13.5,
+                        fontWeight: 300,
+                        lineHeight: 1.7,
+                        color: '#8a9bb5',
+                      }}
+                    >
+                      {t(`about.aspirations.${key}.desc`)}
+                    </p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-        </section>
+        </div>
 
-        <div className="home-section-divider" />
+        {/* ── CODA ── */}
+        <div
+          style={{
+            padding: '64px 0 0',
+            display: 'grid',
+            gridTemplateColumns: '1fr auto',
+            alignItems: 'end',
+            gap: 40,
+          }}
+          className="coda-layout"
+        >
+          <p
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 18,
+              fontWeight: 300,
+              fontStyle: 'italic',
+              lineHeight: 1.6,
+              color: '#d4c9a8',
+            }}
+          >
+            {t('about.coda.text')}
+          </p>
+          <p
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 48,
+              fontWeight: 300,
+              color: 'rgba(184,145,42,0.2)',
+              lineHeight: 1,
+              userSelect: 'none',
+            }}
+          >
+            {t('about.coda.mark')}
+          </p>
+        </div>
+      </div>
 
-        {/* Section 2 — What NodeMatics Does */}
-        <section className="py-16 md:py-20 px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">
-              {t('about.whatWeDo.title')}
-            </h2>
-            <p className="text-lg leading-relaxed text-white/85 mb-10">
-              {t('about.whatWeDo.body')}
-            </p>
-            <ul className="space-y-3 text-white/75">
-              <li className="flex items-start gap-3">
-                <span className="text-accent-blue mt-1">—</span>
-                <span>{t('about.whatWeDo.notDo.item1')}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-accent-blue mt-1">—</span>
-                <span>{t('about.whatWeDo.notDo.item2')}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-accent-blue mt-1">—</span>
-                <span>{t('about.whatWeDo.notDo.item3')}</span>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        <div className="home-section-divider" />
-
-        {/* Section 3 — Products as Consequence */}
-        <section className="py-16 md:py-20 px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">
-              {t('about.products.title')}
-            </h2>
-            <p className="text-lg leading-relaxed text-white/85">
-              {t('about.products.body')}
-            </p>
-          </div>
-        </section>
-
-        <div className="home-section-divider" />
-
-        {/* Section 4 — Founders (low power, supporting role) */}
-        <section className="py-12 md:py-16 px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto">
-            <p className="text-sm uppercase tracking-wider text-text-secondary mb-8">
-              {t('about.founders.intro')}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-10 sm:gap-12">
-              <div className="flex gap-4">
-                <img
-                  src="/lovable-uploads/f77d9966-f5a3-4c77-bb28-46fb6285448b.png"
-                  alt={t('about.founders.patrick.name')}
-                  className="w-12 h-12 rounded-full object-cover flex-shrink-0 opacity-85"
-                />
-                <div>
-                  <p className="text-white font-medium text-base">
-                    {t('about.founders.patrick.name')}
-                    <span className="text-text-secondary font-normal ml-1.5">— {t('about.founders.patrick.role')}</span>
-                  </p>
-                  <p className="text-text-secondary text-sm mt-1 leading-relaxed">
-                    {t('about.founders.patrick.bio')}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <img
-                  src="/lovable-uploads/1fb7ed00-84e5-45f2-b0f7-f978ebd3578b.png"
-                  alt={t('about.founders.sunita.name')}
-                  className="w-12 h-12 rounded-full object-cover flex-shrink-0 opacity-85"
-                />
-                <div>
-                  <p className="text-white font-medium text-base">
-                    {t('about.founders.sunita.name')}
-                    <span className="text-text-secondary font-normal ml-1.5">— {t('about.founders.sunita.role')}</span>
-                  </p>
-                  <p className="text-text-secondary text-sm mt-1 leading-relaxed">
-                    {t('about.founders.sunita.bio')}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div className="home-section-divider" />
-
-        {/* Section 5 — Closing Statement */}
-        <section className="py-16 md:py-20 px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center">
-            <p className="text-2xl md:text-3xl leading-relaxed text-white font-medium">
-              {t('about.closing.line1')}
-            </p>
-            <p className="text-xl md:text-2xl text-text-secondary font-normal mt-4">
-              {t('about.closing.line2')}
-            </p>
-          </div>
-        </section>
-
-        {/* CTA — only one */}
-        <section className="py-16 px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center">
-            <button
-              onClick={handleCalendarClick}
-              className="apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90 text-white font-semibold px-10 py-4 rounded-2xl text-lg"
-            >
-              {t('about.cta')}
-            </button>
-          </div>
-        </section>
-      </article>
+      <style>{`
+        @media (max-width: 720px) {
+          .asp-layout {
+            grid-template-columns: 1fr !important;
+            gap: 32px !important;
+          }
+          .coda-layout {
+            grid-template-columns: 1fr !important;
+          }
+          .coda-layout > p:last-child {
+            display: none;
+          }
+        }
+      `}</style>
     </Layout>
   );
 };

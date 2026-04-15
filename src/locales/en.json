@@ -97,51 +97,57 @@
     }
   },
   "about": {
-    "opening": {
-      "title": "What We Believe",
-      "subtitle": "The principles behind how NodeMatics designs systems.",
-      "manifesto": {
-        "p1": "Time is the most valuable asset. Not data. Not tools. Not technology. Small teams lose it quietly — one repeated task at a time.",
-        "p2": "Repetition quietly destroys focus. Emails copied into spreadsheets. Reports rebuilt every week. Tasks remembered instead of tracked. None of it is hard. It is unnecessary.",
-        "p3": "Systems beat effort. Working harder does not scale. Adding tools does not fix broken workflows. Clear systems do.",
-        "p4": "Use what already exists. Most businesses already pay for the tools they need. They do not use them as systems. We design inside — not on top.",
-        "p5": "Ownership matters. If a system runs your business, you own it. Your data. Your logic. No lock-in.",
-        "p6": "Automation should be quiet. The best system is the one you forget about. It does not announce itself. It works.",
-        "p7": "AI is a tool, not the point. It can draft, summarize, enrich. Logic comes first. Reliability always wins.",
-        "p8": "Focus creates authority. We do not chase every problem. We solve one class of problem well: wasted time caused by broken internal workflows."
-      }
+    "eyebrow": "About",
+    "hero": {
+      "title": "Founder, Afrinia · Builder of Intelligence Systems",
+      "lead": "\"I believe Africa's story is still being written — and that those who build the tools to tell it, shape it.\"",
+      "body": "I am a Congolese-born founder, living at the intersection of vision and execution. My journey has moved through continents, industries, and ideas — but one conviction has remained constant: that the African continent is not waiting to be discovered. It is waiting for the right infrastructure to make its intelligence visible to the world."
     },
-    "whatWeDo": {
-      "title": "What We Do",
-      "body": "NodeMatics designs and installs small, reliable internal systems that remove friction, create clarity, and give time back.",
-      "notDo": {
-        "item1": "Does not sell generic software",
-        "item2": "Does not chase every problem",
-        "item3": "Does not build complexity for its own sake"
-      }
-    },
-    "products": {
-      "title": "When Systems Repeat",
-      "body": "When a system failure repeats at scale, NodeMatics sometimes turns the solution into a product. EngagePerfect and Veil are examples — outcomes of systems thinking, not the business focus."
-    },
-    "founders": {
-      "intro": "Built and Maintained By",
-      "patrick": {
-        "name": "Patrick Kadima",
-        "role": "Systems & Automation",
-        "bio": "Designs and installs internal systems that remove repetitive work. Creator of EngagePerfect."
+    "photoCaption": "Patrick K. Tshimanga · Founder",
+    "beliefs": {
+      "label": "What I believe",
+      "b1": {
+        "headline": "Intelligence belongs to everyone",
+        "body": "For too long, the signal that shapes decisions — business intelligence, market data, strategic insight — has been concentrated in systems built for a world that excludes Africa by default. I believe access to real intelligence is not a privilege. It is a foundation."
       },
-      "sunita": {
-        "name": "Sunita",
-        "role": "Creative Systems & Communication",
-        "bio": "Shapes how systems communicate clearly and work for people. Leads creative systems at NodeMatics."
+      "b2": {
+        "headline": "Language is not a barrier — it is architecture",
+        "body": "Africa speaks in many tongues. French and English are not just communication choices — they are two distinct ecosystems of trust, of relationship, of commerce. Building bilingually is not a feature. It is a statement of respect."
+      },
+      "b3": {
+        "headline": "Africa is not a problem to solve",
+        "body": "I am not here to fix Africa. I am here to build for it — with the same rigor, elegance, and ambition that any world-class market deserves. The continent's entrepreneurs are not underdogs. They are the protagonists of the next chapter of global business."
+      },
+      "b4": {
+        "headline": "Technology must earn trust before it demands attention",
+        "body": "I have learned — through building, failing, and rebuilding — that no platform is worth launching before it is worth trusting. Every product I ship is a promise. And I do not make promises I cannot keep."
       }
     },
-    "closing": {
-      "line1": "NodeMatics is a systems studio.",
-      "line2": "We believe less work, done better, changes everything."
+    "mission": {
+      "quote": "\"Afrinia exists because Africa's entrepreneurs deserve to act on intelligence — not operate in its absence.\"",
+      "attr": "— Patrick K. Tshimanga"
     },
-    "cta": "Start with a Time Audit"
+    "aspirations": {
+      "label": "Where I am going",
+      "heading": "Building the intelligence layer Africa has always deserved.",
+      "body": "The vision is not modest. And it should not be. What I am building with Afrinia is not a website, not a blog, not a news aggregator. It is the beginning of an intelligence operating system — one that transforms raw signal into strategic clarity, in both languages, for every ambitious mind on this continent.",
+      "a1": {
+        "title": "To become Africa's first bilingual business intelligence authority",
+        "desc": "Afrinia will be the place where Francophone and Anglophone entrepreneurs come not for news, but for the intelligence that turns news into action — curated, contextualised, and built from African sources first."
+      },
+      "a2": {
+        "title": "To build a community where the continent thinks together",
+        "desc": "Beyond content, I want Afrinia to become the gathering place — a bilingual space where the continent's sharpest minds find each other, challenge each other, and build together."
+      },
+      "a3": {
+        "title": "To prove that AI can serve Africa on Africa's terms",
+        "desc": "The intelligence engine I am building will be trained on African realities, not imported assumptions. When it answers, it will answer from within the continent — not from the outside looking in."
+      }
+    },
+    "coda": {
+      "text": "\"I am a husband, a father, and a builder. Everything I create is a reflection of what I believe — that technology, when built with discipline and love, can carry dignity forward.\"",
+      "mark": "A."
+    }
   },
   "contact": {
     "hero": {
