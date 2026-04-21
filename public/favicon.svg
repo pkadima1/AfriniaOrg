@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Dark navy background matching Afrinia brand -->
+  <rect width="32" height="32" rx="5" fill="#0f172a"/>
+  <!-- Gold "A" triangle mark: two legs meeting at apex, with crossbar -->
+  <g fill="none" stroke="#B8912A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="5,27 16,5 27,27"/>
+    <line x1="9.5" y1="19.5" x2="22.5" y2="19.5"/>
+  </g>
+</svg>
