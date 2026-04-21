@@ -151,95 +151,35 @@
   },
   "contact": {
     "hero": {
-      "title": "Réservez Votre Audit Temps de 15 Minutes",
-      "subtitle": "Nous identifierons un flux de travail répétitif qui vous coûte du temps — et nous vous montrerons comment le corriger."
+      "eyebrow": "Contact",
+      "title": "Contacter l'équipe Afrinia",
+      "subtitle": "Que vous ayez une question, une histoire, une idée de collaboration, ou simplement quelque chose à dire — nous sommes là."
     },
-    "whatToExpect": {
-      "title": "À quoi s'attendre",
-      "b1": "Conversation de 15 minutes (sans argumentaire commercial)",
-      "b2": "Nous vous demandons quels sont vos plus gros voleurs de temps",
-      "b3": "Nous proposons un système précis à installer",
-      "b4": "Vous décidez si cela a du sens"
+    "reasons": {
+      "label": "Comment nous pouvons aider",
+      "r1": { "title": "Demande éditoriale", "desc": "Proposez un article, suggérez un profil de bâtisseur, ou partagez une idée." },
+      "r2": { "title": "Partenariat", "desc": "Explorez comment votre organisation peut collaborer avec Afrinia." },
+      "r3": { "title": "Question générale", "desc": "Tout autre chose — nous lisons chaque message." }
     },
     "form": {
-      "title": "Demander votre audit temps",
+      "title": "Envoyez-nous un message",
       "fields": {
-        "name": {
-          "label": "Nom",
-          "placeholder": "Votre nom"
-        },
-        "email": {
-          "label": "Email",
-          "placeholder": "votre@email.com"
-        },
-        "company": {
-          "label": "Nom de l'entreprise",
-          "placeholder": "Votre entreprise"
-        },
-        "timeDrain": {
-          "label": "Quel est votre plus gros voleur de temps ?",
-          "placeholder": "ex. copier des e-mails dans des feuilles, reconstruire des rapports chaque semaine, relances oubliées..."
-        },
-        "contactMethod": {
-          "label": "Méthode de contact préférée",
-          "placeholder": "Choisir",
-          "email": "Email",
-          "phone": "Téléphone",
-          "video": "Visio"
-        }
+        "name": { "label": "Nom complet", "placeholder": "Votre nom" },
+        "email": { "label": "Adresse e-mail", "placeholder": "vous@exemple.com" },
+        "subject": { "label": "Sujet", "placeholder": "De quoi s'agit-il ?" },
+        "message": { "label": "Message", "placeholder": "Dites-nous ce que vous avez à l'esprit..." }
       },
-      "submit": "Demander l'Audit Temps",
-      "submitting": "Envoi...",
-      "success": {
-        "title": "Demande reçue",
-        "description": "Nous vous recontacterons sous 24 h pour planifier votre audit temps de 15 minutes."
-      },
-      "error": {
-        "title": "Une erreur s'est produite",
-        "description": "Veuillez réessayer ou nous écrire à contact@nodematics.com"
-      }
+      "submit": "Envoyer le message",
+      "submitting": "Envoi en cours...",
+      "success": { "title": "Message envoyé", "description": "Nous vous répondrons dans les 48 heures." },
+      "error": { "title": "Une erreur est survenue", "description": "Veuillez réessayer ou nous écrire directement à afrinia@afrinia.org" }
     },
-    "alternativeContact": {
-      "preferEmail": "Vous préférez l'email ? Écrivez-nous à :",
-      "email": "contact@nodematics.com",
-      "linkedIn": "LinkedIn :",
-      "linkedInUrl": "https://uk.linkedin.com/company/nodematics-ltd"
-    },
-    "trustBuilders": {
-      "whatYouGet": "Ce que vous obtiendrez :",
-      "get1": "Évaluation honnête (sans langue de bois)",
-      "get2": "Recommandation claire",
-      "get3": "Aucune obligation d'aller plus loin",
-      "whatYouWontGet": "Ce que vous n'obtiendrez pas :",
-      "wont1": "Consulting générique",
-      "wont2": "Pression commerciale",
-      "wont3": "Outils dont vous n'avez pas besoin"
-    },
-    "info": {
-      "title": "Informations de Contact",
-      "email": "Email",
-      "ukOffice": "Bureau UK",
-      "euOffice": "Bureau EU",
-      "phoneWhatsapp": "Téléphone & WhatsApp",
-      "phoneTelegram": "Téléphone & Telegram",
-      "officeHours": {
-        "title": "Heures d'Ouverture",
-        "mondayFriday": "Lundi - Vendredi",
-        "saturday": "Samedi",
-        "sunday": "Dimanche",
-        "closed": "Fermé",
-        "timeGMT": "GMT"
-      }
-    },
-    "responseTime": {
-      "title": "Nous Répondons Rapidement",
-      "subtitle": "Notre équipe répond généralement aux demandes dans les 2-4 heures pendant les heures d'ouverture.",
-      "sales": "Demandes Commerciales",
-      "general": "Questions Générales",
-      "technical": "Support Technique",
-      "hours2": "< 2h",
-      "hours4": "< 4h",
-      "hours24": "< 24h"
+    "direct": {
+      "label": "Contact direct",
+      "email": "afrinia@afrinia.org",
+      "emailLabel": "Écrivez-nous à",
+      "response": "Nous répondons sous 48 heures",
+      "social": "Suivre Afrinia"
     }
   },
   "blog": {

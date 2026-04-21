@@ -151,95 +151,35 @@
   },
   "contact": {
     "hero": {
-      "title": "Book Your 15-Minute Time Audit",
-      "subtitle": "We'll identify one repetitive workflow that's costing you time — and show you how to fix it."
+      "eyebrow": "Contact",
+      "title": "Reach the Afrinia Team",
+      "subtitle": "Whether you have a question, a story, a collaboration idea, or just want to say something — we are here."
     },
-    "whatToExpect": {
-      "title": "What to expect",
-      "b1": "15-minute conversation (no sales pitch)",
-      "b2": "We ask about your biggest time drains",
-      "b3": "We propose one specific system to install",
-      "b4": "You decide if it makes sense"
+    "reasons": {
+      "label": "How we can help",
+      "r1": { "title": "Editorial inquiry", "desc": "Pitch a story, suggest a builder profile, or contribute an idea." },
+      "r2": { "title": "Partnership", "desc": "Explore how your organisation can work with Afrinia." },
+      "r3": { "title": "General question", "desc": "Anything else — we read every message." }
     },
     "form": {
-      "title": "Request your time audit",
+      "title": "Send us a message",
       "fields": {
-        "name": {
-          "label": "Name",
-          "placeholder": "Your name"
-        },
-        "email": {
-          "label": "Email",
-          "placeholder": "your@email.com"
-        },
-        "company": {
-          "label": "Company name",
-          "placeholder": "Your company"
-        },
-        "timeDrain": {
-          "label": "What's your biggest time drain?",
-          "placeholder": "e.g. copying emails into spreadsheets, rebuilding reports every week, forgotten follow-ups..."
-        },
-        "contactMethod": {
-          "label": "Preferred contact method",
-          "placeholder": "Choose one",
-          "email": "Email",
-          "phone": "Phone",
-          "video": "Video call"
-        }
+        "name": { "label": "Full name", "placeholder": "Your name" },
+        "email": { "label": "Email address", "placeholder": "you@example.com" },
+        "subject": { "label": "Subject", "placeholder": "What is this about?" },
+        "message": { "label": "Message", "placeholder": "Tell us what's on your mind..." }
       },
-      "submit": "Request Time Audit",
+      "submit": "Send message",
       "submitting": "Sending...",
-      "success": {
-        "title": "Request received",
-        "description": "We'll be in touch within 24 hours to schedule your 15-minute time audit."
-      },
-      "error": {
-        "title": "Something went wrong",
-        "description": "Please try again or email us directly at contact@nodematics.com"
-      }
+      "success": { "title": "Message sent", "description": "We'll get back to you within 48 hours." },
+      "error": { "title": "Something went wrong", "description": "Please try again or email us directly at afrinia@afrinia.org" }
     },
-    "alternativeContact": {
-      "preferEmail": "Prefer email? Reach us at:",
-      "email": "contact@nodematics.com",
-      "linkedIn": "LinkedIn:",
-      "linkedInUrl": "https://uk.linkedin.com/company/nodematics-ltd"
-    },
-    "trustBuilders": {
-      "whatYouGet": "What you'll get:",
-      "get1": "Honest assessment (we don't sugarcoat)",
-      "get2": "Clear recommendation",
-      "get3": "No obligation to proceed",
-      "whatYouWontGet": "What you won't get:",
-      "wont1": "Generic consulting fluff",
-      "wont2": "Upsell pressure",
-      "wont3": "Tools you don't need"
-    },
-    "info": {
-      "title": "Contact Information",
-      "email": "Email",
-      "ukOffice": "UK Office",
-      "euOffice": "EU Office",
-      "phoneWhatsapp": "Phone & WhatsApp",
-      "phoneTelegram": "Phone & Telegram",
-      "officeHours": {
-        "title": "Office Hours",
-        "mondayFriday": "Monday - Friday",
-        "saturday": "Saturday",
-        "sunday": "Sunday",
-        "closed": "Closed",
-        "timeGMT": "GMT"
-      }
-    },
-    "responseTime": {
-      "title": "We'll Respond Quickly",
-      "subtitle": "Our team typically responds to inquiries within 2-4 hours during business hours.",
-      "sales": "Sales Inquiries",
-      "general": "General Questions", 
-      "technical": "Technical Support",
-      "hours2": "< 2hrs",
-      "hours4": "< 4hrs", 
-      "hours24": "< 24hrs"
+    "direct": {
+      "label": "Direct contact",
+      "email": "afrinia@afrinia.org",
+      "emailLabel": "Email us at",
+      "response": "We respond within 48 hours",
+      "social": "Follow Afrinia"
     }
   },
   "blog": {

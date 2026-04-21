@@ -24,6 +24,8 @@ interface BlogPost {
   published_at?: string;
   created_at: string;
   updated_at: string;
+  content_language?: 'en' | 'fr' | 'both';
+  target_countries?: string[];
 }
 
 export const BlogPostList = () => {
@@ -40,6 +42,8 @@ export const BlogPostList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [contentLangFilter, setContentLangFilter] = useState<string>('all');
+  const [countryFilter, setCountryFilter] = useState<string>('all');
 
   const setLang = (l: Lang) => {
     const next = new URLSearchParams(searchParams);
@@ -60,7 +64,9 @@ export const BlogPostList = () => {
         ...post,
         status: post.status as 'draft' | 'published' | 'archived',
         category: post.category || '',
-        tags: post.tags || []
+        tags: post.tags || [],
+        content_language: post.content_language,
+        target_countries: post.target_countries ?? [],
       })));
     } catch (error) {
       console.error('Error loading posts:', error);
@@ -145,6 +151,14 @@ export const BlogPostList = () => {
   };
 
   const uniqueCategories = [...new Set(posts.map(post => post.category).filter(Boolean))];
+  const uniqueCountries = [...new Set(posts.flatMap(p => p.target_countries ?? []))].sort();
+
+  // Client-side secondary filters (content_language and country)
+  const filteredPosts = posts.filter(p => {
+    const langOk = contentLangFilter === 'all' || p.content_language === contentLangFilter;
+    const cntryOk = countryFilter === 'all' || (p.target_countries ?? []).includes(countryFilter);
+    return langOk && cntryOk;
+  });
 
   if (isLoading) {
     return (
@@ -197,8 +211,8 @@ export const BlogPostList = () => {
           <CardTitle>Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="relative lg:col-span-2">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search posts..."
@@ -210,7 +224,7 @@ export const BlogPostList = () => {
 
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Statuses</SelectItem>
@@ -222,18 +236,55 @@ export const BlogPostList = () => {
 
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Filter by category" />
+                <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
                 {uniqueCategories.map(category => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
+                  <SelectItem key={category} value={category}>{category}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
+
+            <Select value={contentLangFilter} onValueChange={setContentLangFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Content language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Languages</SelectItem>
+                <SelectItem value="en">🇺🇸 English only</SelectItem>
+                <SelectItem value="fr">🇫🇷 Français only</SelectItem>
+                <SelectItem value="both">🌍 Bilingual</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+
+          {/* Country filter — only shown when posts with target_countries exist */}
+          {uniqueCountries.length > 0 && (
+            <div className="mt-4 flex items-center gap-3">
+              <span className="text-xs text-muted-foreground whitespace-nowrap">Target country</span>
+              <Select value={countryFilter} onValueChange={setCountryFilter}>
+                <SelectTrigger className="w-56">
+                  <SelectValue placeholder="All countries" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All countries</SelectItem>
+                  {uniqueCountries.map(c => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {(contentLangFilter !== 'all' || countryFilter !== 'all') && (
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                  onClick={() => { setContentLangFilter('all'); setCountryFilter('all'); }}
+                >
+                  Clear audience filters
+                </button>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -253,18 +304,18 @@ export const BlogPostList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {posts.length === 0 ? (
+              {filteredPosts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-8">
                     <div className="text-muted-foreground">
-                      {searchTerm || statusFilter !== 'all' || categoryFilter !== 'all'
+                      {searchTerm || statusFilter !== 'all' || categoryFilter !== 'all' || contentLangFilter !== 'all' || countryFilter !== 'all'
                         ? 'No posts match your filters'
                         : `No ${lang.toUpperCase()} posts yet. Create your first post!`}
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
-                posts.map((post) => (
+                filteredPosts.map((post) => (
                   <TableRow key={post.id}>
                     <TableCell>
                       <div>

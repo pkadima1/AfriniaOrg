@@ -4,11 +4,13 @@ import { BlogPostEditor } from '@/components/admin/BlogPostEditor';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AudioEpisodeList } from '@/components/admin/AudioEpisodeList';
 import { AudioUpload } from '@/components/admin/AudioUpload';
+import { NewsletterSubscribers } from '@/components/admin/NewsletterSubscribers';
+import { SocialLinksSettings } from '@/components/admin/SocialLinksSettings';
 import { ContributorRoute, AdminRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, FileText, Settings, Users, Crown, Edit3, Mic } from "lucide-react";
+import { ArrowLeft, FileText, Settings, Users, Crown, Edit3, Mic, Mail, Share2 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 
@@ -126,7 +128,62 @@ const AdminDashboard = () => {
             </p>
           </CardContent>
         </Card>
+
+        <Card
+          className={isAdmin() ? "cursor-pointer hover:shadow-lg transition-shadow" : "opacity-50"}
+          onClick={() => isAdmin() && navigate('/admin/subscribers')}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5" />
+              Newsletter Subscribers
+              {!isAdmin() && <Badge variant="outline" className="text-xs">Admin Only</Badge>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              {isAdmin()
+                ? 'View, filter, export, and manage newsletter subscribers.'
+                : 'Only administrators can view subscriber data.'
+              }
+            </p>
+            {isAdmin() && (
+              <Button
+                className="mt-3"
+                variant="outline"
+                size="sm"
+                onClick={(e) => { e.stopPropagation(); navigate('/admin/subscribers'); }}
+              >
+                Manage Subscribers
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       </div>
+
+        {/* Social Links settings card */}
+        <Card className={isAdmin() ? "cursor-pointer hover:shadow-lg transition-shadow" : "opacity-50"}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Share2 className="w-5 h-5" />
+              Social Links
+              {!isAdmin() && <Badge variant="outline" className="text-xs">Admin Only</Badge>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              {isAdmin()
+                ? 'Toggle and configure social media links (Facebook, LinkedIn, X). Activate when pages are ready.'
+                : 'Only administrators can configure social links.'
+              }
+            </p>
+            {isAdmin() && (
+              <Button className="mt-3" variant="outline" size="sm" onClick={() => navigate('/admin/social')}>
+                Configure Social Links
+              </Button>
+            )}
+          </CardContent>
+        </Card>
 
       <Card>
         <CardHeader>
@@ -222,6 +279,38 @@ export const BlogAdmin = () => {
         }
       />
 
+      <Route
+        path="/subscribers"
+        element={
+          <AdminRoute>
+            <div className="container mx-auto px-4 py-8">
+              <div className="flex items-center gap-4 mb-6">
+                <Button variant="ghost" onClick={() => window.history.back()}>
+                  <ArrowLeft className="w-4 h-4 mr-2" />Back
+                </Button>
+                <h1 className="text-3xl font-bold">Newsletter Subscribers</h1>
+              </div>
+              <NewsletterSubscribers />
+            </div>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/social"
+        element={
+          <AdminRoute>
+            <div className="container mx-auto px-4 py-8">
+              <div className="flex items-center gap-4 mb-6">
+                <Button variant="ghost" onClick={() => window.history.back()}>
+                  <ArrowLeft className="w-4 h-4 mr-2" />Back
+                </Button>
+                <h1 className="text-3xl font-bold">Social Links Settings</h1>
+              </div>
+              <SocialLinksSettings />
+            </div>
+          </AdminRoute>
+        }
+      />
       <Route path="*" element={<Navigate to="/admin" replace />} />
     </Routes>
   );

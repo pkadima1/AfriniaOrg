@@ -32,6 +32,8 @@ export interface BlogPost {
   tags?: string[];
   title: string;
   updated_at: string;
+  content_language?: 'en' | 'fr' | 'both';
+  target_countries?: string[];
 }
 
 export interface Comment {

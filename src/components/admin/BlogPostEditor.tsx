@@ -31,7 +31,88 @@ interface BlogPost {
   published_at?: string;
   created_at?: string;
   updated_at?: string;
+  content_language: 'en' | 'fr' | 'both';
+  target_countries: string[];
 }
+
+interface CountryEntry { name: string; lang: 'fr' | 'en' | 'both' | 'pt' }
+
+const COUNTRY_GROUPS: { label: string; flag: string; lang: 'fr' | 'en' | 'both' | 'pt'; countries: CountryEntry[] }[] = [
+  {
+    label: 'Francophone', flag: '🇫🇷', lang: 'fr',
+    countries: [
+      { name: 'DR Congo',                  lang: 'fr' },
+      { name: "Côte d'Ivoire",             lang: 'fr' },
+      { name: 'Senegal',                   lang: 'fr' },
+      { name: 'Mali',                      lang: 'fr' },
+      { name: 'Burkina Faso',              lang: 'fr' },
+      { name: 'Niger',                     lang: 'fr' },
+      { name: 'Guinea',                    lang: 'fr' },
+      { name: 'Chad',                      lang: 'fr' },
+      { name: 'Togo',                      lang: 'fr' },
+      { name: 'Benin',                     lang: 'fr' },
+      { name: 'Madagascar',                lang: 'fr' },
+      { name: 'Central African Republic',  lang: 'fr' },
+      { name: 'Gabon',                     lang: 'fr' },
+      { name: 'Congo',                     lang: 'fr' },
+      { name: 'Djibouti',                  lang: 'fr' },
+      { name: 'Comoros',                   lang: 'fr' },
+      { name: 'Mauritania',                lang: 'fr' },
+      { name: 'Burundi',                   lang: 'fr' },
+      { name: 'Algeria',                   lang: 'fr' },
+      { name: 'Morocco',                   lang: 'fr' },
+      { name: 'Tunisia',                   lang: 'fr' },
+    ],
+  },
+  {
+    label: 'Anglophone', flag: '🇬🇧', lang: 'en',
+    countries: [
+      { name: 'Nigeria',       lang: 'en' },
+      { name: 'Ethiopia',      lang: 'en' },
+      { name: 'Egypt',         lang: 'en' },
+      { name: 'Tanzania',      lang: 'en' },
+      { name: 'Kenya',         lang: 'en' },
+      { name: 'Sudan',         lang: 'en' },
+      { name: 'Uganda',        lang: 'en' },
+      { name: 'Ghana',         lang: 'en' },
+      { name: 'Zambia',        lang: 'en' },
+      { name: 'Zimbabwe',      lang: 'en' },
+      { name: 'Malawi',        lang: 'en' },
+      { name: 'Sierra Leone',  lang: 'en' },
+      { name: 'Liberia',       lang: 'en' },
+      { name: 'Gambia',        lang: 'en' },
+      { name: 'Botswana',      lang: 'en' },
+      { name: 'Namibia',       lang: 'en' },
+      { name: 'Lesotho',       lang: 'en' },
+      { name: 'Eswatini',      lang: 'en' },
+      { name: 'Somalia',       lang: 'en' },
+      { name: 'South Sudan',   lang: 'en' },
+      { name: 'Eritrea',       lang: 'en' },
+      { name: 'Libya',         lang: 'en' },
+    ],
+  },
+  {
+    label: 'Bilingual FR/EN', flag: '🌍', lang: 'both',
+    countries: [
+      { name: 'Cameroon',     lang: 'both' },
+      { name: 'Rwanda',       lang: 'both' },
+      { name: 'South Africa', lang: 'both' },
+      { name: 'Seychelles',   lang: 'both' },
+      { name: 'Mauritius',    lang: 'both' },
+    ],
+  },
+  {
+    label: 'Lusophone', flag: '🇵🇹', lang: 'pt',
+    countries: [
+      { name: 'Angola',                lang: 'pt' },
+      { name: 'Mozambique',            lang: 'pt' },
+      { name: 'Cape Verde',            lang: 'pt' },
+      { name: 'Guinea-Bissau',         lang: 'pt' },
+      { name: 'São Tomé & Príncipe',   lang: 'pt' },
+      { name: 'Equatorial Guinea',     lang: 'pt' },
+    ],
+  },
+];
 
 export const BlogPostEditor = () => {
   const navigate = useNavigate();
@@ -53,7 +134,9 @@ export const BlogPostEditor = () => {
     category: '',
     tags: [],
     meta_title: '',
-    meta_description: ''
+    meta_description: '',
+    content_language: 'en' as const,
+    target_countries: [],
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +164,9 @@ export const BlogPostEditor = () => {
           meta_description: data.meta_description || '',
           published_at: data.published_at,
           created_at: data.created_at,
-          updated_at: data.updated_at
+          updated_at: data.updated_at,
+          content_language: (data.content_language as 'en' | 'fr' | 'both') || 'en',
+          target_countries: (data.target_countries as string[]) || [],
         });
       }
     } catch (error) {
@@ -234,6 +319,7 @@ export const BlogPostEditor = () => {
         <TabsList>
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="audience">Audience</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
 
@@ -396,6 +482,140 @@ export const BlogPostEditor = () => {
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ── AUDIENCE TAB ── */}
+        <TabsContent value="audience" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Audience Targeting</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+
+              {/* Content language */}
+              <div>
+                <Label htmlFor="content_language">Content Language</Label>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Which language is this content written in?
+                </p>
+                <Select
+                  value={post.content_language}
+                  onValueChange={(v) =>
+                    setPost(prev => ({ ...prev, content_language: v as 'en' | 'fr' | 'both' }))
+                  }
+                >
+                  <SelectTrigger className="w-64">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">🇺🇸 English only</SelectItem>
+                    <SelectItem value="fr">🇫🇷 Français uniquement</SelectItem>
+                    <SelectItem value="both">🌍 Both / Bilingue</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Target countries */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <Label>Target Countries</Label>
+                  {post.target_countries.length > 0 && (
+                    <button
+                      type="button"
+                      className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                      onClick={() => setPost(prev => ({ ...prev, target_countries: [] }))}
+                    >
+                      Clear all
+                    </button>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Select the African markets this content targets. Use "Select all" per group for quick bulk selection.
+                </p>
+
+                {/* Grouped country chips */}
+                <div className="space-y-5">
+                  {COUNTRY_GROUPS.map(group => {
+                    const groupNames = group.countries.map(c => c.name);
+                    const allSelected = groupNames.every(n => post.target_countries.includes(n));
+                    return (
+                      <div key={group.label}>
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                            {group.flag} {group.label}
+                          </span>
+                          <button
+                            type="button"
+                            className="text-xs text-primary underline-offset-2 hover:underline"
+                            onClick={() =>
+                              setPost(prev => ({
+                                ...prev,
+                                target_countries: allSelected
+                                  ? prev.target_countries.filter(c => !groupNames.includes(c))
+                                  : [...new Set([...prev.target_countries, ...groupNames])],
+                              }))
+                            }
+                          >
+                            {allSelected ? 'Deselect all' : 'Select all'}
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {group.countries.map(({ name }) => {
+                            const selected = post.target_countries.includes(name);
+                            return (
+                              <button
+                                key={name}
+                                type="button"
+                                onClick={() =>
+                                  setPost(prev => ({
+                                    ...prev,
+                                    target_countries: selected
+                                      ? prev.target_countries.filter(c => c !== name)
+                                      : [...prev.target_countries, name],
+                                  }))
+                                }
+                                className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                                  selected
+                                    ? 'bg-primary text-primary-foreground border-primary'
+                                    : 'border-border text-muted-foreground hover:border-primary hover:text-foreground'
+                                }`}
+                              >
+                                {name}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Selected as removable badges */}
+                {post.target_countries.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-muted rounded-md mt-4">
+                    <span className="text-xs text-muted-foreground self-center mr-1">
+                      Selected ({post.target_countries.length}):
+                    </span>
+                    {post.target_countries.map(c => (
+                      <Badge key={c} variant="secondary" className="flex items-center gap-1">
+                        {c}
+                        <X
+                          className="w-3 h-3 cursor-pointer"
+                          onClick={() =>
+                            setPost(prev => ({
+                              ...prev,
+                              target_countries: prev.target_countries.filter(x => x !== c),
+                            }))
+                          }
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
             </CardContent>
           </Card>
         </TabsContent>

@@ -4,6 +4,18 @@ import { useTranslation } from 'react-i18next';
 const PATRICK_PHOTO =
   'https://firebasestorage.googleapis.com/v0/b/modified-hull-203004.firebasestorage.app/o/Afrinia%2FAfriniaMedia%2FMe%20LinkedIn.png?alt=media&token=b7119c05-1405-40e9-a3a4-b489d1a2fa52';
 
+/* ─── Design tokens ─────────────────────────────── */
+const BG          = '#0a1628';          // deep dark premium navy
+const GOLD        = '#B8912A';          // brand gold
+const GOLD_LIGHT  = '#d4a83a';          // lighter gold for numbers (solid, no opacity)
+const GOLD_BORDER = 'rgba(184,145,42,0.3)';
+const WHITE       = '#ffffff';          // headings & h-level text
+const BODY        = '#dde8f4';          // body paragraphs — white-toned, high contrast
+const LEAD        = '#f0e8d0';          // italic pull-quotes
+const MUTED       = '#8fa8c8';          // captions / attribution
+const SERIF       = "'Cormorant Garamond', serif";
+const SANS        = "'Jost', sans-serif";
+
 const About = () => {
   const { t } = useTranslation();
 
@@ -18,120 +30,69 @@ const About = () => {
 
   return (
     <Layout>
-      <div
-        style={{
-          maxWidth: 1100,
-          margin: '0 auto',
-          padding: '0 24px 80px',
-          fontFamily: "'Jost', sans-serif",
-        }}
-      >
-        {/* ── HERO ── */}
+      {/* ── full-page background ── */}
+      <div style={{ background: BG, minHeight: '100vh', fontFamily: SANS }}>
+
+        {/* ════════════════════════════════════════
+            HERO
+        ════════════════════════════════════════ */}
         <div
+          className="about-hero"
           style={{
+            maxWidth: 1200,
+            margin: '0 auto',
+            padding: '80px 48px 96px',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: 64,
+            gridTemplateColumns: '1fr 380px',
+            gap: 80,
             alignItems: 'center',
-            padding: '64px 0 72px',
-            borderBottom: '1px solid rgba(184,145,42,0.2)',
           }}
         >
-          {/* Text */}
+          {/* ── left: text ── */}
           <div>
-            <p
-              style={{
-                fontFamily: "'Jost', sans-serif",
-                fontSize: 10,
-                fontWeight: 500,
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color: '#B8912A',
-                marginBottom: 20,
-              }}
-            >
+            {/* eyebrow */}
+            <p style={{ fontFamily: SANS, fontSize: 11, fontWeight: 500, letterSpacing: '0.22em', textTransform: 'uppercase', color: GOLD, marginBottom: 24 }}>
               {t('about.eyebrow')}
             </p>
 
-            <h1
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 'clamp(42px, 5vw, 60px)',
-                fontWeight: 300,
-                lineHeight: 1.1,
-                color: '#F5F0E8',
-                marginBottom: 8,
-                letterSpacing: '-0.01em',
-              }}
-            >
+            {/* name */}
+            <h1 style={{ fontFamily: SERIF, fontSize: 'clamp(50px, 5.5vw, 74px)', fontWeight: 300, lineHeight: 1.05, color: WHITE, marginBottom: 14, letterSpacing: '-0.02em' }}>
               Patrick K.
               <br />
               Tshimanga
             </h1>
 
-            <p
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 'clamp(16px, 2vw, 20px)',
-                fontWeight: 400,
-                fontStyle: 'italic',
-                color: '#B8912A',
-                marginBottom: 32,
-              }}
-            >
+            {/* role */}
+            <p style={{ fontFamily: SERIF, fontSize: 'clamp(17px, 1.8vw, 21px)', fontStyle: 'italic', color: GOLD, marginBottom: 40 }}>
               {t('about.hero.title')}
             </p>
 
-            <p
-              style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: 'clamp(20px, 2.5vw, 26px)',
-                fontWeight: 300,
-                fontStyle: 'italic',
-                lineHeight: 1.55,
-                color: '#d4c9a8',
-                marginBottom: 32,
-                borderLeft: '2px solid #B8912A',
-                paddingLeft: 20,
-              }}
-            >
+            {/* pull-quote */}
+            <p style={{ fontFamily: SERIF, fontSize: 'clamp(21px, 2.2vw, 28px)', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.6, color: LEAD, marginBottom: 36, borderLeft: `3px solid ${GOLD}`, paddingLeft: 24 }}>
               {t('about.hero.lead')}
             </p>
 
-            <p
-              style={{
-                fontSize: 15,
-                fontWeight: 300,
-                lineHeight: 1.8,
-                color: '#8a9bb5',
-              }}
-            >
+            {/* body */}
+            <p style={{ fontSize: 17, fontWeight: 300, lineHeight: 1.9, color: BODY, maxWidth: 560 }}>
               {t('about.hero.body')}
             </p>
           </div>
 
-          {/* Photo */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <div style={{ position: 'relative', width: 340, height: 420 }}>
-              {/* Gold offset border */}
-              <div
-                style={{
-                  position: 'absolute',
-                  top: -12,
-                  left: 12,
-                  width: '100%',
-                  height: '100%',
-                  border: '1px solid #B8912A',
-                  borderRadius: 1,
-                  zIndex: 0,
-                }}
-              />
+          {/* ── right: photo ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {/* gold offset border frame */}
+            <div style={{ position: 'relative', width: '100%' }}>
+              {/* offset gold border — sits behind and shifted */}
+              <div style={{
+                position: 'absolute',
+                top: -10,
+                left: 10,
+                right: -10,
+                bottom: 10,
+                border: `1px solid ${GOLD}`,
+                borderRadius: 2,
+                zIndex: 0,
+              }} />
               <img
                 src={PATRICK_PHOTO}
                 alt="Patrick K. Tshimanga"
@@ -139,102 +100,49 @@ const About = () => {
                   position: 'relative',
                   zIndex: 1,
                   width: '100%',
-                  height: '100%',
+                  height: 480,
                   objectFit: 'cover',
                   objectPosition: 'top center',
-                  borderRadius: 1,
+                  borderRadius: 2,
                   display: 'block',
+                  background: BG,   /* matches page bg */
                 }}
               />
-              <p
-                style={{
-                  position: 'absolute',
-                  bottom: -36,
-                  left: 0,
-                  right: 0,
-                  textAlign: 'center',
-                  fontFamily: "'Jost', sans-serif",
-                  fontSize: 11,
-                  fontWeight: 300,
-                  letterSpacing: '0.1em',
-                  color: '#5c7090',
-                  zIndex: 1,
-                }}
-              >
-                {t('about.photoCaption')}
-              </p>
             </div>
+            <p style={{ marginTop: 24, fontFamily: SANS, fontSize: 11, fontWeight: 300, letterSpacing: '0.12em', color: MUTED, textAlign: 'center' }}>
+              {t('about.photoCaption')}
+            </p>
           </div>
         </div>
 
-        {/* ── BELIEFS ── */}
-        <div
-          style={{
-            padding: '72px 0',
-            borderBottom: '1px solid rgba(184,145,42,0.2)',
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: '#B8912A',
-              marginBottom: 40,
-            }}
-          >
+        {/* divider */}
+        <hr style={{ maxWidth: 1200, margin: '0 auto', border: 'none', borderTop: `1px solid ${GOLD_BORDER}` }} />
+
+        {/* ════════════════════════════════════════
+            WHAT I BELIEVE
+        ════════════════════════════════════════ */}
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '88px 48px' }}>
+
+          {/* section label */}
+          <p style={{ fontFamily: SANS, fontSize: 11, fontWeight: 500, letterSpacing: '0.22em', textTransform: 'uppercase', color: GOLD, marginBottom: 56 }}>
             {t('about.beliefs.label')}
           </p>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: 48,
-            }}
-          >
+          {/* strict 2-col grid — controlled via <style> below */}
+          <div id="beliefs-grid">
             {beliefs.map(({ num, key }) => (
-              <div
-                key={key}
-                style={{
-                  borderTop: '1px solid rgba(184,145,42,0.2)',
-                  paddingTop: 24,
-                }}
-              >
-                <p
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: 42,
-                    fontWeight: 300,
-                    color: 'rgba(184,145,42,0.18)',
-                    lineHeight: 1,
-                    marginBottom: 12,
-                  }}
-                >
+              <div key={key} style={{ borderTop: `1px solid ${GOLD_BORDER}`, paddingTop: 32 }}>
+
+                {/* solid gold number — no opacity */}
+                <p style={{ fontFamily: SERIF, fontSize: 60, fontWeight: 300, color: GOLD_LIGHT, lineHeight: 1, marginBottom: 18 }}>
                   {num}
                 </p>
-                <h3
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: 22,
-                    fontWeight: 400,
-                    color: '#F5F0E8',
-                    marginBottom: 12,
-                    lineHeight: 1.3,
-                  }}
-                >
+
+                <h3 style={{ fontFamily: SERIF, fontSize: 25, fontWeight: 400, color: WHITE, marginBottom: 14, lineHeight: 1.35 }}>
                   {t(`about.beliefs.${key}.headline`)}
                 </h3>
-                <p
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 300,
-                    lineHeight: 1.75,
-                    color: '#8a9bb5',
-                  }}
-                >
+
+                <p style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.85, color: BODY }}>
                   {t(`about.beliefs.${key}.body`)}
                 </p>
               </div>
@@ -242,142 +150,63 @@ const About = () => {
           </div>
         </div>
 
-        {/* ── MISSION QUOTE ── */}
-        <div
-          style={{
-            padding: '72px 0',
-            borderBottom: '1px solid rgba(184,145,42,0.2)',
-            textAlign: 'center',
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 'clamp(26px, 3.5vw, 40px)',
-              fontWeight: 300,
-              fontStyle: 'italic',
-              lineHeight: 1.45,
-              color: '#F5F0E8',
-              maxWidth: 820,
-              margin: '0 auto 24px',
-              letterSpacing: '-0.01em',
-            }}
-          >
+        {/* divider */}
+        <hr style={{ maxWidth: 1200, margin: '0 auto', border: 'none', borderTop: `1px solid ${GOLD_BORDER}` }} />
+
+        {/* ════════════════════════════════════════
+            MISSION QUOTE
+        ════════════════════════════════════════ */}
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '96px 48px', textAlign: 'center' }}>
+          <p style={{ fontFamily: SERIF, fontSize: 'clamp(28px, 3.2vw, 44px)', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.5, color: WHITE, marginBottom: 28, letterSpacing: '-0.01em' }}>
             {t('about.mission.quote')}
           </p>
-          <p
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              fontSize: 12,
-              fontWeight: 300,
-              letterSpacing: '0.12em',
-              color: '#B8912A',
-            }}
-          >
+          <p style={{ fontFamily: SANS, fontSize: 12, fontWeight: 400, letterSpacing: '0.18em', textTransform: 'uppercase', color: GOLD }}>
             {t('about.mission.attr')}
           </p>
         </div>
 
-        {/* ── ASPIRATIONS ── */}
-        <div
-          style={{
-            padding: '72px 0',
-            borderBottom: '1px solid rgba(184,145,42,0.2)',
-          }}
-        >
-          <p
-            style={{
-              fontFamily: "'Jost', sans-serif",
-              fontSize: 10,
-              fontWeight: 500,
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: '#B8912A',
-              marginBottom: 40,
-            }}
-          >
+        {/* divider */}
+        <hr style={{ maxWidth: 1200, margin: '0 auto', border: 'none', borderTop: `1px solid ${GOLD_BORDER}` }} />
+
+        {/* ════════════════════════════════════════
+            WHERE I AM GOING
+        ════════════════════════════════════════ */}
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '88px 48px' }}>
+
+          <p style={{ fontFamily: SANS, fontSize: 11, fontWeight: 500, letterSpacing: '0.22em', textTransform: 'uppercase', color: GOLD, marginBottom: 56 }}>
             {t('about.aspirations.label')}
           </p>
 
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'minmax(0, 280px) 1fr',
-              gap: 64,
-              alignItems: 'start',
-            }}
-            className="asp-layout"
-          >
+          <div id="asp-layout">
+            {/* left col */}
             <div>
-              <h2
-                style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: 'clamp(32px, 4vw, 48px)',
-                  fontWeight: 300,
-                  lineHeight: 1.15,
-                  color: '#F5F0E8',
-                  marginBottom: 24,
-                }}
-              >
+              <h2 style={{ fontFamily: SERIF, fontSize: 'clamp(34px, 3.5vw, 50px)', fontWeight: 300, lineHeight: 1.18, color: WHITE, marginBottom: 28 }}>
                 {t('about.aspirations.heading')}
               </h2>
-              <p
-                style={{
-                  fontSize: 14,
-                  fontWeight: 300,
-                  lineHeight: 1.8,
-                  color: '#8a9bb5',
-                }}
-              >
+              <p style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.9, color: BODY }}>
                 {t('about.aspirations.body')}
               </p>
             </div>
 
+            {/* right col */}
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {aspirations.map((key, i) => (
                 <div
                   key={key}
                   style={{
                     display: 'flex',
-                    gap: 24,
-                    padding: i === 0 ? '0 0 28px' : '28px 0',
-                    borderBottom:
-                      i < aspirations.length - 1
-                        ? '1px solid rgba(184,145,42,0.2)'
-                        : 'none',
+                    gap: 28,
+                    padding: i === 0 ? '0 0 40px' : '40px 0',
+                    borderBottom: i < aspirations.length - 1 ? `1px solid ${GOLD_BORDER}` : 'none',
                     alignItems: 'flex-start',
                   }}
                 >
-                  <div
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: '50%',
-                      background: '#B8912A',
-                      marginTop: 8,
-                      flexShrink: 0,
-                    }}
-                  />
+                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: GOLD, marginTop: 11, flexShrink: 0 }} />
                   <div>
-                    <p
-                      style={{
-                        fontFamily: "'Cormorant Garamond', serif",
-                        fontSize: 20,
-                        fontWeight: 400,
-                        color: '#F5F0E8',
-                        marginBottom: 6,
-                      }}
-                    >
+                    <p style={{ fontFamily: SERIF, fontSize: 22, fontWeight: 400, color: WHITE, marginBottom: 10, lineHeight: 1.3 }}>
                       {t(`about.aspirations.${key}.title`)}
                     </p>
-                    <p
-                      style={{
-                        fontSize: 13.5,
-                        fontWeight: 300,
-                        lineHeight: 1.7,
-                        color: '#8a9bb5',
-                      }}
-                    >
+                    <p style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.85, color: BODY }}>
                       {t(`about.aspirations.${key}.desc`)}
                     </p>
                   </div>
@@ -387,56 +216,56 @@ const About = () => {
           </div>
         </div>
 
-        {/* ── CODA ── */}
-        <div
-          style={{
-            padding: '64px 0 0',
-            display: 'grid',
-            gridTemplateColumns: '1fr auto',
-            alignItems: 'end',
-            gap: 40,
-          }}
-          className="coda-layout"
-        >
-          <p
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 18,
-              fontWeight: 300,
-              fontStyle: 'italic',
-              lineHeight: 1.6,
-              color: '#d4c9a8',
-            }}
-          >
+        {/* divider */}
+        <hr style={{ maxWidth: 1200, margin: '0 auto', border: 'none', borderTop: `1px solid ${GOLD_BORDER}` }} />
+
+        {/* ════════════════════════════════════════
+            CODA
+        ════════════════════════════════════════ */}
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '80px 48px 110px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <p style={{ fontFamily: SERIF, fontSize: 'clamp(20px, 2vw, 26px)', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.75, color: LEAD, maxWidth: 700 }}>
             {t('about.coda.text')}
           </p>
-          <p
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: 48,
-              fontWeight: 300,
-              color: 'rgba(184,145,42,0.2)',
-              lineHeight: 1,
-              userSelect: 'none',
-            }}
-          >
+          <p style={{ fontFamily: SERIF, fontSize: 80, fontWeight: 300, color: GOLD_LIGHT, lineHeight: 1, userSelect: 'none' }}>
             {t('about.coda.mark')}
           </p>
         </div>
-      </div>
 
+      </div>{/* /BG */}
+
+      {/* ── Grid + responsive overrides ── */}
       <style>{`
-        @media (max-width: 720px) {
-          .asp-layout {
+        /* Beliefs — always 2 equal columns */
+        #beliefs-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 52px 64px;
+        }
+        /* Aspirations — fixed left col + flexible right */
+        #asp-layout {
+          display: grid;
+          grid-template-columns: 340px 1fr;
+          gap: 80px;
+          align-items: start;
+        }
+        @media (max-width: 960px) {
+          .about-hero {
             grid-template-columns: 1fr !important;
-            gap: 32px !important;
+            gap: 48px !important;
+            padding: 56px 24px 64px !important;
           }
-          .coda-layout {
-            grid-template-columns: 1fr !important;
+          #beliefs-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
           }
-          .coda-layout > p:last-child {
-            display: none;
+          #asp-layout {
+            grid-template-columns: 1fr;
+            gap: 48px;
           }
+        }
+        @media (max-width: 600px) {
+          .about-hero img { height: 300px !important; }
+          section, div[style] { padding-left: 24px !important; padding-right: 24px !important; }
         }
       `}</style>
     </Layout>

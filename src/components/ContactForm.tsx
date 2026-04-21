@@ -1,198 +1,115 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
-const CONTACT_METHOD_VALUES = ['email', 'phone', 'video'] as const;
+const GOLD = '#B8912A';
+const BODY = '#c8d8e8';
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'rgba(255,255,255,0.05)',
+  border: '1px solid rgba(184,145,42,0.3)',
+  borderRadius: 2,
+  padding: '12px 16px',
+  fontSize: 15,
+  color: '#ffffff',
+  outline: 'none',
+  fontFamily: "'Jost', sans-serif",
+  fontWeight: 300,
+  boxSizing: 'border-box',
+};
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontFamily: "'Jost', sans-serif",
+  fontSize: 11,
+  fontWeight: 500,
+  letterSpacing: '0.15em',
+  textTransform: 'uppercase',
+  color: GOLD,
+  marginBottom: 8,
+};
 
 const ContactForm = () => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    timeDrain: '',
-    contactMethod: '' as '' | (typeof CONTACT_METHOD_VALUES)[number],
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
+    setSubmitting(true);
     try {
       await fetch('https://engageperfect.app.n8n.cloud/webhook/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         mode: 'no-cors',
         body: JSON.stringify({
-          type: 'time_audit_request',
-          name: formData.name,
-          email: formData.email,
-          company: formData.company || '',
-          time_drain: formData.timeDrain,
-          contact_method: formData.contactMethod || 'email',
+          type: 'afrinia_contact',
+          to: 'afrinia@afrinia.org',
+          ...form,
           submitted_at: new Date().toISOString(),
         }),
       });
-
-      toast({
-        title: t('contact.form.success.title'),
-        description: t('contact.form.success.description'),
-      });
-
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        timeDrain: '',
-        contactMethod: '',
-      });
-    } catch (error: unknown) {
-      console.error('Contact form error:', error);
-      toast({
-        title: t('contact.form.error.title'),
-        description: t('contact.form.error.description'),
-        variant: 'destructive',
-      });
+      setSent(true);
+      toast({ title: t('contact.form.success.title'), description: t('contact.form.success.description') });
+    } catch {
+      toast({ title: t('contact.form.error.title'), description: t('contact.form.error.description'), variant: 'destructive' });
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleContactMethodChange = (value: string) => {
-    setFormData({
-      ...formData,
-      contactMethod: value as (typeof CONTACT_METHOD_VALUES)[number],
-    });
-  };
+  if (sent) {
+    return (
+      <div style={{ padding: '48px 0', textAlign: 'center' }}>
+        <p style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 32, fontWeight: 300, color: '#F5F0E8', marginBottom: 12 }}>
+          {t('contact.form.success.title')}
+        </p>
+        <p style={{ fontSize: 15, color: BODY, lineHeight: 1.7 }}>{t('contact.form.success.description')}</p>
+      </div>
+    );
+  }
 
   return (
-    <Card className="p-8 bg-dark-card border-white/10">
-      <h2 className="text-2xl font-bold mb-6">{t('contact.form.title')}</h2>
-      <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }} className="form-row">
         <div>
-          <Label htmlFor="name" className="text-sm font-medium mb-2 block">
-            {t('contact.form.fields.name.label')}
-          </Label>
-          <Input
-            id="name"
-            name="name"
-            type="text"
-            required
-            value={formData.name}
-            onChange={handleChange}
-            disabled={isSubmitting}
-            className="bg-dark-surface border-white/20 text-white placeholder:text-text-secondary"
-            placeholder={t('contact.form.fields.name.placeholder')}
-          />
+          <label style={labelStyle}>{t('contact.form.fields.name.label')}</label>
+          <input name="name" required value={form.name} onChange={handleChange} disabled={submitting}
+            placeholder={t('contact.form.fields.name.placeholder')} style={inputStyle} />
         </div>
-
         <div>
-          <Label htmlFor="email" className="text-sm font-medium mb-2 block">
-            {t('contact.form.fields.email.label')}
-          </Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            required
-            value={formData.email}
-            onChange={handleChange}
-            disabled={isSubmitting}
-            className="bg-dark-surface border-white/20 text-white placeholder:text-text-secondary"
-            placeholder={t('contact.form.fields.email.placeholder')}
-          />
+          <label style={labelStyle}>{t('contact.form.fields.email.label')}</label>
+          <input name="email" type="email" required value={form.email} onChange={handleChange} disabled={submitting}
+            placeholder={t('contact.form.fields.email.placeholder')} style={inputStyle} />
         </div>
-
-        <div>
-          <Label htmlFor="company" className="text-sm font-medium mb-2 block">
-            {t('contact.form.fields.company.label')}
-          </Label>
-          <Input
-            id="company"
-            name="company"
-            type="text"
-            value={formData.company}
-            onChange={handleChange}
-            disabled={isSubmitting}
-            className="bg-dark-surface border-white/20 text-white placeholder:text-text-secondary"
-            placeholder={t('contact.form.fields.company.placeholder')}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="timeDrain" className="text-sm font-medium mb-2 block">
-            {t('contact.form.fields.timeDrain.label')}
-          </Label>
-          <textarea
-            id="timeDrain"
-            name="timeDrain"
-            rows={4}
-            required
-            value={formData.timeDrain}
-            onChange={handleChange}
-            disabled={isSubmitting}
-            className="w-full bg-dark-surface border border-white/20 rounded-lg px-3 py-2 text-white placeholder:text-text-secondary focus:outline-none focus:ring-2 focus:ring-accent-blue disabled:opacity-50 resize-none"
-            placeholder={t('contact.form.fields.timeDrain.placeholder')}
-          />
-        </div>
-
-        <div>
-          <Label className="text-sm font-medium mb-2 block">
-            {t('contact.form.fields.contactMethod.label')}
-          </Label>
-          <Select
-            value={formData.contactMethod}
-            onValueChange={handleContactMethodChange}
-            disabled={isSubmitting}
-          >
-            <SelectTrigger className="bg-dark-surface border-white/20 text-white [&>span]:text-text-secondary">
-              <SelectValue placeholder={t('contact.form.fields.contactMethod.placeholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="email" className="text-foreground">
-                {t('contact.form.fields.contactMethod.email')}
-              </SelectItem>
-              <SelectItem value="phone" className="text-foreground">
-                {t('contact.form.fields.contactMethod.phone')}
-              </SelectItem>
-              <SelectItem value="video" className="text-foreground">
-                {t('contact.form.fields.contactMethod.video')}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button
-          type="submit"
-          className="w-full apple-button bg-gradient-to-r from-accent-blue to-accent-purple hover:from-accent-blue/90 hover:to-accent-purple/90"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? t('contact.form.submitting') : t('contact.form.submit')}
-        </Button>
-      </form>
-    </Card>
+      </div>
+      <div>
+        <label style={labelStyle}>{t('contact.form.fields.subject.label')}</label>
+        <input name="subject" required value={form.subject} onChange={handleChange} disabled={submitting}
+          placeholder={t('contact.form.fields.subject.placeholder')} style={inputStyle} />
+      </div>
+      <div>
+        <label style={labelStyle}>{t('contact.form.fields.message.label')}</label>
+        <textarea name="message" required rows={6} value={form.message} onChange={handleChange} disabled={submitting}
+          placeholder={t('contact.form.fields.message.placeholder')}
+          style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.7 }} />
+      </div>
+      <div>
+        <button type="submit" disabled={submitting}
+          style={{
+            fontFamily: "'Jost', sans-serif", fontSize: 11, fontWeight: 500,
+            letterSpacing: '0.22em', textTransform: 'uppercase',
+            background: GOLD, color: '#0a1628', border: 'none', cursor: submitting ? 'not-allowed' : 'pointer',
+            padding: '16px 48px', opacity: submitting ? 0.7 : 1, transition: 'opacity 0.2s',
+          }}>
+          {submitting ? t('contact.form.submitting') : t('contact.form.submit')}
+        </button>
+      </div>
+    </form>
   );
 };
 
