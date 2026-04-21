@@ -64,35 +64,34 @@ The site is live at `https://afrinia.org/` (confirmed via Google Search Console 
 - Firebase config (project IDs, storage URLs) — these are Firebase infrastructure identifiers, not canonical URLs
 - Any runtime content already stored in Firestore — those are data, not code
 
-**Success criteria verified locally:**
-- [ ] Open `http://localhost:8080/sitemap.xml` — returns XML with `afrinia.org` URLs (no HTML shell)
-- [ ] Open `http://localhost:8080/robots.txt` — shows `Sitemap: https://afrinia.org/sitemap.xml`
-- [ ] View page source of homepage — `og:url` shows `afrinia.org`
-- [ ] View page source of a blog post — JSON-LD publisher shows `afrinia.org`
+**Success criteria verified in production (2026-04-21):**
+- ✅ `https://afrinia.org/sitemap.xml` returns valid XML — 7 URLs listed, all `afrinia.org` (screenshot confirmed: browser renders plain-text sitemap, not the React app)
+- ✅ GSC → Sitemaps → `/sitemap.xml` shows **"Sitemap processed successfully"**, Last read: 4/21/26, **Discovered pages: 7**
+- ✅ GSC → URL Inspection → `https://afrinia.org/` shows **"URL is on Google"** and **"Page is indexed"**
+- ✅ HTTPS valid, Breadcrumbs: 1 valid item detected
+- ✅ `robots.txt` in production points to the correct sitemap URL
 
-**Next manual action required (after deploying to production):**
-1. In GSC → Sitemaps: delete the broken `sitemap_index.xml` entry
-2. Submit `sitemap.xml` (the correct filename, no "index" suffix)
-3. Request indexing for the homepage via GSC URL inspection
+**Previous broken state (for reference):**
+- `sitemap_index.xml` had "1 error — Sitemap is HTML", 0 discovered pages
+- All URLs in the sitemap referenced `afrinia.com` instead of `afrinia.org`
 
 ---
 
 ### MILESTONE 2 — Fix Sitemap Structure (Add Missing Pages, Remove Non-Indexable)
-**Status:** 🔴 Not started
-**Planned branch:** `GoogleAnalyticsSetUp`
+**Status:** ✅ Done (completed as part of Milestone 1 — same file, same commit)
+**Date completed:** 2026-04-21
+**Branch:** `GoogleAnalyticsSetUp`
 
-**What needs to be done:**
-- Add `/audio` page (exists in routes, missing from sitemap)
-- Confirm `/builders` is correctly listed (currently in sitemap — verify it is indexable)
-- Remove any paths that robots.txt disallows (`/admin/*`, `/profile`, `/settings`) from the sitemap
-- Clean up the comment block in `sitemap.xml` (example slug template is outdated noise)
+**What was done:**
+- Added `/audio` page — it existed as a live route in the app but was absent from the sitemap
+- `/builders` confirmed and retained (it is a public, indexable coming-soon page)
+- Disallowed paths (`/admin/*`, `/profile`, `/settings`) are correctly absent — they were never in the sitemap and robots.txt already blocks them
+- Comment block cleaned up: removed the outdated `afrinia.com` example slug template; updated the Phase 1 manual workflow note and Phase 2 long-term plan note
 
-**Files to change:** `public/sitemap.xml`
-
-**Success criteria:**
-- Every public, indexable route appears exactly once in the sitemap
-- No disallowed URL appears in the sitemap
-- GSC sitemap validation shows 0 errors and page count matches route count
+**Success criteria verified in production (2026-04-21):**
+- ✅ GSC discovered exactly **7 pages** — matches the 7 entries in the sitemap exactly (/, /about, /fr/blog, /en/blog, /audio, /contact, /builders)
+- ✅ No disallowed URL appears in the sitemap
+- ✅ GSC reports **0 errors** on `/sitemap.xml`
 
 ---
 
@@ -174,7 +173,7 @@ Enhanced Measurement is currently toggled OFF (visible in the GA4 screenshot). T
 |-----------|-------------|--------|------|
 | 0 | Foundation & Planning | ✅ Done | 2026-04-21 |
 | 1 | Fix domain mismatch (afrinia.com → afrinia.org) | ✅ Done | 2026-04-21 |
-| 2 | Fix sitemap structure (add missing pages) | 🔴 Not started | — |
+| 2 | Fix sitemap structure (add missing pages) | ✅ Done | 2026-04-21 |
 | 3 | GA4 SPA route-change tracking | 🔴 Not started | — |
 | 4 | GA4 custom event tracking (blog + audio) | 🔴 Not started | — |
 | 5 | Add page meta to AudioPage | 🔴 Not started | — |
