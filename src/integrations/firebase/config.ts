@@ -5,7 +5,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
-import { getAnalytics } from 'firebase/analytics';
+import { getAnalytics, Analytics } from 'firebase/analytics';
 
 /** Afrinia web app config – keep in sync with Firebase Console > Project settings > Afrinia app */
 const firebaseConfig = {
@@ -45,11 +45,16 @@ if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
 // Rules are deployed to both .appspot.com and .firebasestorage.app so blog images load from either.
 export const storage: FirebaseStorage = getStorage(firebaseApp);
 
-// Initialize Analytics
+// Initialize Analytics — exported so route-change tracking can call logEvent
+// without re-initializing. Firebase returns the same singleton if called
+// twice, but exporting here makes the dependency explicit and avoids hidden
+// coupling between modules.
+export let analytics: Analytics | null = null;
 try {
-  getAnalytics(firebaseApp);
+  analytics = getAnalytics(firebaseApp);
 } catch (error) {
-  console.warn('Analytics initialization error (may be expected in test environments):', error);
+  // Expected in test environments or when blocked by an ad-blocker.
+  console.warn('Analytics initialization error:', error);
 }
 
 export default firebaseApp;

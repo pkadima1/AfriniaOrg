@@ -96,21 +96,33 @@ The site is live at `https://afrinia.org/` (confirmed via Google Search Console 
 ---
 
 ### MILESTONE 3 — GA4 SPA Route-Change Tracking
-**Status:** 🔴 Not started
-**Planned branch:** `GoogleAnalyticsSetUp`
+**Status:** ✅ Done
+**Date completed:** 2026-04-21
+**Branch:** `GoogleAnalyticsSetUp`
 
-**What needs to be done:**
-- Create `src/utils/analytics.ts` — centralized GA4 helper (all `gtag` calls go here only)
-- Create `src/hooks/useGAPageTracking.ts` — hook that fires `page_view` on every React Router route change
-- Mount tracker inside `<BrowserRouter>` in `src/App.tsx`
+**Root cause:**
+React Router swaps page components without reloading the browser. Firebase Analytics fires one `page_view` automatically when the app first loads, then never again. Every navigation after that (home → blog → article → audio) was invisible to GA4.
 
-**Why this is critical:**
-React Router swaps page components without reloading the browser. GA4 only fires one `page_view` on the initial load. Every navigation between pages is currently invisible in Analytics.
+**Files changed:**
 
-**Success criteria:**
-- GA4 Realtime report shows a new `page_view` event when clicking from homepage to a blog post
-- `page_path` in the event matches the new URL (e.g. `/en/blog/some-slug`)
-- No duplicate events firing on the same navigation
+| File | What changed |
+|------|-------------|
+| `src/integrations/firebase/config.ts` | `analytics` instance now exported (`export let analytics`) instead of being created and discarded. This avoids hidden coupling — any module that needs to call `logEvent` imports the single initialized instance rather than calling `getAnalytics()` again. |
+| `src/utils/analytics.ts` | **New file.** Centralized GA4 helper. All GA4 calls in the entire codebase go through here. Exports `trackPageView` (Milestone 3) and all custom event functions (`trackArticleView`, `trackAudioPlay`, etc.) with typed parameters — ready for Milestone 4 wiring. Internal `fire()` guard means analytics failures never crash the UI. |
+| `src/components/GAPageTracker.tsx` | **New file.** React component that renders nothing but fires `trackPageView` on every route change. Skips first render (Firebase already handles the initial page_view). Mounted once inside `<BrowserRouter>`, outside `<Routes>`, so it is never unmounted during navigation. |
+| `src/App.tsx` | Added `<GAPageTracker />` as first child of `<BrowserRouter>`, before `<Routes>`. One line change. |
+
+**Design decisions recorded:**
+- **Why a component, not a hook:** A component returning null is the standard React pattern for "router-aware side effect." It keeps `App.tsx` clean and does not pollute the `App` component with hook boilerplate.
+- **Why skip first render:** Firebase auto-fires page_view on initialization. Firing again on mount would double-count the first page view.
+- **Why all events in one file:** If GA4 is ever replaced or the measurement ID changes, there is exactly one file to update. No hunting through components.
+- **TypeScript:** Zero type errors confirmed (`tsc --noEmit` passes cleanly).
+
+**Success criteria to verify in GA4 Realtime:**
+- [ ] Navigate from homepage to a blog post → GA4 Realtime shows `page_view` with `page_path: /en/blog/your-slug`
+- [ ] Navigate back to blog listing → GA4 Realtime shows `page_view` with `page_path: /en/blog`
+- [ ] No duplicate events on initial page load
+- [ ] No console errors related to analytics
 
 ---
 
@@ -174,7 +186,7 @@ Enhanced Measurement is currently toggled OFF (visible in the GA4 screenshot). T
 | 0 | Foundation & Planning | ✅ Done | 2026-04-21 |
 | 1 | Fix domain mismatch (afrinia.com → afrinia.org) | ✅ Done | 2026-04-21 |
 | 2 | Fix sitemap structure (add missing pages) | ✅ Done | 2026-04-21 |
-| 3 | GA4 SPA route-change tracking | 🔴 Not started | — |
+| 3 | GA4 SPA route-change tracking | ✅ Done | 2026-04-21 |
 | 4 | GA4 custom event tracking (blog + audio) | 🔴 Not started | — |
 | 5 | Add page meta to AudioPage | 🔴 Not started | — |
 | 6 | Enable Enhanced Measurement (GA4 console) | ⏸ Blocked | — |

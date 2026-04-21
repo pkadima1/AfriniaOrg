@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import { BlogAdmin } from "./pages/admin/BlogAdmin";
 import { detectLanguage } from "@/utils/languageUtils";
+import GAPageTracker from "@/components/GAPageTracker";
 
 // Phase 1 placeholder for Builders page
 import ComingSoon from "./pages/ComingSoon";
@@ -43,6 +44,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <GAPageTracker />
           <Routes>
             {/* Afrinia public routes */}
             <Route path="/" element={<Index />} />
