@@ -161,19 +161,35 @@ All typed event functions were defined in `src/utils/analytics.ts` (Milestone 3)
 ---
 
 ### MILESTONE 5 — Add Page Meta to AudioPage
-**Status:** 🔴 Not started
-**Planned branch:** `GoogleAnalyticsSetUp`
+**Status:** ✅ Done
+**Date completed:** 2026-04-21
+**Branch:** `GoogleAnalyticsSetUp`
 
-**What needs to be done:**
-- Add `usePageMeta()` call in `src/pages/AudioPage.tsx` with EN and FR title/description
-- Add JSON-LD for the audio page (PodcastSeries schema)
+**Root cause:**
+Every visit to `/audio` was recorded in GA4 with `page_title: "Afrinia — Intelligence for Africa's Builders"` — the same title as the homepage. GA4 cannot distinguish audio traffic from homepage traffic in any report filtered by page title. Google also had no structured data describing the podcast, which limits how the audio page appears in search results.
 
-**Why this matters:**
-GA4 currently sees every visit to `/audio` as a visit to "Afrinia — Intelligence for Africa's Builders" (the default title). It is indistinguishable from the homepage in reports. Google also sees no structured data for the audio content.
+**Files changed:**
 
-**Success criteria:**
-- Browser tab shows "Audio | Afrinia" (or French equivalent) when on the audio page
-- GA4 Realtime shows correct `page_title` for audio page visits
+| File | What changed |
+|------|-------------|
+| `src/pages/AudioPage.tsx` | Added `usePageMeta` import; added `usePageMeta()` call inside the component with bilingual title, bilingual description, canonical `ogUrl`, and a `PodcastSeries` JSON-LD schema |
+| `src/locales/en.json` | Added `audio_page.page_title` and `audio_page.page_description` |
+| `src/locales/fr.json` | Added `audio_page.page_title` and `audio_page.page_description` |
+
+**What the JSON-LD does:**
+The `PodcastSeries` schema block tells Google that `/audio` is a podcast series named "The Afrinia Brief", published by the Afrinia organisation (`afrinia.org/#organization`), available in both English and French. This is the same organisation already declared in `index.html` — the `@id` links them together so Google sees a coherent knowledge graph, not isolated pages.
+
+**Design decisions recorded:**
+- **Why `usePageMeta` re-runs on language change:** `useTranslation()` re-renders the component when the user switches language. `t('audio_page.page_title')` changes value, so `usePageMeta`'s dependency array triggers and the browser tab title and meta tags update immediately — no page reload needed.
+- **Why JSON-LD is hardcoded (not translated):** Structured data is read by search engine crawlers, not users. "The Afrinia Brief" is a proper noun that does not change by language. Translating it would create two competing schema entries, which confuses Google's parser.
+- **Why `inLanguage` is an array:** The audio feed serves both EN and FR listeners. Declaring both languages in the schema correctly signals multilingual content to search engines rather than implying it is English-only.
+
+**Success criteria verified:**
+- ✅ `tsc --noEmit` passes with zero errors
+- [ ] Browser tab shows "The Afrinia Brief — Audio | Afrinia" when on the audio page (EN)
+- [ ] Browser tab shows "Le Bref Afrinia — Audio | Afrinia" when language is switched to FR
+- [ ] GA4 Realtime shows `page_title: "The Afrinia Brief — Audio | Afrinia"` for `/audio` visits
+- [ ] Browser DevTools → Sources → rendered `<head>` contains `<script type="application/ld+json">` with PodcastSeries schema while on `/audio`, and that script is removed when navigating away
 
 ---
 
@@ -205,5 +221,5 @@ Enhanced Measurement is currently toggled OFF (visible in the GA4 screenshot). T
 | 2 | Fix sitemap structure (add missing pages) | ✅ Done | 2026-04-21 |
 | 3 | GA4 SPA route-change tracking | ✅ Done | 2026-04-21 |
 | 4 | GA4 custom event tracking (blog + audio) | ✅ Done | 2026-04-21 |
-| 5 | Add page meta to AudioPage | 🔴 Not started | — |
+| 5 | Add page meta to AudioPage | ✅ Done | 2026-04-21 |
 | 6 | Enable Enhanced Measurement (GA4 console) | ⏸ Blocked | — |

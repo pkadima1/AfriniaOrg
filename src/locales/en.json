@@ -728,7 +728,9 @@
     "episode_label": "Episode",
     "listen": "Play episode",
     "no_episodes": "No episodes available yet.",
-    "loading": "Loading episodes…"
+    "loading": "Loading episodes…",
+    "page_title": "The Afrinia Brief — Audio | Afrinia",
+    "page_description": "Audio episodes on business, technology, and opportunity across Africa. Focused 6–8 minute conversations for Africa's entrepreneurs and builders."
   },
   "afrinia_footer": {
     "tagline": "Africa Builds. Africa Leads.",

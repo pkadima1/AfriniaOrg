@@ -728,7 +728,9 @@
     "episode_label": "Épisode",
     "listen": "Écouter l'épisode",
     "no_episodes": "Aucun épisode disponible pour l'instant.",
-    "loading": "Chargement des épisodes…"
+    "loading": "Chargement des épisodes…",
+    "page_title": "Le Bref Afrinia — Audio | Afrinia",
+    "page_description": "Épisodes audio sur les affaires, la technologie et les opportunités en Afrique. Des conversations ciblées de 6 à 8 minutes pour les entrepreneurs et bâtisseurs africains."
   },
   "afrinia_footer": {
     "tagline": "L'Afrique Construit. L'Afrique Mène.",
