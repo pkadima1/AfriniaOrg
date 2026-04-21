@@ -3,23 +3,26 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '@/components/Layout';
-import { ArrowLeft, MessageCircle, Reply } from 'lucide-react';
-import { getPostByLangAndSlug } from '@/integrations/firebase/blogService';
+import { ArrowLeft, MessageCircle, Reply, Clock, User, Tag } from 'lucide-react';
+import { getPostByLangAndSlug, getPostsByLanguage } from '@/integrations/firebase/blogService';
 import {
   fetchCommentsForPost,
   addCommentToPost,
   type Comment,
 } from '@/integrations/firebase/commentService';
+import { BlogPost as FirestorePost } from '@/integrations/firebase/types';
 import { useToast } from '@/hooks/use-toast';
 import SocialShare from '@/components/SocialShare';
 import EmojiPickerComponent from '@/components/EmojiPicker';
 import {
   type Lang,
   getBlogUrl,
+  getPostUrl,
   useSeoHead,
 } from '@/utils/languageUtils';
+import { usePageMeta } from '@/utils/pageMeta';
 
-// ── Afrinia brand tokens ──
+// ── Afrinia brand tokens ──────────────────────────────────────────────────────
 const A = {
   bg:     '#0f172a',
   bg2:    '#131f35',
@@ -41,17 +44,46 @@ interface DisplayPost {
   category: string;
   summary: string;
   featuredImageURL: string;
+  readTime: string;
+  tags: string[];
+}
+
+interface RelatedCard {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  image?: string;
+  readTime: string;
+  date: string;
+}
+
+function toRelatedCard(post: FirestorePost, lang: Lang): RelatedCard {
+  const words = (post.excerpt || post.content || '').replace(/<[^>]+>/g, '').split(/\s+/).length;
+  const mins = Math.max(1, Math.round(words / 200));
+  return {
+    id: post.id,
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt?.replace(/<[^>]+>/g, '') || post.content?.replace(/<[^>]+>/g, '').substring(0, 120) + '…' || '',
+    category: post.category || 'Ideas',
+    image: post.featured_image_url,
+    readTime: `${mins} min${lang === 'fr' ? ' de lecture' : ' read'}`,
+    date: post.published_at
+      ? new Date(post.published_at).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
+          year: 'numeric', month: 'long', day: 'numeric',
+        })
+      : '—',
+  };
 }
 
 /**
  * Takes the flat array returned by Firestore and builds a nested tree.
- * Top-level comments have no parent_id; replies are placed inside their
- * parent's `.replies` array.
  */
 function nestComments(flat: Comment[]): Comment[] {
   const map = new Map<string, Comment>();
   flat.forEach(c => map.set(c.id, { ...c, replies: [] }));
-
   const roots: Comment[] = [];
   flat.forEach(c => {
     if (c.parent_id && map.has(c.parent_id)) {
@@ -60,7 +92,6 @@ function nestComments(flat: Comment[]): Comment[] {
       roots.push(map.get(c.id)!);
     }
   });
-
   return roots;
 }
 
@@ -80,20 +111,17 @@ const BlogPost = () => {
   const { pathname } = useLocation();
   const { toast } = useToast();
 
-  // Derive lang from the static URL prefix (/fr/blog/... or /en/blog/...)
   const lang: Lang = pathname.startsWith('/fr/') ? 'fr' : 'en';
 
-  // Sync i18n with the URL language
   useEffect(() => {
-    if (i18n.language !== lang) {
-      void i18n.changeLanguage(lang);
-    }
+    if (i18n.language !== lang) void i18n.changeLanguage(lang);
   }, [lang, i18n]);
 
   const [post, setPost] = useState<DisplayPost | null>(null);
   const [content, setContent] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [relatedPosts, setRelatedPosts] = useState<RelatedCard[]>([]);
 
   // Comment form state
   const [commentName, setCommentName] = useState('');
@@ -113,10 +141,12 @@ const BlogPost = () => {
   const loadBlogPost = async () => {
     setLoading(true);
     try {
-      // Fetch ONLY from the lang-specific collection — no cross-collection fallback
       const firebasePost = await getPostByLangAndSlug(lang, slug || '');
 
       if (firebasePost) {
+        const words = (firebasePost.content || '').replace(/<[^>]+>/g, '').split(/\s+/).length;
+        const mins = Math.max(1, Math.round(words / 200));
+
         setPost({
           title: firebasePost.title,
           slug: firebasePost.slug,
@@ -127,6 +157,8 @@ const BlogPost = () => {
           category: firebasePost.category || 'Ideas',
           summary: (firebasePost.excerpt || firebasePost.content || '').replace(/<[^>]+>/g, '').substring(0, 200).trim() || '',
           featuredImageURL: firebasePost.featured_image_url || '',
+          readTime: `${mins} min${lang === 'fr' ? ' de lecture' : ' read'}`,
+          tags: firebasePost.tags ?? [],
         });
 
         const bodyContent = firebasePost.content?.trim();
@@ -139,6 +171,9 @@ const BlogPost = () => {
         } else {
           setContent('<p style="color:#8a9bb5;font-family:Jost,sans-serif">No content available.</p>');
         }
+
+        // Fetch related posts
+        void loadRelated(firebasePost.slug, firebasePost.category);
       }
     } catch (error) {
       console.error('Error loading blog post:', error);
@@ -147,11 +182,25 @@ const BlogPost = () => {
     setLoading(false);
   };
 
+  const loadRelated = async (currentSlug: string, category?: string) => {
+    try {
+      const all = await getPostsByLanguage(lang, { status: 'published' });
+      const others = all.filter(p => p.slug !== currentSlug);
+      // Prefer same category
+      const sameCategory = others.filter(p => p.category === category);
+      const picks = sameCategory.length >= 2
+        ? sameCategory.slice(0, 3)
+        : [...sameCategory, ...others.filter(p => p.category !== category)].slice(0, 3);
+      setRelatedPosts(picks.map(p => toRelatedCard(p, lang)));
+    } catch {
+      // silently ignore
+    }
+  };
+
   const loadComments = async (replaceIfEmpty = false) => {
     if (!slug) return;
     try {
       const fetched = await fetchCommentsForPost(slug, lang);
-      // Only replace state when the result is non-empty, or caller explicitly allows it
       if (fetched.length > 0 || replaceIfEmpty) {
         setComments(nestComments(fetched));
       }
@@ -167,20 +216,13 @@ const BlogPost = () => {
     setSubmitting(true);
     try {
       const newId = await addCommentToPost(
-        slug,
-        lang,
-        commentName.trim(),
-        commentMessage.trim(),
-        commentEmail.trim() || undefined,
-        replyingTo || undefined
+        slug, lang, commentName.trim(), commentMessage.trim(),
+        commentEmail.trim() || undefined, replyingTo || undefined,
       );
 
       if (newId) {
-        // Optimistically add the new comment/reply to local state so it appears immediately
         const optimistic: Comment = {
-          id: newId,
-          post_slug: slug,
-          lang,
+          id: newId, post_slug: slug, lang,
           name: commentName.trim(),
           email: commentEmail.trim() || undefined,
           message: commentMessage.trim(),
@@ -191,26 +233,17 @@ const BlogPost = () => {
         };
 
         if (replyingTo) {
-          // Nest the reply under its parent comment
           setComments(prev =>
             prev.map(c =>
-              c.id === replyingTo
-                ? { ...c, replies: [...(c.replies || []), optimistic] }
-                : c,
+              c.id === replyingTo ? { ...c, replies: [...(c.replies || []), optimistic] } : c,
             ),
           );
         } else {
-          // New top-level comment — prepend to the list
           setComments(prev => [optimistic, ...prev]);
         }
 
-        setCommentName('');
-        setCommentEmail('');
-        setCommentMessage('');
-        setReplyingTo(null);
+        setCommentName(''); setCommentEmail(''); setCommentMessage(''); setReplyingTo(null);
         toast({ title: replyingTo ? 'Reply posted.' : 'Comment posted.' });
-
-        // Background re-fetch to sync accurate server state (won't clear if index delay)
         void loadComments();
       } else {
         toast({ title: 'Error posting comment.', variant: 'destructive' });
@@ -227,10 +260,8 @@ const BlogPost = () => {
       key={comment.id}
       style={{
         borderLeft: `2px solid ${isReply ? A.border : A.gold}`,
-        paddingLeft: 20,
-        marginLeft: isReply ? 32 : 0,
-        marginBottom: 28,
-        opacity: isReply ? 0.85 : 1,
+        paddingLeft: 20, marginLeft: isReply ? 32 : 0,
+        marginBottom: 28, opacity: isReply ? 0.85 : 1,
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -248,8 +279,7 @@ const BlogPost = () => {
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
               display: 'flex', alignItems: 'center', gap: 4,
-              fontFamily: A.sans, fontSize: 11, color: A.muted,
-              transition: 'color 0.2s',
+              fontFamily: A.sans, fontSize: 11, color: A.muted, transition: 'color 0.2s',
             }}
             onMouseEnter={e => (e.currentTarget.style.color = A.gold)}
             onMouseLeave={e => (e.currentTarget.style.color = A.muted)}
@@ -270,16 +300,56 @@ const BlogPost = () => {
     </div>
   );
 
-  // SEO: hreflang + canonical (falls back gracefully when post not yet loaded)
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://afrinia.com';
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://afrinia.org';
   const currentSlug = slug || '';
+  const postUrl = `${origin}/${lang}/blog/${currentSlug}`;
+
   useSeoHead(
     `${origin}/en/blog/${currentSlug}`,
     `${origin}/fr/blog/${currentSlug}`,
-    `${origin}/${lang}/blog/${currentSlug}`,
+    postUrl,
   );
 
-  // ── Loading state ──
+  // Dynamic per-post meta tags + JSON-LD BlogPosting schema
+  usePageMeta({
+    title: post
+      ? `${post.title} | Afrinia`
+      : lang === 'fr' ? 'Afrinia — Flux d\'Intelligence' : 'Afrinia Intelligence Feed',
+    description: post?.summary ||
+      (lang === 'fr'
+        ? 'Explorez les dernières idées d\'Afrinia pour les bâtisseurs africains.'
+        : 'Explore the latest ideas from Afrinia for Africa\'s builders.'),
+    ogUrl: postUrl,
+    ogImage: post?.featuredImageURL || undefined,
+    jsonLd: post
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: post.title,
+          description: post.summary,
+          image: post.featuredImageURL || `${origin}/og-image.png`,
+          url: postUrl,
+          inLanguage: lang === 'fr' ? 'fr-FR' : 'en-US',
+          datePublished: post.date,
+          author: {
+            '@type': 'Person',
+            name: post.author,
+          },
+          publisher: {
+            '@type': 'Organization',
+            '@id': 'https://afrinia.org/#organization',
+            name: 'Afrinia',
+          },
+          keywords: post.tags.join(', '),
+          isPartOf: {
+            '@type': 'Blog',
+            '@id': `${origin}/${lang}/blog`,
+            name: lang === 'fr' ? 'Afrinia — Flux d\'Intelligence' : 'Afrinia Intelligence Feed',
+          },
+        }
+      : undefined,
+  });
+
   if (loading) {
     return (
       <Layout>
@@ -297,7 +367,6 @@ const BlogPost = () => {
     );
   }
 
-  // ── Not found in this language's collection ──
   if (!post) {
     return (
       <Layout>
@@ -329,16 +398,12 @@ const BlogPost = () => {
 
   return (
     <Layout>
-      {/* ── Post header — blog page hero style ── */}
+      {/* ── Post header hero ── */}
       <div style={{
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
+        position: 'relative', display: 'flex', alignItems: 'center',
         backgroundImage: `url('https://firebasestorage.googleapis.com/v0/b/modified-hull-203004-d8ktc/o/Media%2F20260124_1818_Image%20Generation_simple_compose_01kfrcrxdmeqwvk17njx6yj8vt.png?alt=media&token=3f88282d-9495-4e54-94a4-704895b14794')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundColor: A.bg,
+        backgroundSize: 'cover', backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat', backgroundColor: A.bg,
       }}>
         <div style={{
           position: 'absolute', inset: 0,
@@ -353,8 +418,7 @@ const BlogPost = () => {
           position: 'relative', zIndex: 1,
           padding: '72px 0 64px',
           display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 18,
-          maxWidth: 920,
-          margin: '0 auto',
+          maxWidth: 920, margin: '0 auto',
         }}>
           <div style={{
             fontFamily: A.sans, fontSize: '9px', fontWeight: 500,
@@ -362,41 +426,13 @@ const BlogPost = () => {
             color: A.gold, marginBottom: 12,
             textShadow: '0 1px 8px rgba(0,0,0,0.9)',
             display: 'flex', alignItems: 'center', gap: 10,
-            padding: '10px 18px',
-            borderRadius: 999,
-            background: 'rgba(15,23,42,0.58)',
-            backdropFilter: 'blur(10px)',
+            padding: '10px 18px', borderRadius: 999,
+            background: 'rgba(15,23,42,0.58)', backdropFilter: 'blur(10px)',
             border: '1px solid rgba(255,255,255,0.08)',
           }}>
             <span style={{ display: 'inline-block', width: 20, height: 1, background: 'rgba(184,145,42,0.7)' }} />
-            {lang === 'fr' ? 'Flux d’intelligence Afrinia' : 'Afrinia Intelligence Feed'}
+            {lang === 'fr' ? "Flux d\u2019intelligence Afrinia" : 'Afrinia Intelligence Feed'}
             <span style={{ display: 'inline-block', width: 20, height: 1, background: 'rgba(184,145,42,0.7)' }} />
-          </div>
-
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 0,
-            padding: '10px 18px',
-            borderRadius: 999,
-            background: 'rgba(15,23,42,0.45)',
-            backdropFilter: 'blur(10px)',
-          }}>
-            {post.category && (
-              <span style={{
-                fontFamily: A.sans, fontSize: '9px', fontWeight: 500,
-                letterSpacing: '2.5px', textTransform: 'uppercase',
-                color: A.gold, border: '1px solid rgba(184,145,42,0.4)',
-                padding: '4px 12px',
-                textShadow: '0 1px 8px rgba(0,0,0,0.9)',
-              }}>{post.category}</span>
-            )}
-            <span style={{ fontFamily: A.sans, fontSize: 11, color: 'rgba(245,240,232,0.84)', textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
-              {formatPostDate(post.date, lang)}
-            </span>
-            {post.author && (
-              <span style={{ fontFamily: A.sans, fontSize: 11, color: 'rgba(245,240,232,0.84)', textShadow: '0 1px 8px rgba(0,0,0,0.9)' }}>
-                {lang === 'fr' ? 'par' : 'by'} {post.author}
-              </span>
-            )}
           </div>
         </div>
       </div>
@@ -423,17 +459,85 @@ const BlogPost = () => {
 
           <article>
             <header style={{ marginBottom: 40 }}>
+              {/* Category pill */}
+              {post.category && (
+                <div style={{ marginBottom: 16 }}>
+                  <span style={{
+                    fontFamily: A.sans, fontSize: '9px', fontWeight: 500,
+                    letterSpacing: '2.5px', textTransform: 'uppercase',
+                    color: A.gold, border: `1px solid rgba(184,145,42,0.35)`,
+                    padding: '4px 12px', borderRadius: 2,
+                  }}>{post.category}</span>
+                </div>
+              )}
+
               <h1 style={{
                 fontFamily: A.serif,
                 fontSize: 'clamp(32px,4vw,52px)',
                 fontWeight: 300, color: A.cream,
-                lineHeight: 1.2, marginBottom: 20,
+                lineHeight: 1.2, marginBottom: 24,
               }}>{post.title}</h1>
+
+              {/* ── Metadata strip ── */}
+              <div style={{
+                display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 20,
+                padding: '16px 20px',
+                background: A.bg2,
+                border: `1px solid ${A.border}`,
+                borderRadius: 4,
+                marginBottom: 28,
+              }}>
+                {/* Read time */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <Clock size={13} style={{ color: A.gold, flexShrink: 0 }} />
+                  <span style={{ fontFamily: A.sans, fontSize: 13, fontWeight: 400, color: A.cream }}>
+                    {post.readTime}
+                  </span>
+                </div>
+
+                <span style={{ width: 1, height: 16, background: A.border, display: 'inline-block' }} />
+
+                {/* Author */}
+                {post.author && (
+                  <>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                      <User size={13} style={{ color: A.gold, flexShrink: 0 }} />
+                      <span style={{ fontFamily: A.sans, fontSize: 13, fontWeight: 400, color: A.cream }}>
+                        {post.author}
+                      </span>
+                    </div>
+                    <span style={{ width: 1, height: 16, background: A.border, display: 'inline-block' }} />
+                  </>
+                )}
+
+                {/* Date */}
+                <span style={{ fontFamily: A.sans, fontSize: 13, fontWeight: 300, color: A.muted }}>
+                  {formatPostDate(post.date, lang)}
+                </span>
+
+                {/* Tags */}
+                {post.tags.length > 0 && (
+                  <>
+                    <span style={{ width: 1, height: 16, background: A.border, display: 'inline-block' }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap' }}>
+                      <Tag size={12} style={{ color: A.gold, flexShrink: 0 }} />
+                      {post.tags.map(tag => (
+                        <span key={tag} style={{
+                          fontFamily: A.sans, fontSize: '11px', fontWeight: 300,
+                          color: A.muted, background: A.bg3,
+                          border: `1px solid ${A.border}`,
+                          padding: '2px 8px', borderRadius: 2,
+                        }}>{tag}</span>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
 
               {post.summary && (
                 <p style={{
                   fontFamily: A.sans, fontSize: 16, fontWeight: 300,
-                  color: A.muted, lineHeight: 1.8,
+                  color: '#c8d8e8', lineHeight: 1.8,
                   borderLeft: `2px solid ${A.gold}`,
                   paddingLeft: 20, marginBottom: 32,
                 }}>{post.summary}</p>
@@ -444,6 +548,8 @@ const BlogPost = () => {
                   <img
                     src={post.featuredImageURL}
                     alt={post.title}
+                    loading="eager"
+                    fetchPriority="high"
                     style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                     onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                   />
@@ -460,6 +566,88 @@ const BlogPost = () => {
               <SocialShare title={post.title} url={currentUrl} description={post.summary} />
             </div>
           </article>
+
+          {/* ── Read Next ── */}
+          {relatedPosts.length > 0 && (
+            <section style={{ marginTop: 72, paddingTop: 48, borderTop: `1px solid ${A.border}` }}>
+              <div style={{ marginBottom: 36 }}>
+                <p style={{
+                  fontFamily: A.sans, fontSize: '9px', fontWeight: 500,
+                  letterSpacing: '4px', textTransform: 'uppercase',
+                  color: A.gold, marginBottom: 10,
+                }}>
+                  {lang === 'fr' ? 'Lire ensuite' : 'Read next'}
+                </p>
+                <h2 style={{
+                  fontFamily: A.serif, fontSize: 'clamp(22px,3vw,32px)',
+                  fontWeight: 300, color: A.cream, lineHeight: 1.2,
+                }}>
+                  {lang === 'fr' ? "D\u2019autres id\u00e9es pour les b\u00e2tisseurs" : "More ideas for Africa\u2019s builders"}
+                </h2>
+              </div>
+
+              <div id="read-next-grid">
+                {relatedPosts.map(card => (
+                  <Link
+                    key={card.id}
+                    to={getPostUrl(lang, card.slug)}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <article style={{
+                      background: A.bg2,
+                      border: `1px solid ${A.border}`,
+                      borderRadius: 12, overflow: 'hidden',
+                      height: '100%', display: 'flex', flexDirection: 'column',
+                      transition: 'border-color 0.25s',
+                    }}
+                      onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(184,145,42,0.5)')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = A.border)}
+                    >
+                      {card.image && (
+                        <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden' }}>
+                          <img
+                            src={card.image}
+                            alt={card.title}
+                            loading="lazy"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                            onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                          />
+                        </div>
+                      )}
+                      <div style={{ padding: '20px 22px 24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                          <span style={{
+                            fontFamily: A.sans, fontSize: '9px', fontWeight: 500,
+                            letterSpacing: '2px', textTransform: 'uppercase',
+                            color: A.gold, border: `1px solid rgba(184,145,42,0.25)`,
+                            padding: '2px 8px',
+                          }}>{card.category}</span>
+                          <span style={{ fontFamily: A.sans, fontSize: '11px', color: A.muted }}>{card.readTime}</span>
+                        </div>
+                        <h3 style={{
+                          fontFamily: A.serif, fontSize: 'clamp(16px,2vw,20px)',
+                          fontWeight: 400, color: A.cream, lineHeight: 1.3,
+                          marginBottom: 10, flex: 1,
+                        }}>{card.title}</h3>
+                        <p style={{
+                          fontFamily: A.sans, fontSize: 12, fontWeight: 300,
+                          color: A.muted, lineHeight: 1.65,
+                          display: '-webkit-box', WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                          marginBottom: 14,
+                        }}>{card.excerpt}</p>
+                        <span style={{
+                          fontFamily: A.sans, fontSize: '10px', fontWeight: 500,
+                          letterSpacing: '1.5px', textTransform: 'uppercase',
+                          color: A.gold,
+                        }}>{lang === 'fr' ? 'Lire →' : 'Read →'}</span>
+                      </div>
+                    </article>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* ── Comments ── */}
           <section style={{ marginTop: 64 }}>
@@ -569,6 +757,20 @@ const BlogPost = () => {
           </section>
         </div>
       </div>
+
+      <style>{`
+        #read-next-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 28px;
+        }
+        @media (max-width: 860px) {
+          #read-next-grid { grid-template-columns: 1fr; }
+        }
+        @media (min-width: 861px) and (max-width: 1100px) {
+          #read-next-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+      `}</style>
     </Layout>
   );
 };

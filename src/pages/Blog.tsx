@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -13,8 +13,9 @@ import {
   getPostUrl,
   useSeoHead,
 } from '@/utils/languageUtils';
+import { usePageMeta } from '@/utils/pageMeta';
 
-// ── Afrinia brand tokens (mirrored from CSS variables) ──
+// ── Afrinia brand tokens ──────────────────────────────────────────────────────
 const A = {
   bg:     '#0f172a',
   bg2:    '#131f35',
@@ -38,6 +39,9 @@ interface ArticleCard {
   date: string;
   image?: string;
   readTime: string;
+  targetCountries: string[];
+  contentLang: string;
+  tags: string[];
 }
 
 function toCard(post: FirestorePost, lang: Lang): ArticleCard {
@@ -61,6 +65,9 @@ function toCard(post: FirestorePost, lang: Lang): ArticleCard {
         : '—',
     image: post.featured_image_url,
     readTime: `${mins} min${lang === 'fr' ? ' de lecture' : ' read'}`,
+    targetCountries: post.target_countries ?? [],
+    contentLang: post.content_language ?? lang,
+    tags: post.tags ?? [],
   };
 }
 
@@ -73,7 +80,7 @@ async function subscribeToNewsletter(email: string, lang: Lang): Promise<void> {
   });
 }
 
-// ── Article card component ──
+// ── Article card component ──────────────────────────────────────────────────
 const ArticleCard = ({ card, lang }: { card: ArticleCard; lang: Lang }) => {
   const [hovered, setHovered] = useState(false);
 
@@ -99,6 +106,7 @@ const ArticleCard = ({ card, lang }: { card: ArticleCard; lang: Lang }) => {
             <img
               src={card.image}
               alt={card.title}
+              loading="lazy"
               style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s', transform: hovered ? 'scale(1.03)' : 'scale(1)' }}
               onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
             />
@@ -146,7 +154,7 @@ const ArticleCard = ({ card, lang }: { card: ArticleCard; lang: Lang }) => {
   );
 };
 
-// ── Skeleton card for loading state ──
+// ── Skeleton card for loading state ──────────────────────────────────────────
 const SkeletonCard = () => (
   <div style={{ background: A.bg2, borderRadius: '16px', border: `1px solid ${A.border}`, overflow: 'hidden' }}>
     <div style={{ width: '100%', aspectRatio: '16/9', background: A.bg3 }} />
@@ -160,18 +168,37 @@ const SkeletonCard = () => (
   </div>
 );
 
+// ── Filter chip button ────────────────────────────────────────────────────────
+const FilterChip = ({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    style={{
+      fontFamily: "'Jost', sans-serif",
+      fontSize: '10px', fontWeight: 500,
+      letterSpacing: '1.8px', textTransform: 'uppercase',
+      padding: '7px 16px',
+      border: `1px solid ${active ? A.gold : 'rgba(184,145,42,0.22)'}`,
+      background: active ? 'rgba(184,145,42,0.12)' : 'transparent',
+      color: active ? A.goldLt : A.muted,
+      cursor: 'pointer',
+      borderRadius: 2,
+      transition: 'all 0.2s',
+      whiteSpace: 'nowrap',
+    }}
+  >
+    {label}
+  </button>
+);
+
 const Blog = () => {
   const { t, i18n } = useTranslation();
   const { pathname } = useLocation();
 
-  // Derive lang from the static URL prefix (/fr/blog or /en/blog)
   const lang: Lang = pathname.startsWith('/fr/') ? 'fr' : 'en';
 
-  // Sync i18n with the URL language
   useEffect(() => {
-    if (i18n.language !== lang) {
-      void i18n.changeLanguage(lang);
-    }
+    if (i18n.language !== lang) void i18n.changeLanguage(lang);
   }, [lang, i18n]);
 
   const [cards, setCards] = useState<ArticleCard[]>([]);
@@ -179,23 +206,58 @@ const Blog = () => {
   const [email, setEmail] = useState('');
   const [nlStatus, setNlStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  // Fetch from the correct language collection — no mixing
+  // ── filter state ──────────────────────────────────────────────────────────
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [countryFilter, setCountryFilter] = useState('all');
+
   useEffect(() => {
     setLoading(true);
     setCards([]);
+    setCategoryFilter('all');
+    setCountryFilter('all');
     getPostsByLanguage(lang, { status: 'published' })
       .then(posts => setCards(posts.map(p => toCard(p, lang))))
-      .catch(err => { console.error(`Error loading posts_${lang}:`, err); })
+      .catch(err => console.error(`Error loading posts_${lang}:`, err))
       .finally(() => setLoading(false));
   }, [lang]);
 
-  // SEO: hreflang + canonical
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://afrinia.com';
+  // Derive unique categories and countries from fetched cards
+  const uniqueCategories = useMemo(
+    () => [...new Set(cards.map(c => c.category).filter(Boolean))].sort(),
+    [cards],
+  );
+  const uniqueCountries = useMemo(
+    () => [...new Set(cards.flatMap(c => c.targetCountries))].sort(),
+    [cards],
+  );
+
+  // Apply filters client-side
+  const visibleCards = useMemo(() => {
+    return cards.filter(card => {
+      const catOk = categoryFilter === 'all' || card.category === categoryFilter;
+      const cntryOk = countryFilter === 'all' || card.targetCountries.includes(countryFilter);
+      return catOk && cntryOk;
+    });
+  }, [cards, categoryFilter, countryFilter]);
+
+  const activeFilters = (categoryFilter !== 'all' ? 1 : 0) + (countryFilter !== 'all' ? 1 : 0);
+
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://afrinia.org';
   useSeoHead(
     `${origin}/en/blog`,
     `${origin}/fr/blog`,
     `${origin}/${lang}/blog`,
   );
+
+  usePageMeta({
+    title: lang === 'fr'
+      ? 'Idées & Analyses | Afrinia — Intelligence Africaine'
+      : 'Ideas & Analysis | Afrinia — African Intelligence Feed',
+    description: lang === 'fr'
+      ? 'Explorez les idées, analyses et outils d\'Afrinia pour les entrepreneurs et innovateurs africains. Bimensuel, bilingue.'
+      : 'Explore Afrinia\'s ideas, analysis and tools for African entrepreneurs and innovators. Bilingual, biweekly.',
+    ogUrl: `${origin}/${lang}/blog`,
+  });
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -225,12 +287,10 @@ const Blog = () => {
         backgroundRepeat: 'no-repeat',
         backgroundColor: A.bg,
       }}>
-        {/* Radial overlay — image glows through the centre, edges darken */}
         <div style={{
           position: 'absolute', inset: 0,
           background: 'radial-gradient(ellipse at 50% 60%, rgba(15,23,42,0.25) 0%, rgba(15,23,42,0.55) 40%, rgba(15,23,42,0.82) 75%, rgba(15,23,42,0.97) 100%)',
         }} />
-        {/* Smooth fade into the article grid below */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: 80,
           background: `linear-gradient(to bottom, transparent, ${A.bg})`,
@@ -263,28 +323,125 @@ const Blog = () => {
         </div>
       </div>
 
-      {/* ── Article grid — starts immediately below the hero ── */}
+      {/* ── Filter bar ── */}
+      <div style={{ background: A.bg, borderBottom: `1px solid ${A.border}` }}>
+        <div className="page-container" style={{ paddingTop: 0, paddingBottom: 0 }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 0,
+            flexWrap: 'wrap', padding: '16px 0',
+          }}>
+            {/* Category chips */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', flex: 1 }}>
+              <FilterChip
+                label={lang === 'fr' ? 'Tout' : 'All'}
+                active={categoryFilter === 'all'}
+                onClick={() => setCategoryFilter('all')}
+              />
+              {uniqueCategories.map(cat => (
+                <FilterChip
+                  key={cat}
+                  label={cat}
+                  active={categoryFilter === cat}
+                  onClick={() => setCategoryFilter(cat)}
+                />
+              ))}
+            </div>
+
+            {/* Country select */}
+            {uniqueCountries.length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 16 }}>
+                <span style={{
+                  fontFamily: A.sans, fontSize: '10px', fontWeight: 500,
+                  letterSpacing: '1.5px', textTransform: 'uppercase',
+                  color: A.muted, whiteSpace: 'nowrap',
+                }}>
+                  {lang === 'fr' ? 'Pays' : 'Country'}
+                </span>
+                <select
+                  value={countryFilter}
+                  onChange={e => setCountryFilter(e.target.value)}
+                  style={{
+                    background: A.bg2, border: `1px solid ${countryFilter !== 'all' ? A.gold : 'rgba(184,145,42,0.22)'}`,
+                    color: countryFilter !== 'all' ? A.goldLt : A.muted,
+                    fontFamily: A.sans, fontSize: '11px',
+                    padding: '7px 12px', cursor: 'pointer', outline: 'none',
+                    borderRadius: 2,
+                  }}
+                >
+                  <option value="all">{lang === 'fr' ? 'Tous les pays' : 'All countries'}</option>
+                  {uniqueCountries.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Active filter count + clear */}
+            {activeFilters > 0 && (
+              <button
+                type="button"
+                onClick={() => { setCategoryFilter('all'); setCountryFilter('all'); }}
+                style={{
+                  marginLeft: 12,
+                  fontFamily: A.sans, fontSize: '10px', fontWeight: 500,
+                  letterSpacing: '1px', color: A.gold, background: 'none',
+                  border: 'none', cursor: 'pointer', textDecoration: 'underline',
+                  textUnderlineOffset: 3,
+                }}
+              >
+                {lang === 'fr' ? `Effacer (${activeFilters})` : `Clear (${activeFilters})`}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Article grid ── */}
       <div className="blog-section" style={{ background: A.bg }}>
         <div className="page-container">
           {loading ? (
             <div className="blog-article-grid">
               {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
             </div>
-          ) : cards.length === 0 ? (
+          ) : visibleCards.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
               <div style={{ fontFamily: A.serif, fontSize: 28, fontWeight: 300, color: A.muted, marginBottom: 16 }}>
-                {lang === 'fr' ? 'Les premières idées arrivent bientôt.' : 'The first ideas are on their way.'}
+                {activeFilters > 0
+                  ? (lang === 'fr' ? 'Aucun article correspond à ces filtres.' : 'No ideas match these filters.')
+                  : (lang === 'fr' ? 'Les premières idées arrivent bientôt.' : 'The first ideas are on their way.')}
               </div>
-              <p style={{ fontFamily: A.sans, fontSize: 14, color: A.muted, lineHeight: 1.8 }}>
-                {lang === 'fr'
-                  ? 'Abonnez-vous ci-dessous pour être notifié lors de notre première publication.'
-                  : 'Subscribe to the brief below to be notified when we publish.'}
-              </p>
+              {activeFilters > 0 && (
+                <button
+                  type="button"
+                  onClick={() => { setCategoryFilter('all'); setCountryFilter('all'); }}
+                  style={{
+                    fontFamily: A.sans, fontSize: '11px', fontWeight: 500,
+                    letterSpacing: '1.5px', textTransform: 'uppercase',
+                    color: A.gold, background: 'none',
+                    border: `1px solid ${A.gold}`, padding: '10px 24px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {lang === 'fr' ? 'Voir toutes les idées' : 'Clear filters'}
+                </button>
+              )}
             </div>
           ) : (
-            <div className="blog-article-grid">
-              {cards.map(card => <ArticleCard key={card.id} card={card} lang={lang} />)}
-            </div>
+            <>
+              {activeFilters > 0 && (
+                <p style={{
+                  fontFamily: A.sans, fontSize: '11px', color: A.muted,
+                  marginBottom: 24, paddingTop: 4,
+                }}>
+                  {lang === 'fr'
+                    ? `${visibleCards.length} idée${visibleCards.length > 1 ? 's' : ''}`
+                    : `${visibleCards.length} idea${visibleCards.length !== 1 ? 's' : ''}`}
+                </p>
+              )}
+              <div className="blog-article-grid">
+                {visibleCards.map(card => <ArticleCard key={card.id} card={card} lang={lang} />)}
+              </div>
+            </>
           )}
         </div>
       </div>
