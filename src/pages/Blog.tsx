@@ -14,6 +14,7 @@ import {
   useSeoHead,
 } from '@/utils/languageUtils';
 import { usePageMeta } from '@/utils/pageMeta';
+import { trackNewsletterSignup } from '@/utils/analytics';
 
 // ── Afrinia brand tokens ──────────────────────────────────────────────────────
 const A = {
@@ -266,6 +267,7 @@ const Blog = () => {
     try {
       await subscribeToNewsletter(email.trim(), lang);
       setNlStatus('success');
+      trackNewsletterSignup({ source_page: `/${lang}/blog`, lang });
       setEmail('');
     } catch {
       setNlStatus('error');

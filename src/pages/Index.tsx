@@ -8,6 +8,7 @@ import { getPostsByLanguage } from '@/integrations/firebase/blogService';
 import { fetchAudioEpisodes, type AudioEpisode } from '@/integrations/firebase/audioService';
 import { BlogPost } from '@/integrations/firebase/types';
 import { type Lang, getBlogUrl, getPostUrl } from '@/utils/languageUtils';
+import { trackNewsletterSignup } from '@/utils/analytics';
 import Layout from '../components/Layout';
 
 // ── Afrinia brand colours (mirrored from CSS variables for inline styles) ──
@@ -249,6 +250,7 @@ const Index = () => {
     try {
       await subscribeEmail(email.trim());
       setNlStatus('success');
+      trackNewsletterSignup({ source_page: 'home', lang });
       setEmail('');
     } catch {
       setNlStatus('error');

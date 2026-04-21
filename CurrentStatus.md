@@ -127,19 +127,36 @@ React Router swaps page components without reloading the browser. Firebase Analy
 ---
 
 ### MILESTONE 4 — GA4 Custom Event Tracking (Blog + Audio)
-**Status:** 🔴 Not started
-**Planned branch:** `GoogleAnalyticsSetUp`
+**Status:** ✅ Done
+**Date completed:** 2026-04-21
+**Branch:** `GoogleAnalyticsSetUp`
 
-**What needs to be done:**
-- Add to `src/utils/analytics.ts`: typed functions for `article_view`, `article_read_complete`, `comment_submitted`, `audio_play`, `audio_pause`, `newsletter_signup`
-- Wire into `src/pages/BlogPost.tsx`: `article_view` on load, `article_read_complete` on 80% scroll
-- Wire into `src/pages/AudioPage.tsx`: `audio_play` on play click, `audio_pause` on pause
-- Wire into `src/pages/Blog.tsx`: `newsletter_signup` on successful subscription
+**What was done:**
+All typed event functions were defined in `src/utils/analytics.ts` (Milestone 3). This milestone wired them into the four pages that generate those events.
 
-**Success criteria:**
-- GA4 Realtime shows `article_view` when a blog post loads
-- GA4 Realtime shows `audio_play` when an episode starts
-- All events include the correct data (slug, title, language, category)
+| Event | File | Trigger | Data sent |
+|-------|------|---------|-----------|
+| `article_view` | `BlogPost.tsx` | Post data loads successfully from Firestore | `article_slug`, `article_title`, `article_lang`, `article_category` |
+| `article_read_complete` | `BlogPost.tsx` | IntersectionObserver fires when end-of-article sentinel scrolls into view (50% threshold) | `article_slug`, `article_title` |
+| `comment_submitted` | `BlogPost.tsx` | Comment successfully written to Firestore | `article_slug`, `article_lang` |
+| `audio_play` | `AudioPage.tsx` | `onPlay` fires on the `<audio>` element (new episode start OR resume) | `episode_id`, `episode_title`, `episode_number` |
+| `audio_pause` | `AudioPage.tsx` | `onPause` fires AND `audioRef.current.ended === false` (intentional pause only, not natural episode end) | `episode_id`, `listen_duration_seconds` |
+| `newsletter_signup` | `Blog.tsx` | Firestore write succeeds in `handleSubscribe` | `source_page: /{lang}/blog`, `lang` |
+| `newsletter_signup` | `Index.tsx` | Firestore write succeeds in `handleSubscribe` | `source_page: home`, `lang` |
+
+**Design decisions recorded:**
+- **`article_read_complete` uses IntersectionObserver, not scroll events.** Scroll listeners fire constantly and require debouncing. An IntersectionObserver on a 0-height sentinel `<div>` placed at the end of the article body fires once, cleanly, with no performance cost. A `hasTrackedReadRef` prevents re-firing if the user scrolls back up and down.
+- **`audio_pause` guards against natural episode end.** `onPause` and `onEnded` both fire when an episode finishes. `audioRef.current.ended` distinguishes natural end from user pause. Only user pauses emit the event, so the listen duration data is meaningful.
+- **`newsletter_signup` is tracked in both Blog and Index.** Both pages have independent newsletter forms writing to Firestore. The `source_page` parameter tells GA4 which page converted the subscriber.
+- **TypeScript:** `tsc --noEmit` passes with zero errors.
+
+**Success criteria to verify in GA4 Realtime:**
+- [ ] Open a blog article → GA4 shows `article_view` with correct slug, title, lang, category
+- [ ] Scroll to the bottom of the article → GA4 shows `article_read_complete`
+- [ ] Submit a comment → GA4 shows `comment_submitted`
+- [ ] Play an audio episode → GA4 shows `audio_play` with episode data
+- [ ] Pause audio mid-episode → GA4 shows `audio_pause` with `listen_duration_seconds`
+- [ ] Subscribe to newsletter on blog or homepage → GA4 shows `newsletter_signup` with correct `source_page`
 
 ---
 
@@ -187,6 +204,6 @@ Enhanced Measurement is currently toggled OFF (visible in the GA4 screenshot). T
 | 1 | Fix domain mismatch (afrinia.com → afrinia.org) | ✅ Done | 2026-04-21 |
 | 2 | Fix sitemap structure (add missing pages) | ✅ Done | 2026-04-21 |
 | 3 | GA4 SPA route-change tracking | ✅ Done | 2026-04-21 |
-| 4 | GA4 custom event tracking (blog + audio) | 🔴 Not started | — |
+| 4 | GA4 custom event tracking (blog + audio) | ✅ Done | 2026-04-21 |
 | 5 | Add page meta to AudioPage | 🔴 Not started | — |
 | 6 | Enable Enhanced Measurement (GA4 console) | ⏸ Blocked | — |

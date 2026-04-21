@@ -5,6 +5,7 @@ import Layout from '../components/Layout';
 import { fetchAudioEpisodes } from '@/integrations/firebase/audioService';
 import type { AudioEpisode } from '@/integrations/firebase/types';
 import type { Lang } from '@/utils/languageUtils';
+import { trackAudioPlay, trackAudioPause } from '@/utils/analytics';
 
 // ── Brand tokens (shared with Index.tsx) ────────────────────────────────────
 const A = {
@@ -276,8 +277,27 @@ const AudioPage = () => {
           ref={audioRef}
           src={nowPlaying.audio_url}
           autoPlay
-          onPlay={() => setAudioPlaying(true)}
-          onPause={() => setAudioPlaying(false)}
+          onPlay={() => {
+            setAudioPlaying(true);
+            if (nowPlaying) {
+              trackAudioPlay({
+                episode_id: nowPlaying.id,
+                episode_title: nowPlaying.title,
+                episode_number: nowPlaying.episode_number,
+              });
+            }
+          }}
+          onPause={() => {
+            setAudioPlaying(false);
+            // audioRef.current.ended is true when the episode finished naturally.
+            // We only want to track intentional pauses, not natural episode ends.
+            if (!audioRef.current?.ended && nowPlaying) {
+              trackAudioPause({
+                episode_id: nowPlaying.id,
+                listen_duration_seconds: Math.round(audioTime),
+              });
+            }
+          }}
           onEnded={() => { setAudioPlaying(false); setAudioTime(0); }}
           onTimeUpdate={() => setAudioTime(audioRef.current?.currentTime ?? 0)}
           onLoadedMetadata={() => setAudioDuration(audioRef.current?.duration ?? 0)}

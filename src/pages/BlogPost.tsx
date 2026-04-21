@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '@/components/Layout';
@@ -21,6 +21,11 @@ import {
   useSeoHead,
 } from '@/utils/languageUtils';
 import { usePageMeta } from '@/utils/pageMeta';
+import {
+  trackArticleView,
+  trackArticleReadComplete,
+  trackCommentSubmitted,
+} from '@/utils/analytics';
 
 // ── Afrinia brand tokens ──────────────────────────────────────────────────────
 const A = {
@@ -130,6 +135,13 @@ const BlogPost = () => {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Refs for article_read_complete tracking.
+  // articleEndRef marks the bottom of the article body — observed by an
+  // IntersectionObserver below. hasTrackedReadRef prevents the event firing
+  // more than once per article (e.g. if user scrolls down and back up).
+  const articleEndRef = useRef<HTMLDivElement>(null);
+  const hasTrackedReadRef = useRef(false);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (slug) {
@@ -137,6 +149,30 @@ const BlogPost = () => {
       void loadComments(true);
     }
   }, [slug, lang]);
+
+  // Fire article_read_complete when the reader scrolls to the bottom of the
+  // article body. Runs after `post` is set (meaning content is rendered).
+  // Fires at most once per article: the observer disconnects after first trigger
+  // and hasTrackedReadRef guards against the effect re-running on re-renders.
+  useEffect(() => {
+    if (!post || !articleEndRef.current) return;
+    hasTrackedReadRef.current = false;
+
+    const sentinel = articleEndRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasTrackedReadRef.current) {
+          hasTrackedReadRef.current = true;
+          trackArticleReadComplete({ article_slug: post.slug, article_title: post.title });
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [post]);
 
   const loadBlogPost = async () => {
     setLoading(true);
@@ -171,6 +207,13 @@ const BlogPost = () => {
         } else {
           setContent('<p style="color:#8a9bb5;font-family:Jost,sans-serif">No content available.</p>');
         }
+
+        trackArticleView({
+          article_slug: firebasePost.slug,
+          article_title: firebasePost.title,
+          article_lang: lang,
+          article_category: firebasePost.category || 'Ideas',
+        });
 
         // Fetch related posts
         void loadRelated(firebasePost.slug, firebasePost.category);
@@ -244,6 +287,7 @@ const BlogPost = () => {
 
         setCommentName(''); setCommentEmail(''); setCommentMessage(''); setReplyingTo(null);
         toast({ title: replyingTo ? 'Reply posted.' : 'Comment posted.' });
+        trackCommentSubmitted({ article_slug: slug, article_lang: lang });
         void loadComments();
       } else {
         toast({ title: 'Error posting comment.', variant: 'destructive' });
@@ -561,6 +605,9 @@ const BlogPost = () => {
               className="blog-post-content prose prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: content }}
             />
+
+            {/* Sentinel: IntersectionObserver watches this to fire article_read_complete */}
+            <div ref={articleEndRef} aria-hidden="true" />
 
             <div style={{ marginTop: 48, paddingTop: 32, borderTop: `1px solid ${A.border}` }}>
               <SocialShare title={post.title} url={currentUrl} description={post.summary} />
