@@ -134,8 +134,8 @@ It starts as a curated content destination — articles and audio covering Afric
 ### SEO Skills Required
 - Keyword research for African business/tech topics in both EN and FR
 - Internal linking between signal articles
-- `sitemap.xml` and `robots.txt` configured in Next.js
-- Structured data (JSON-LD) for articles
+- `sitemap.xml` and `robots.txt` configured and pointing to the correct canonical domain
+- Structured data (JSON-LD) for articles, with per-page BlogPosting schema
 - Core Web Vitals optimization (Next.js Image, font loading)
 
 ---
@@ -193,7 +193,151 @@ These are the canonical design tokens. Every UI component must use these.
 
 ---
 
-## 8. WHAT ANY CONTRIBUTOR MUST KNOW BEFORE TOUCHING THIS PROJECT
+---
+
+## 8. GOOGLE ANALYTICS & SEARCH CONSOLE — CURRENT STATUS & WORK PLAN
+
+> Last audited: April 21, 2026
+> Branch for this work: `GoogleAnalyticsSetUp`
+
+This section is the structured work log for getting Afrinia fully instrumented on GA4 and visible to Google Search. It documents what was found, what needs to be fixed, and in what order — so that any session can pick up exactly where the last one left off.
+
+---
+
+### 8.1 What Was Found (Audit Results)
+
+#### Google Analytics (GA4)
+**Measurement ID:** `G-E21VHKPP97`
+**Stream:** Afrinia (ID: 14346647168)
+**Firebase project:** modified-hull-203004
+
+| Finding | File | Severity |
+|---------|------|----------|
+| Firebase Analytics initialized via `getAnalytics(firebaseApp)` — basic page load fires | `src/integrations/firebase/config.ts:49` | ✅ Working |
+| **No SPA route-change tracking** — GA4 only sees the first page load. Every navigation between pages (Home → Blog → Article) is invisible to Analytics | `src/App.tsx` | 🔴 Critical |
+| **No custom events** — blog article opens, audio plays, audio pauses, comment submissions all fire zero GA4 events | `src/pages/BlogPost.tsx`, `src/pages/AudioPage.tsx` | 🟠 High |
+| **Enhanced Measurement is toggled OFF** in GA4 stream settings — scroll depth, outbound clicks, site search are not collected | GA4 Console (manual toggle) | 🟠 High |
+| **AudioPage has no page meta** — title and description never change on the audio page, so GA4 and Google both see it as the homepage | `src/pages/AudioPage.tsx` | 🟡 Medium |
+
+#### Google Search Console (GSC)
+**Property:** `https://afrinia.org/`
+
+| Finding | File | Severity |
+|---------|------|----------|
+| **Wrong domain in sitemap** — all URLs use `afrinia.com` but site is served on `afrinia.org`. Google cannot match crawled URLs to sitemap entries | `public/sitemap.xml` | 🔴 Critical |
+| **Wrong domain in robots.txt** — sitemap pointer says `afrinia.com/sitemap.xml` | `public/robots.txt` | 🔴 Critical |
+| **Wrong sitemap filename submitted to GSC** — user submitted `/sitemap_index.xml` which does not exist. React SPA serves the HTML shell instead, causing "Sitemap is HTML" error | GSC Console (manual fix) | 🔴 Critical |
+| **Wrong canonical domain in index.html** — `og:url` is `https://afrinia.com/` | `index.html:19` | 🟠 High |
+| **Zero blog posts in sitemap** — Firestore articles are dynamic and cannot be listed statically. No mechanism exists to generate URLs for published posts | `public/sitemap.xml` | 🟠 High |
+| **6 pages indexed, 9 not indexed** — caused by the domain mismatch and missing sitemap coverage | GSC Console | Result of above |
+
+---
+
+### 8.2 Fix Plan (Ordered by Priority)
+
+Work through these in order. Do not skip a step. Each fix depends on the previous being correct.
+
+#### STEP 1 — Fix the domain everywhere (afrinia.com → afrinia.org)
+**Why first:** Everything else (sitemap submission, canonical URLs, GA4 data correlation) depends on the domain being consistent. If the sitemap says `afrinia.com` and the site lives at `afrinia.org`, every other fix is built on a broken foundation.
+
+Files to change:
+- `public/sitemap.xml` — replace all `https://afrinia.com` with `https://afrinia.org`
+- `public/robots.txt` — update sitemap pointer to `https://afrinia.org/sitemap.xml`
+- `index.html` — update `og:url` to `https://afrinia.org/`
+
+**After this step:** All static URL references are consistent with the live domain.
+
+---
+
+#### STEP 2 — Fix the sitemap structure
+**Why second:** Once the domain is correct, the sitemap needs to be a valid XML document that Google can parse and that correctly represents the site's pages.
+
+Tasks:
+- Confirm `public/sitemap.xml` is served at `https://afrinia.org/sitemap.xml` (Vite/Netlify serves `public/` as root)
+- Add missing static pages to the sitemap: `/audio`, `/builders`
+- Remove pages from sitemap that are excluded in robots.txt: `/admin/*`, `/profile`, `/settings`
+- Keep legal pages (`/privacy`, `/terms`) in the sitemap — they are indexable
+
+**After this step:** Go to GSC → Sitemaps → delete the broken `sitemap_index.xml` entry → submit `sitemap.xml`.
+
+---
+
+#### STEP 3 — Add GA4 SPA route-change tracking
+**Why third:** Without this, GA4 is essentially useless for a React single-page app. Every click that changes the URL (from homepage to a blog post, for example) is invisible.
+
+**How it works:**
+React Router does not reload the page when navigating between routes — it swaps components in memory. But GA4 only fires a `page_view` on a real page load. So we must manually tell GA4 "the user is now on a new page" every time React Router changes the route.
+
+The fix: create a `useGAPageTracking` hook that listens to React Router's `location` object. Every time `location.pathname` changes, fire `gtag('event', 'page_view', { page_path: newPath })`. Mount this hook once in `App.tsx`.
+
+Files to create/change:
+- `src/utils/analytics.ts` — centralized GA4 helper (all gtag calls go here, nothing else)
+- `src/hooks/useGAPageTracking.ts` — React hook that fires page_view on every route change
+- `src/App.tsx` — mount `<GAPageTracker />` inside `<BrowserRouter>`
+
+**After this step:** Every page navigation is visible in GA4 Realtime reports.
+
+---
+
+#### STEP 4 — Add custom event tracking for blog and audio
+**Why fourth:** Once page views are working, the next layer is understanding *how* users engage with content.
+
+Events to track:
+
+| Event Name | Where Fired | Data Sent |
+|-----------|-------------|-----------|
+| `article_view` | BlogPost — when post data loads successfully | `{ article_slug, article_title, article_lang, article_category }` |
+| `article_read_complete` | BlogPost — when user scrolls past 80% of article | `{ article_slug, article_title }` |
+| `comment_submitted` | BlogPost — on successful comment post | `{ article_slug, article_lang }` |
+| `audio_play` | AudioPage — when user clicks play on an episode | `{ episode_id, episode_title, episode_number }` |
+| `audio_pause` | AudioPage — when user pauses | `{ episode_id, listen_duration_seconds }` |
+| `newsletter_signup` | Blog page and Index — on successful subscription | `{ source_page, lang }` |
+
+Files to change:
+- `src/utils/analytics.ts` — add typed event functions (no raw `gtag` calls outside this file)
+- `src/pages/BlogPost.tsx` — call `trackArticleView()` and `trackReadComplete()`
+- `src/pages/AudioPage.tsx` — call `trackAudioPlay()` and `trackAudioPause()`
+- `src/pages/Blog.tsx` — call `trackNewsletterSignup()` on success
+
+---
+
+#### STEP 5 — Add page meta to AudioPage
+**Why fifth:** AudioPage currently renders with the default site title. GA4 receives `page_title = "Afrinia — Intelligence for Africa's Builders"` for the audio page. This makes it impossible to distinguish audio traffic from homepage traffic.
+
+Files to change:
+- `src/pages/AudioPage.tsx` — add `usePageMeta()` call with audio-specific title and description, in both EN and FR
+
+---
+
+#### STEP 6 — Enable Enhanced Measurement in GA4 (manual, in console)
+**Why last:** This is a toggle in the GA4 console (no code change). Once the tracking foundation is solid (Steps 1–5), turning this on adds scroll depth, outbound link clicks, and site search tracking automatically.
+
+Manual action: GA4 Console → Data streams → Afrinia stream → Enhanced measurement → toggle ON
+
+---
+
+### 8.3 Success Criteria (How We Know It's Done)
+
+- [ ] `https://afrinia.org/sitemap.xml` returns valid XML when opened in a browser (not the React app)
+- [ ] GSC → Sitemaps shows `sitemap.xml` with **0 errors** and **discovered pages > 0**
+- [ ] GA4 Realtime report shows a page_view event when navigating from homepage to a blog post
+- [ ] GA4 Realtime report shows an `article_view` event when a blog post fully loads
+- [ ] GA4 Realtime report shows an `audio_play` event when an audio episode is played
+- [ ] `robots.txt` accessible at `https://afrinia.org/robots.txt` points to the correct sitemap URL
+- [ ] No console errors related to gtag or Firebase Analytics
+- [ ] Both EN and FR blog pages track separately in GA4
+
+---
+
+### 8.4 Known Limitations (Accepted for Phase 1)
+
+- **Dynamic blog post URLs in sitemap** — Firestore posts cannot be listed in a static `sitemap.xml`. A Firebase Cloud Function that generates the sitemap dynamically is the correct long-term solution (Phase 2). For Phase 1, published slugs will be added manually to the sitemap after each publish cycle.
+- **Server-side rendering** — The site is a Vite React SPA, not Next.js. This means Google must execute JavaScript to see the page content. GA4 meta tags and JSON-LD are injected dynamically by React, which means Googlebot's first crawl may see the shell before the content. This is acceptable in Phase 1 but will be resolved when migrating to Next.js (App Router with SSR) in Phase 2.
+
+---
+
+## 9. WHAT ANY CONTRIBUTOR MUST KNOW BEFORE TOUCHING THIS PROJECT
+
 
 1. Read this SKILLS.md in full.
 2. Read CLAUDE.md for how to interact with the AI assistant on this project.
