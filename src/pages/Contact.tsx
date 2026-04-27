@@ -2,6 +2,7 @@ import Layout from '../components/Layout';
 import ContactForm from '../components/ContactForm';
 import { useTranslation } from 'react-i18next';
 import { useSocialLinks } from '@/hooks/useSocialLinks';
+import { usePageMeta } from '@/utils/pageMeta';
 
 const BG   = '#0a1628';
 const GOLD = '#B8912A';
@@ -17,6 +18,13 @@ const reasons = ['r1', 'r2', 'r3'] as const;
 const Contact = () => {
   const { t } = useTranslation();
   const { links: socialLinks } = useSocialLinks();
+
+  usePageMeta({
+    title: 'Contact — Afrinia',
+    description: 'Contactez l\'équipe Afrinia pour toute question éditoriale, partenariat ou collaboration.',
+    ogUrl: 'https://afrinia.org/contact',
+  });
+
   return (
     <Layout>
       <div style={{ background: BG, minHeight: '100vh', fontFamily: SANS }}>

@@ -1,5 +1,6 @@
 import Layout from '../components/Layout';
 import { useTranslation } from 'react-i18next';
+import { usePageMeta } from '@/utils/pageMeta';
 
 const PATRICK_PHOTO =
   'https://firebasestorage.googleapis.com/v0/b/modified-hull-203004.firebasestorage.app/o/Afrinia%2FAfriniaMedia%2FMe%20LinkedIn.png?alt=media&token=b7119c05-1405-40e9-a3a4-b489d1a2fa52';
@@ -18,6 +19,12 @@ const SANS        = "'Jost', sans-serif";
 
 const About = () => {
   const { t } = useTranslation();
+
+  usePageMeta({
+    title: 'À Propos — Afrinia | Intelligence pour l\'Afrique',
+    description: 'Afrinia est la première plateforme d\'intelligence bilingue pour les entrepreneurs et technologues africains.',
+    ogUrl: 'https://afrinia.org/about',
+  });
 
   const beliefs = [
     { num: '01', key: 'b1' },

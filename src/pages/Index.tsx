@@ -9,6 +9,7 @@ import { fetchAudioEpisodes, type AudioEpisode } from '@/integrations/firebase/a
 import { BlogPost } from '@/integrations/firebase/types';
 import { type Lang, getBlogUrl, getPostUrl } from '@/utils/languageUtils';
 import { trackNewsletterSignup } from '@/utils/analytics';
+import { usePageMeta } from '@/utils/pageMeta';
 import Layout from '../components/Layout';
 
 // ── Afrinia brand colours (mirrored from CSS variables for inline styles) ──
@@ -151,6 +152,16 @@ const Index = () => {
   const { t, i18n } = useTranslation();
   // Derive lang from i18n — updates reactively when language switcher fires
   const lang: Lang = i18n.language === 'fr' ? 'fr' : 'en';
+
+  usePageMeta({
+    title: lang === 'fr'
+      ? 'Afrinia — Intelligence pour les bâtisseurs d\'Afrique'
+      : 'Afrinia — Intelligence for Africa\'s Builders',
+    description: lang === 'fr'
+      ? 'Idées, analyses et outils pour les entrepreneurs et innovateurs africains. Flux d\'intelligence bilingue en français et en anglais.'
+      : 'Ideas, analysis and tools for entrepreneurs and innovators across Africa. Bilingual intelligence feed in English and French.',
+    ogUrl: 'https://afrinia.org/',
+  });
 
   const [email, setEmail] = useState('');
   const [nlStatus, setNlStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');

@@ -354,7 +354,7 @@ const BlogPost = () => {
     postUrl,
   );
 
-  // Dynamic per-post meta tags + JSON-LD BlogPosting schema
+  // Dynamic per-post meta tags + JSON-LD Article schema
   usePageMeta({
     title: post
       ? `${post.title} | Afrinia`
@@ -368,21 +368,26 @@ const BlogPost = () => {
     jsonLd: post
       ? {
           '@context': 'https://schema.org',
-          '@type': 'BlogPosting',
+          '@type': 'Article',
           headline: post.title,
           description: post.summary,
-          image: post.featuredImageURL || `${origin}/og-image.png`,
+          // Omit image when no cover exists — a missing field is valid schema;
+          // a pointer to a non-existent file is an error Google will flag.
+          ...(post.featuredImageURL ? { image: post.featuredImageURL } : {}),
           url: postUrl,
-          inLanguage: lang === 'fr' ? 'fr-FR' : 'en-US',
+          inLanguage: lang === 'fr' ? 'fr' : 'en',
           datePublished: post.date,
+          dateModified: post.date,
           author: {
-            '@type': 'Person',
-            name: post.author,
+            '@type': 'Organization',
+            name: 'Afrinia',
+            url: 'https://afrinia.org',
           },
           publisher: {
             '@type': 'Organization',
             '@id': 'https://afrinia.org/#organization',
             name: 'Afrinia',
+            url: 'https://afrinia.org',
           },
           keywords: post.tags.join(', '),
           isPartOf: {

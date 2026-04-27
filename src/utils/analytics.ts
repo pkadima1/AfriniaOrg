@@ -26,6 +26,14 @@ function fire(eventName: string, params?: Record<string, string | number | boole
   }
 }
 
+/**
+ * Generic GA4 event. Use the typed helpers below for all known events;
+ * use this only for one-off or ad-hoc events where a typed helper does not exist.
+ */
+export function trackEvent(eventName: string, params?: Record<string, string | number | boolean>): void {
+  fire(eventName, params);
+}
+
 // ── Page views ────────────────────────────────────────────────────────────────
 
 /**

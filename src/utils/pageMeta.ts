@@ -19,7 +19,10 @@ export interface PageMetaOptions {
   description: string;
   /** Override the og:image (e.g. featured image for a blog post) */
   ogImage?: string;
-  /** Canonical URL for og:url */
+  /**
+   * Canonical URL for this page (full https://afrinia.org/... URL).
+   * Sets both og:url and <link rel="canonical"> — both signals matter to Google.
+   */
   ogUrl?: string;
   /**
    * One or more schema.org JSON-LD objects to inject as
@@ -68,6 +71,16 @@ export function usePageMeta({
         document.head.appendChild(urlEl);
       }
       urlEl.content = ogUrl;
+
+      // <link rel="canonical"> — the definitive signal Google uses to resolve
+      // duplicate/variant URLs. Must match the og:url exactly.
+      let canonicalEl = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+      if (!canonicalEl) {
+        canonicalEl = document.createElement('link');
+        canonicalEl.rel = 'canonical';
+        document.head.appendChild(canonicalEl);
+      }
+      canonicalEl.href = ogUrl;
     }
 
     if (ogImage) {
@@ -95,6 +108,8 @@ export function usePageMeta({
       setMetaContent('meta[name="description"]', prevDesc || DEFAULT_DESCRIPTION);
       setMetaContent('meta[property="og:title"]', prevOgTitle || DEFAULT_TITLE);
       setMetaContent('meta[property="og:description"]', prevOgDesc || DEFAULT_DESCRIPTION);
+      // Remove canonical on unmount — the next page will set its own if needed.
+      document.querySelector('link[rel="canonical"]')?.remove();
       injectedScripts.forEach(s => s.remove());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
