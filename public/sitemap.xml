@@ -2,182 +2,35 @@
 <!--
   AFRINIA — sitemap.xml
   ─────────────────────
-  Canonical domain: https://afrinia.org
+  THIS FILE IS NO LONGER THE LIVE SITEMAP.
 
-  Static pages are listed here directly.
+  The live sitemap is generated dynamically by:
+    netlify/functions/sitemap.js
 
-  IMPORTANT — dynamic blog posts:
-  Each blog post published via the admin panel lives at
-    /en/blog/<slug>  and  /fr/blog/<slug>
-  Because these URLs come from Firestore at runtime, they cannot be
-  listed here automatically.
+  When Google requests https://afrinia.org/sitemap.xml, Netlify rewrites
+  the request to that function, which queries Firestore in real time for
+  all published articles and returns the complete XML.
 
-  Workflow for Phase 1 (manual): After publishing a new article, copy the
-  block below for each slug and re-deploy. Replace YYYY-MM-DD and YOUR-SLUG.
+  You do NOT need to touch this file when publishing a new article.
+  Publishing via the admin panel is all that is required.
 
-  <url>
-    <loc>https://afrinia.org/en/blog/YOUR-SLUG</loc>
-    <lastmod>YYYY-MM-DD</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/YOUR-SLUG"/>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/YOUR-SLUG"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/YOUR-SLUG"/>
-  </url>
-
-  Long-term solution (Phase 2): A Firebase Cloud Function that reads all
-  published posts from Firestore and returns this file dynamically.
+  This file exists only so the repo contains a human-readable reference
+  of the static pages. It is never served to browsers or crawlers.
 -->
 <urlset
   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
 >
+  <!-- Static pages — also included in netlify/functions/sitemap.js -->
+  <url><loc>https://afrinia.org/</loc></url>
+  <url><loc>https://afrinia.org/about</loc></url>
+  <url><loc>https://afrinia.org/fr/blog</loc></url>
+  <url><loc>https://afrinia.org/en/blog</loc></url>
+  <url><loc>https://afrinia.org/audio</loc></url>
+  <url><loc>https://afrinia.org/contact</loc></url>
+  <url><loc>https://afrinia.org/builders</loc></url>
+  <url><loc>https://afrinia.org/privacy</loc></url>
+  <url><loc>https://afrinia.org/terms</loc></url>
 
-  <!-- ── Home ──────────────────────────────────────────────────────────── -->
-  <url>
-    <loc>https://afrinia.org/</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
-
-  <!-- ── About ─────────────────────────────────────────────────────────── -->
-  <url>
-    <loc>https://afrinia.org/about</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- ── Blog listing — French (x-default) ────────────────────────────── -->
-  <url>
-    <loc>https://afrinia.org/fr/blog</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog"/>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog"/>
-  </url>
-
-  <!-- ── Blog listing — English ────────────────────────────────────────── -->
-  <url>
-    <loc>https://afrinia.org/en/blog</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog"/>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog"/>
-  </url>
-
-  <!-- ── Audio ─────────────────────────────────────────────────────────── -->
-  <url>
-    <loc>https://afrinia.org/audio</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- ── Contact ───────────────────────────────────────────────────────── -->
-  <url>
-    <loc>https://afrinia.org/contact</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <!-- ── Builders (coming soon) ────────────────────────────────────────── -->
-  <url>
-    <loc>https://afrinia.org/builders</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-
-  <!-- ── Published articles ─────────────────────────────────────────────────
-       CONTENT MODEL: French and English articles are independent content written
-       for different African audiences (Francophone vs Anglophone). They are NOT
-       translations of each other. Each article is a standalone entry — no
-       cross-language hreflang pairing between articles.
-
-       MAINTENANCE RULE: Every time a new article is published, add ONE <url>
-       block for it below (FR under French articles, EN under English articles),
-       then commit + push to trigger a Netlify redeploy.
-  ──────────────────────────────────────────────────────────────────────────── -->
-
-  <!-- ── French articles (Audience: Francophone Africa) ──────────────────── -->
-
-  <url>
-    <loc>https://afrinia.org/fr/blog/le-capital-de-la-diaspora-rinventer-linvestissement-immobilier-africain-par-lingnierie-de-confiance</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://afrinia.org/fr/blog/croissance-africaine-au-del-des-chiffres-daide-et-rapports-externes</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://afrinia.org/fr/blog/francophonie-digitale-levier-stratgique</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://afrinia.org/fr/blog/le-mirage-europen-rediriger-lambition-africaine-vers-la-prosprit-locale</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://afrinia.org/fr/blog/le-mythe-du-financement-btir-des-projets-stratgiques-pour-attirer-le-capital-en-afrique</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://afrinia.org/fr/blog/rinventer-lconomie-africaine-opportunits-stratgiques-face-aux-crises-externes</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- ── English articles (Audience: Anglophone Africa) ──────────────────── -->
-
-  <url>
-    <loc>https://afrinia.org/en/blog/beyond-remittances-building-the-infrastructure-to-unlock-africas-diaspora-capital</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://afrinia.org/en/blog/ai-from-digital-payments-to-capital-markets</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://afrinia.org/en/blog/beyond-the-funding-myth-engineering-africas-investable-future-through-strategic-value-creation</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <url>
-    <loc>https://afrinia.org/en/blog/africas-ai-health-build-sovereign-not-just-smart-2026</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
+  <!-- Articles are NOT listed here. They come from Firestore via the function. -->
 </urlset>

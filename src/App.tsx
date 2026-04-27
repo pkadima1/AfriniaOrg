@@ -86,7 +86,7 @@ const App = () => (
               }
             />
 
-            {/* Legacy NodeMatics redirects → home */}
+            {/* Legacy redirects — keeps old URLs from 404ing */}
             <Route path="/services" element={<Navigate to="/" replace />} />
             <Route path="/products" element={<Navigate to="/" replace />} />
             <Route path="/example-systems" element={<Navigate to="/" replace />} />
