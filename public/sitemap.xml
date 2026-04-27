@@ -96,129 +96,88 @@
   </url>
 
   <!-- ── Published articles ─────────────────────────────────────────────────
-       MAINTENANCE RULE: Every time a new article is published, add its FR and
-       EN <url> blocks here, then commit + push to trigger a Netlify redeploy.
-       See googleSKILLS.md POST-IMPLEMENTATION RULES for the full procedure.
+       CONTENT MODEL: French and English articles are independent content written
+       for different African audiences (Francophone vs Anglophone). They are NOT
+       translations of each other. Each article is a standalone entry — no
+       cross-language hreflang pairing between articles.
+
+       MAINTENANCE RULE: Every time a new article is published, add ONE <url>
+       block for it below (FR under French articles, EN under English articles),
+       then commit + push to trigger a Netlify redeploy.
   ──────────────────────────────────────────────────────────────────────────── -->
 
-  <!-- Article 1 — Le capital de la diaspora -->
+  <!-- ── French articles (Audience: Francophone Africa) ──────────────────── -->
+
   <url>
     <loc>https://afrinia.org/fr/blog/le-capital-de-la-diaspora-rinventer-linvestissement-immobilier-africain-par-lingnierie-de-confiance</loc>
     <lastmod>2026-04-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/le-capital-de-la-diaspora-rinventer-linvestissement-immobilier-africain-par-lingnierie-de-confiance"/>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/le-capital-de-la-diaspora-rinventer-linvestissement-immobilier-africain-par-lingnierie-de-confiance"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/le-capital-de-la-diaspora-rinventer-linvestissement-immobilier-africain-par-lingnierie-de-confiance"/>
-  </url>
-  <url>
-    <loc>https://afrinia.org/en/blog/le-capital-de-la-diaspora-rinventer-linvestissement-immobilier-africain-par-lingnierie-de-confiance</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/le-capital-de-la-diaspora-rinventer-linvestissement-immobilier-africain-par-lingnierie-de-confiance"/>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/le-capital-de-la-diaspora-rinventer-linvestissement-immobilier-africain-par-lingnierie-de-confiance"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/le-capital-de-la-diaspora-rinventer-linvestissement-immobilier-africain-par-lingnierie-de-confiance"/>
   </url>
 
-  <!-- Article 2 — Croissance africaine au-delà des chiffres -->
   <url>
-    <loc>https://afrinia.org/fr/blog/croissance-africaine-au-dela-des-chiffres-daide-et-rapports-externes</loc>
+    <loc>https://afrinia.org/fr/blog/croissance-africaine-au-del-des-chiffres-daide-et-rapports-externes</loc>
     <lastmod>2026-04-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/croissance-africaine-au-dela-des-chiffres-daide-et-rapports-externes"/>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/croissance-africaine-au-dela-des-chiffres-daide-et-rapports-externes"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/croissance-africaine-au-dela-des-chiffres-daide-et-rapports-externes"/>
-  </url>
-  <url>
-    <loc>https://afrinia.org/en/blog/croissance-africaine-au-dela-des-chiffres-daide-et-rapports-externes</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/croissance-africaine-au-dela-des-chiffres-daide-et-rapports-externes"/>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/croissance-africaine-au-dela-des-chiffres-daide-et-rapports-externes"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/croissance-africaine-au-dela-des-chiffres-daide-et-rapports-externes"/>
   </url>
 
-  <!-- Article 3 — Francophonie digitale -->
   <url>
-    <loc>https://afrinia.org/fr/blog/francophonie-digitale-levier-strategique</loc>
+    <loc>https://afrinia.org/fr/blog/francophonie-digitale-levier-stratgique</loc>
     <lastmod>2026-04-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/francophonie-digitale-levier-strategique"/>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/francophonie-digitale-levier-strategique"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/francophonie-digitale-levier-strategique"/>
-  </url>
-  <url>
-    <loc>https://afrinia.org/en/blog/francophonie-digitale-levier-strategique</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/francophonie-digitale-levier-strategique"/>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/francophonie-digitale-levier-strategique"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/francophonie-digitale-levier-strategique"/>
   </url>
 
-  <!-- Article 4 — Le mirage européen -->
   <url>
-    <loc>https://afrinia.org/fr/blog/le-mirage-europeen-rediriger-lambition-africaine-vers-la-prosperite-locale</loc>
+    <loc>https://afrinia.org/fr/blog/le-mirage-europen-rediriger-lambition-africaine-vers-la-prosprit-locale</loc>
     <lastmod>2026-04-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/le-mirage-europeen-rediriger-lambition-africaine-vers-la-prosperite-locale"/>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/le-mirage-europeen-rediriger-lambition-africaine-vers-la-prosperite-locale"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/le-mirage-europeen-rediriger-lambition-africaine-vers-la-prosperite-locale"/>
-  </url>
-  <url>
-    <loc>https://afrinia.org/en/blog/le-mirage-europeen-rediriger-lambition-africaine-vers-la-prosperite-locale</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/le-mirage-europeen-rediriger-lambition-africaine-vers-la-prosperite-locale"/>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/le-mirage-europeen-rediriger-lambition-africaine-vers-la-prosperite-locale"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/le-mirage-europeen-rediriger-lambition-africaine-vers-la-prosperite-locale"/>
   </url>
 
-  <!-- Article 5 — Le mythe du financement -->
   <url>
-    <loc>https://afrinia.org/fr/blog/le-mythe-du-financement-batir-des-projets-strategiques-pour-attirer-le-capital-en-afrique</loc>
+    <loc>https://afrinia.org/fr/blog/le-mythe-du-financement-btir-des-projets-stratgiques-pour-attirer-le-capital-en-afrique</loc>
     <lastmod>2026-04-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/le-mythe-du-financement-batir-des-projets-strategiques-pour-attirer-le-capital-en-afrique"/>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/le-mythe-du-financement-batir-des-projets-strategiques-pour-attirer-le-capital-en-afrique"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/le-mythe-du-financement-batir-des-projets-strategiques-pour-attirer-le-capital-en-afrique"/>
-  </url>
-  <url>
-    <loc>https://afrinia.org/en/blog/le-mythe-du-financement-batir-des-projets-strategiques-pour-attirer-le-capital-en-afrique</loc>
-    <lastmod>2026-04-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/le-mythe-du-financement-batir-des-projets-strategiques-pour-attirer-le-capital-en-afrique"/>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/le-mythe-du-financement-batir-des-projets-strategiques-pour-attirer-le-capital-en-afrique"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/le-mythe-du-financement-batir-des-projets-strategiques-pour-attirer-le-capital-en-afrique"/>
   </url>
 
-  <!-- Article 6 — Réinventer l'économie africaine -->
   <url>
-    <loc>https://afrinia.org/fr/blog/reinventer-leconomie-africaine-opportunites-strategiques-face-aux-crises-externes</loc>
+    <loc>https://afrinia.org/fr/blog/rinventer-lconomie-africaine-opportunits-stratgiques-face-aux-crises-externes</loc>
     <lastmod>2026-04-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/reinventer-leconomie-africaine-opportunites-strategiques-face-aux-crises-externes"/>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/reinventer-leconomie-africaine-opportunites-strategiques-face-aux-crises-externes"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/reinventer-leconomie-africaine-opportunites-strategiques-face-aux-crises-externes"/>
   </url>
+
+  <!-- ── English articles (Audience: Anglophone Africa) ──────────────────── -->
+
   <url>
-    <loc>https://afrinia.org/en/blog/reinventer-leconomie-africaine-opportunites-strategiques-face-aux-crises-externes</loc>
+    <loc>https://afrinia.org/en/blog/beyond-remittances-building-the-infrastructure-to-unlock-africas-diaspora-capital</loc>
     <lastmod>2026-04-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en"        href="https://afrinia.org/en/blog/reinventer-leconomie-africaine-opportunites-strategiques-face-aux-crises-externes"/>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://afrinia.org/fr/blog/reinventer-leconomie-africaine-opportunites-strategiques-face-aux-crises-externes"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://afrinia.org/fr/blog/reinventer-leconomie-africaine-opportunites-strategiques-face-aux-crises-externes"/>
+  </url>
+
+  <url>
+    <loc>https://afrinia.org/en/blog/ai-from-digital-payments-to-capital-markets</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://afrinia.org/en/blog/beyond-the-funding-myth-engineering-africas-investable-future-through-strategic-value-creation</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>https://afrinia.org/en/blog/africas-ai-health-build-sovereign-not-just-smart-2026</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
   </url>
 
 </urlset>
