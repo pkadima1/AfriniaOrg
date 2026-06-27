@@ -5,3 +5,17 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+# Serve the dynamic sitemap from the Netlify function.
+# Status 200 = rewrite (URL stays /sitemap.xml in the browser/crawler).
+# Must come BEFORE the SPA catch-all below so Netlify matches it first.
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/sitemap"
+  status = 200
+
+# SPA catch-all — every other path serves index.html so React Router works.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -316,6 +316,19 @@ export const saveBlogPost = async (
 
     await setDoc(docRef, postData, { merge: true });
     invalidateCache(lang);
+
+    // Notify Google Indexing API when an article is published or unpublished.
+    // Fire-and-forget — a failed notification never blocks the save.
+    if (post.slug && (post.status === 'published' || post.status === 'archived')) {
+      const articleUrl = `https://afrinia.org/${lang}/blog/${post.slug}`;
+      const indexingType = post.status === 'published' ? 'URL_UPDATED' : 'URL_DELETED';
+      fetch('/.netlify/functions/notify-indexing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: articleUrl, type: indexingType }),
+      }).catch(() => { /* silent — indexing failure must never surface to the admin UI */ });
+    }
+
     return docId;
   } catch (error) {
     console.error('Error saving blog post:', error);
