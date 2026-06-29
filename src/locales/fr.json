@@ -93,6 +93,7 @@
       "cta": "Recevoir le brief",
       "promise": "Pas de bruit. Pas de spam. Désinscription à tout moment.",
       "successMsg": "Vous êtes inscrit. Le premier brief arrive ce jeudi.",
+      "alreadyMsg": "Vous êtes déjà abonné(e). Consultez votre boîte mail pour le dernier brief.",
       "errorMsg": "Une erreur est survenue. Veuillez réessayer."
     }
   },

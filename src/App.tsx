@@ -23,6 +23,7 @@ import GAPageTracker from "@/components/GAPageTracker";
 // Phase 1 placeholder for Builders page
 import ComingSoon from "./pages/ComingSoon";
 import AudioPage from "./pages/AudioPage";
+import Unsubscribed from "./pages/Unsubscribed";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,9 @@ const App = () => (
             {/* Legal */}
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+
+            {/* Mailing — unsubscribe confirmation (reached via redirect from Netlify function) */}
+            <Route path="/unsubscribed" element={<Unsubscribed />} />
 
             {/* Auth-protected */}
             <Route path="/profile" element={<Profile />} />

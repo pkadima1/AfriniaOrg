@@ -120,9 +120,13 @@ service cloud.firestore {
     }
 
     // ── Newsletter subscribers ────────────────────────────────────────────
+    // All writes now go through the Netlify subscribe/unsubscribe functions,
+    // which use Firebase Admin SDK and bypass these rules. Browser clients
+    // no longer write to this collection directly — create is therefore
+    // denied at the rule level to prevent unauthenticated direct writes.
+    // Admin reads and deletes remain for the subscriber management panel.
     match /newsletter_subscribers/{docId} {
-      allow create: if request.resource.data.email is string
-                    && request.resource.data.email.size() > 0;
+      allow create: if false;
       allow read:   if isAdmin();
       allow delete: if isAdmin();
       allow update: if false;

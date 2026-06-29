@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { collection, addDoc, serverTimestamp, getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc } from 'firebase/firestore';
 import { db } from '@/integrations/firebase/config';
 import { getPostsByLanguage } from '@/integrations/firebase/blogService';
 import { fetchAudioEpisodes, type AudioEpisode } from '@/integrations/firebase/audioService';
@@ -138,14 +138,18 @@ const PlayBtn = ({ active = false, playing = false }: { active?: boolean; playin
   </div>
 );
 
-// ── Newsletter subscriber Firestore write ──
-async function subscribeEmail(email: string): Promise<void> {
-  await addDoc(collection(db, 'newsletter_subscribers'), {
-    email,
-    subscribedAt: serverTimestamp(),
-    source: 'homepage',
-    language: typeof window !== 'undefined' ? (localStorage.getItem('i18nextLng') || 'en') : 'en',
+// ── Newsletter subscribe via Netlify function (server writes to Firestore + sends welcome email) ──
+async function subscribeEmail(email: string, lang: string): Promise<void> {
+  const res = await fetch('/.netlify/functions/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, lang, source: 'homepage' }),
   });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({})) as { error?: string };
+    if (data.error === 'already_subscribed') throw Object.assign(new Error('already_subscribed'), { code: 'already_subscribed' });
+    throw new Error('subscribe_failed');
+  }
 }
 
 const Index = () => {
@@ -164,7 +168,7 @@ const Index = () => {
   });
 
   const [email, setEmail] = useState('');
-  const [nlStatus, setNlStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [nlStatus, setNlStatus] = useState<'idle' | 'loading' | 'success' | 'already' | 'error'>('idle');
   const [articles, setArticles] = useState<ArticleCard[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(true);
   const [showBuilder, setShowBuilder] = useState(false);
@@ -259,12 +263,13 @@ const Index = () => {
     if (!email.trim()) return;
     setNlStatus('loading');
     try {
-      await subscribeEmail(email.trim());
+      await subscribeEmail(email.trim(), lang);
       setNlStatus('success');
       trackNewsletterSignup({ source_page: 'home', lang });
       setEmail('');
-    } catch {
-      setNlStatus('error');
+    } catch (err) {
+      const code = (err as { code?: string }).code;
+      setNlStatus(code === 'already_subscribed' ? 'already' : 'error');
     }
   };
 
@@ -845,12 +850,12 @@ const Index = () => {
             color: A.muted, lineHeight: 1.8, marginBottom: 40,
           }}>{t('home.newsletter.desc')}</p>
 
-          {nlStatus === 'success' ? (
+          {(nlStatus === 'success' || nlStatus === 'already') ? (
             <p style={{
               fontFamily: A.sans, fontSize: 14, color: A.gold,
               letterSpacing: '1px', padding: '16px 0',
             }}>
-              {t('home.newsletter.successMsg')}
+              {nlStatus === 'already' ? t('home.newsletter.alreadyMsg') : t('home.newsletter.successMsg')}
             </p>
           ) : (
             <form

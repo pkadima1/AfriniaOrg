@@ -42,17 +42,18 @@ const ContactForm = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await fetch('https://engageperfect.app.n8n.cloud/webhook/b6b9ad0f-ab8a-439c-b213-e6b3d5c24d59', {
+      const res = await fetch('/.netlify/functions/send-contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        mode: 'no-cors',
         body: JSON.stringify({
-          type: 'afrinia_contact',
-          to: 'afrinia@afrinia.org',
           ...form,
-          submitted_at: new Date().toISOString(),
+          // Detect language from i18n so the admin notification and receipt are in the right language.
+          lang: typeof window !== 'undefined'
+            ? (localStorage.getItem('i18nextLng') === 'fr' ? 'fr' : 'en')
+            : 'en',
         }),
       });
+      if (!res.ok) throw new Error('send_failed');
       setSent(true);
       toast({ title: t('contact.form.success.title'), description: t('contact.form.success.description') });
     } catch {

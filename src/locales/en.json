@@ -93,6 +93,7 @@
       "cta": "Send me the brief",
       "promise": "No noise. No spam. Unsubscribe any time.",
       "successMsg": "You're in. Expect the first brief this Thursday.",
+      "alreadyMsg": "You're already subscribed. Check your inbox for the latest brief.",
       "errorMsg": "Something went wrong. Please try again."
     }
   },

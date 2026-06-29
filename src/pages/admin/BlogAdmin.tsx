@@ -6,6 +6,7 @@ import { AudioEpisodeList } from '@/components/admin/AudioEpisodeList';
 import { AudioUpload } from '@/components/admin/AudioUpload';
 import { NewsletterSubscribers } from '@/components/admin/NewsletterSubscribers';
 import { SocialLinksSettings } from '@/components/admin/SocialLinksSettings';
+import { NewsletterAdmin } from '@/pages/admin/NewsletterAdmin';
 import { ContributorRoute, AdminRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
@@ -148,14 +149,21 @@ const AdminDashboard = () => {
               }
             </p>
             {isAdmin() && (
-              <Button
-                className="mt-3"
-                variant="outline"
-                size="sm"
-                onClick={(e) => { e.stopPropagation(); navigate('/admin/subscribers'); }}
-              >
-                Manage Subscribers
-              </Button>
+              <div className="flex gap-2 mt-3 flex-wrap">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => { e.stopPropagation(); navigate('/admin/subscribers'); }}
+                >
+                  Manage Subscribers
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={(e) => { e.stopPropagation(); navigate('/admin/newsletter'); }}
+                >
+                  Send Newsletter
+                </Button>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -308,6 +316,14 @@ export const BlogAdmin = () => {
               </div>
               <SocialLinksSettings />
             </div>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/newsletter"
+        element={
+          <AdminRoute>
+            <NewsletterAdmin />
           </AdminRoute>
         }
       />

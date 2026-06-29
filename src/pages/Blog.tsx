@@ -3,8 +3,6 @@ import { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/integrations/firebase/config';
 import { getPostsByLanguage } from '@/integrations/firebase/blogService';
 import { BlogPost as FirestorePost } from '@/integrations/firebase/types';
 import Layout from '@/components/Layout';
@@ -73,12 +71,16 @@ function toCard(post: FirestorePost, lang: Lang): ArticleCard {
 }
 
 async function subscribeToNewsletter(email: string, lang: Lang): Promise<void> {
-  await addDoc(collection(db, 'newsletter_subscribers'), {
-    email,
-    subscribedAt: serverTimestamp(),
-    source: `blog-page-${lang}`,
-    language: lang,
+  const res = await fetch('/.netlify/functions/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, lang, source: `blog-page-${lang}` }),
   });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({})) as { error?: string };
+    if (data.error === 'already_subscribed') throw Object.assign(new Error('already_subscribed'), { code: 'already_subscribed' });
+    throw new Error('subscribe_failed');
+  }
 }
 
 // ── Article card component ──────────────────────────────────────────────────
@@ -205,7 +207,7 @@ const Blog = () => {
   const [cards, setCards] = useState<ArticleCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
-  const [nlStatus, setNlStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [nlStatus, setNlStatus] = useState<'idle' | 'loading' | 'success' | 'already' | 'error'>('idle');
 
   // ── filter state ──────────────────────────────────────────────────────────
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -269,8 +271,9 @@ const Blog = () => {
       setNlStatus('success');
       trackNewsletterSignup({ source_page: `/${lang}/blog`, lang });
       setEmail('');
-    } catch {
-      setNlStatus('error');
+    } catch (err) {
+      const code = (err as { code?: string }).code;
+      setNlStatus(code === 'already_subscribed' ? 'already' : 'error');
     }
   };
 
@@ -469,9 +472,11 @@ const Blog = () => {
             color: A.muted, lineHeight: 1.8, marginBottom: 32,
           }}>{t('home.newsletter.sub', 'No noise. No aggregation. One rigorous idea per week for Africa\'s builders.')}</p>
 
-          {nlStatus === 'success' ? (
+          {(nlStatus === 'success' || nlStatus === 'already') ? (
             <p style={{ fontFamily: A.sans, fontSize: 14, color: A.gold, letterSpacing: '1px' }}>
-              {t('home.newsletter.success', 'You\'re in. Watch your inbox Thursday.')}
+              {nlStatus === 'already'
+                ? t('home.newsletter.alreadyMsg')
+                : t('home.newsletter.success', 'You\'re in. Watch your inbox Thursday.')}
             </p>
           ) : (
             <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: 0, maxWidth: 440, margin: '0 auto' }}>
