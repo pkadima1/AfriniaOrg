@@ -39,12 +39,14 @@ export const handler = async (event) => {
     return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: 'method_not_allowed' }) };
   }
 
-  let email, lang, source;
+  let email, language, source, country;
   try {
     const body = JSON.parse(event.body ?? '{}');
-    email  = (body.email  ?? '').trim().toLowerCase();
-    lang   = body.lang === 'fr' ? 'fr' : 'en';
-    source = (body.source ?? 'homepage').slice(0, 64);
+    email    = (body.email  ?? '').trim().toLowerCase();
+    language = body.lang === 'fr' ? 'fr' : 'en';
+    source   = (body.source ?? 'homepage').slice(0, 64);
+    // Netlify CDN injects x-country on every request in production (empty in local dev).
+    country  = (event.headers['x-country'] ?? '').toUpperCase().slice(0, 2);
   } catch {
     return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'invalid_json' }) };
   }
@@ -54,46 +56,48 @@ export const handler = async (event) => {
     return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'invalid_email' }) };
   }
 
-  const db = getAdminDb();
-
-  // Check for duplicate — query by email field.
-  const existing = await db.collection('newsletter_subscribers')
-    .where('email', '==', email)
-    .where('status', '!=', 'unsubscribed')
-    .limit(1)
-    .get();
-
-  if (!existing.empty) {
-    return { statusCode: 409, headers: CORS, body: JSON.stringify({ error: 'already_subscribed' }) };
-  }
-
-  // Generate a cryptographically random unsubscribe token.
-  const unsubscribeToken = crypto.randomUUID();
-
-  // Write subscriber to Firestore via Admin SDK.
+  // All Firestore operations in one try/catch — catches bad service account JSON too.
+  let unsubscribeToken;
   try {
+    const db = getAdminDb();
+
+    // Check for duplicate — query by email field.
+    const existing = await db.collection('newsletter_subscribers')
+      .where('email', '==', email)
+      .where('status', '!=', 'unsubscribed')
+      .limit(1)
+      .get();
+
+    if (!existing.empty) {
+      return { statusCode: 409, headers: CORS, body: JSON.stringify({ error: 'already_subscribed' }) };
+    }
+
+    // Generate a cryptographically random unsubscribe token.
+    unsubscribeToken = crypto.randomUUID();
+
     await db.collection('newsletter_subscribers').add({
       email,
-      lang,
+      language,
       source,
+      country,
       status: 'active',
       unsubscribeToken,
       subscribedAt: new Date(),
     });
   } catch (err) {
-    console.error('[subscribe] Firestore write failed:', err.message);
+    console.error('[subscribe] Firestore error:', err.message);
     return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'server_error' }) };
   }
 
   // Send welcome email — if it fails, the subscriber is still saved.
   const unsubscribeUrl =
-    `${SITE_URL()}/.netlify/functions/unsubscribe?token=${unsubscribeToken}&lang=${lang}`;
+    `${SITE_URL()}/.netlify/functions/unsubscribe?token=${unsubscribeToken}&lang=${language}`;
 
   try {
     await sendEmail({
       event: 'newsletter.welcome',
       to: email,
-      lang,
+      lang: language,
       payload: { unsubscribeUrl },
     });
   } catch (err) {

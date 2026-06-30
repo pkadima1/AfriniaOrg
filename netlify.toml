@@ -6,16 +6,22 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+[dev]
+  command = "npm run dev"
+  targetPort = 8080
+  port = 8888
+
 # Serve the dynamic sitemap from the Netlify function.
 # Status 200 = rewrite (URL stays /sitemap.xml in the browser/crawler).
-# Must come BEFORE the SPA catch-all below so Netlify matches it first.
 [[redirects]]
   from = "/sitemap.xml"
   to = "/.netlify/functions/sitemap"
   status = 200
 
-# SPA catch-all — every other path serves index.html so React Router works.
-[[redirects]]
+# SPA catch-all — production ONLY.
+# netlify dev ignores [context.production] blocks, so Vite handles routing in dev.
+# Without this, React Router sub-routes (e.g. /fr/blog/my-article) return 404 on Netlify CDN.
+[[context.production.redirects]]
   from = "/*"
   to = "/index.html"
   status = 200

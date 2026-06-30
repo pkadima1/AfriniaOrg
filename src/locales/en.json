@@ -87,7 +87,11 @@
     "newsletter": {
       "eyebrow": "The Afrinia Brief — Weekly",
       "headline": "One idea.",
+      "title": "One idea. Every Thursday.",
       "sub": "Every Thursday.",
+      "button": "Subscribe",
+      "success": "You're in. Watch your inbox Thursday.",
+      "error": "Something went wrong. Try again.",
       "desc": "One deeply researched idea for African builders — delivered to your inbox before the week ends. Not a news digest. Not a trend report. One complete thought you can act on. Read by entrepreneurs, technologists, and thinkers across 30+ African countries.",
       "placeholder": "Your email address",
       "cta": "Send me the brief",

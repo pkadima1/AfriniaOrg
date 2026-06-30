@@ -87,7 +87,11 @@
     "newsletter": {
       "eyebrow": "Le Brief Afrinia — Hebdomadaire",
       "headline": "Une idée.",
+      "title": "Une idée. Chaque jeudi.",
       "sub": "Chaque jeudi.",
+      "button": "S'abonner",
+      "success": "Vous êtes inscrit. Le premier brief arrive ce jeudi.",
+      "error": "Une erreur est survenue. Veuillez réessayer.",
       "desc": "Une idée profondément analysée pour les bâtisseurs africains — livrée dans votre boîte mail avant la fin de la semaine. Pas une revue de presse. Pas un rapport de tendances. Une pensée complète sur laquelle vous pouvez agir. Lue par des entrepreneurs, technologues et penseurs dans plus de 30 pays africains.",
       "placeholder": "Votre adresse e-mail",
       "cta": "Recevoir le brief",

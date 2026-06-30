@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, deleteDoc, doc, query, orderBy } from 'firebase/firestore';
 import { db } from '@/integrations/firebase/config';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Trash2, Download, Search, Loader2, RefreshCw } from 'lucide-react';
+import { Send, Trash2, Download, Search, Loader2, RefreshCw } from 'lucide-react';
 
 interface Subscriber {
   id: string;
@@ -15,15 +16,19 @@ interface Subscriber {
   subscribedAt: { toDate: () => Date } | null;
   source?: string;
   language?: string;
+  lang?: string;     // legacy field name — kept for backward compatibility with old records
   country?: string;
+  status?: string;
 }
 
 export function NewsletterSubscribers() {
+  const navigate = useNavigate();
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [filtered, setFiltered] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [langFilter, setLangFilter] = useState<'all' | 'en' | 'fr'>('all');
+  const [showUnsubscribed, setShowUnsubscribed] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -43,12 +48,16 @@ export function NewsletterSubscribers() {
 
   useEffect(() => { void load(); }, []);
 
+  const activeCount = subscribers.filter(s => !s.status || s.status === 'active').length;
+
   useEffect(() => {
     let result = subscribers;
+    // By default, hide unsubscribed users unless the admin explicitly opts in.
+    if (!showUnsubscribed) result = result.filter(s => !s.status || s.status === 'active');
     if (search) result = result.filter(s => s.email.toLowerCase().includes(search.toLowerCase()));
-    if (langFilter !== 'all') result = result.filter(s => s.language === langFilter);
+    if (langFilter !== 'all') result = result.filter(s => (s.language ?? s.lang) === langFilter);
     setFiltered(result);
-  }, [search, langFilter, subscribers]);
+  }, [search, langFilter, showUnsubscribed, subscribers]);
 
   const handleDelete = async (id: string, email: string) => {
     if (!confirm(`Remove ${email} from the newsletter list?`)) return;
@@ -82,7 +91,7 @@ export function NewsletterSubscribers() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Newsletter Subscribers</h2>
-          <p className="text-gray-400">{subscribers.length} total · {filtered.length} shown</p>
+          <p className="text-gray-400">{activeCount} active · {subscribers.length} total · {filtered.length} shown</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => void load()}>
@@ -91,10 +100,8 @@ export function NewsletterSubscribers() {
           <Button variant="outline" size="sm" onClick={exportCSV}>
             <Download className="w-4 h-4 mr-2" /> Export CSV
           </Button>
-          <Button size="sm" asChild>
-            <a href="mailto:afrinia@afrinia.org">
-              <Mail className="w-4 h-4 mr-2" /> Email All
-            </a>
+          <Button size="sm" onClick={() => navigate('/admin/newsletter')}>
+            <Send className="w-4 h-4 mr-2" /> Send Newsletter
           </Button>
         </div>
       </div>
@@ -112,6 +119,10 @@ export function NewsletterSubscribers() {
             {l === 'all' ? 'All languages' : l === 'en' ? '🇺🇸 English' : '🇫🇷 Français'}
           </Button>
         ))}
+        <Button variant={showUnsubscribed ? 'default' : 'outline'} size="sm"
+          onClick={() => setShowUnsubscribed(v => !v)}>
+          {showUnsubscribed ? 'Hide unsubscribed' : 'Show unsubscribed'}
+        </Button>
       </div>
 
       <Card>
@@ -128,6 +139,7 @@ export function NewsletterSubscribers() {
                   <TableHead>Email</TableHead>
                   <TableHead>Subscribed</TableHead>
                   <TableHead>Language</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Country</TableHead>
                   <TableHead>Source</TableHead>
                   <TableHead></TableHead>
@@ -136,7 +148,7 @@ export function NewsletterSubscribers() {
               <TableBody>
                 {filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center py-10 text-muted-foreground">
                       No subscribers found
                     </TableCell>
                   </TableRow>
@@ -147,11 +159,18 @@ export function NewsletterSubscribers() {
                       {s.subscribedAt ? s.subscribedAt.toDate().toLocaleDateString() : '—'}
                     </TableCell>
                     <TableCell>
-                      {s.language ? (
-                        <Badge variant="outline" className={s.language === 'fr' ? 'border-blue-400 text-blue-400' : 'border-green-400 text-green-400'}>
-                          {s.language === 'fr' ? '🇫🇷 FR' : '🇺🇸 EN'}
+                      {(() => { const l = s.language ?? s.lang; return l ? (
+                        <Badge variant="outline" className={l === 'fr' ? 'border-blue-400 text-blue-400' : 'border-green-400 text-green-400'}>
+                          {l === 'fr' ? '🇫🇷 FR' : '🇺🇸 EN'}
                         </Badge>
-                      ) : <span className="text-gray-500">—</span>}
+                      ) : <span className="text-gray-500">—</span>; })()}
+                    </TableCell>
+                    <TableCell>
+                      {s.status === 'unsubscribed' ? (
+                        <Badge variant="outline" className="border-red-400 text-red-400">Unsubscribed</Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-emerald-400 text-emerald-400">Active</Badge>
+                      )}
                     </TableCell>
                     <TableCell className="text-sm text-gray-400">{s.country || '—'}</TableCell>
                     <TableCell>
