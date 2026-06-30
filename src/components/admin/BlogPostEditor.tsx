@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { fetchBlogPostById, saveBlogPost, uploadBlogImage } from "@/integrations/firebase/blogService";
-import { ArrowLeft, Save, Eye, X } from "lucide-react";
+import { ArrowLeft, Save, Eye, X, Bell } from "lucide-react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import type { Lang } from "@/utils/languageUtils";
@@ -119,6 +121,7 @@ export const BlogPostEditor = () => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const isEditing = Boolean(id);
+  const { user } = useAuth();
 
   // Read language from ?lang= query param — defaults to 'en'
   const langParam = searchParams.get('lang');
@@ -143,6 +146,8 @@ export const BlogPostEditor = () => {
   const [isSaving, setSaving] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [imageUploading, setImageUploading] = useState(false);
+  // When true, publishing this post fires an email to subscribers in this language.
+  const [notifySubscribers, setNotifySubscribers] = useState(false);
 
   const loadPost = async (postId: string) => {
     setIsLoading(true);
@@ -242,6 +247,85 @@ export const BlogPostEditor = () => {
     setPost(prev => ({ ...prev, tags: prev.tags.filter(tag => tag !== tagToRemove) }));
   };
 
+  // Fires the newsletter broadcast with a branded article announcement email.
+  // Called after a successful publish when the "Notify subscribers" toggle is ON.
+  const notifyNewArticle = async (publishedPost: BlogPost) => {
+    if (!user) return;
+    try {
+      const idToken = await user.getIdToken();
+      const articleUrl = `https://afrinia.org/${lang}/blog/${publishedPost.slug}`;
+      const isFr = lang === 'fr';
+
+      // Brand tokens — must match netlify/functions/lib/email-templates/base.js
+      const C = { gold: '#B8912A', cream: '#F5F0E8', muted: '#8a9bb5', dark: '#0a1628' };
+
+      const buildBody = (title: string, excerpt: string, ctaLabel: string, eyebrow: string) => `
+        <!-- Eyebrow -->
+        <p style="margin:0 0 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:${C.gold};">
+          ${eyebrow}
+        </p>
+
+        <!-- Article headline -->
+        <h1 style="margin:0 0 24px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:300;color:${C.cream};line-height:1.3;">
+          ${title}
+        </h1>
+
+        <!-- Gold divider -->
+        <div style="width:40px;height:1px;background:${C.gold};opacity:0.5;margin:0 0 24px;"></div>
+
+        <!-- Excerpt -->
+        ${excerpt ? `<p style="margin:0 0 32px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:300;color:${C.muted};line-height:1.8;">${excerpt}</p>` : ''}
+
+        <!-- Gold CTA button — table-based for email client compatibility -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:0;">
+          <tr>
+            <td style="background-color:${C.gold};padding:0;">
+              <a href="${articleUrl}"
+                style="display:inline-block;padding:14px 36px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:${C.dark};text-decoration:none;white-space:nowrap;">
+                ${ctaLabel}
+              </a>
+            </td>
+          </tr>
+        </table>
+      `;
+
+      const bodyHtml = buildBody(
+        publishedPost.title,
+        publishedPost.excerpt,
+        isFr ? 'LIRE L\'ARTICLE' : 'READ THE ARTICLE',
+        isFr ? 'Nouvel article' : 'New Article',
+      );
+
+      const res = await fetch('/.netlify/functions/send-newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          subject_en: publishedPost.title,
+          subject_fr: isFr ? publishedPost.title : '',
+          body_en: bodyHtml,
+          body_fr: isFr ? bodyHtml : '',
+          lang_filter: lang,
+        }),
+      });
+
+      const result = await res.json() as { sent: number; failed: number };
+      toast({
+        title: `Sent to ${result.sent} subscriber${result.sent !== 1 ? 's' : ''}`,
+        description: result.failed > 0 ? `${result.failed} delivery failed.` : undefined,
+      });
+    } catch (err) {
+      console.error('[BlogPostEditor] Subscriber notify failed:', err);
+      toast({
+        title: 'Article published — subscriber notification failed',
+        description: 'Go to Admin → Newsletter to send manually.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleSave = async (status?: 'draft' | 'published') => {
     setSaving(true);
     try {
@@ -259,6 +343,13 @@ export const BlogPostEditor = () => {
         title: "Success",
         description: `Blog post ${status === 'published' ? 'published' : 'saved'} successfully`
       });
+
+      // Auto-notify subscribers if the toggle is ON and we're publishing.
+      // Reset toggle immediately so re-saves don't re-send.
+      if (status === 'published' && notifySubscribers) {
+        setNotifySubscribers(false);
+        void notifyNewArticle(postData);
+      }
 
       if (!isEditing) {
         navigate(`/admin/blog?lang=${lang}`);
@@ -480,6 +571,28 @@ export const BlogPostEditor = () => {
                       </Badge>
                     ))}
                   </div>
+                </div>
+              </div>
+
+              {/* ── Subscriber notification toggle ── */}
+              <div className="pt-4 border-t border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-start gap-3">
+                    <Bell className="w-4 h-4 mt-0.5 text-muted-foreground shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium">Notify subscribers on publish</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Sends an email to {lang === 'fr' ? 'French' : 'English'} subscribers
+                        with the article title and excerpt when you click Publish.
+                        Resets after each send.
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    id="notify-subscribers"
+                    checked={notifySubscribers}
+                    onCheckedChange={setNotifySubscribers}
+                  />
                 </div>
               </div>
             </CardContent>
