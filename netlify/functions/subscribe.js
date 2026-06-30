@@ -14,6 +14,8 @@
  *   400  { error: 'invalid_email' }             — bad email format
  *   409  { error: 'already_subscribed' }        — email already active
  *   500  { error: 'server_error' }              — Firestore write failed
+ *
+ * Runtime: Netlify Functions v2 (export default — no Lambda 4KB env var limit)
  */
 
 import { getAdminDb } from './lib/firebase-admin.js';
@@ -26,42 +28,44 @@ const CORS = {
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 const SITE_URL = () => process.env.SITE_URL || 'https://afrinia.org';
 
-export const handler = async (event) => {
-  // Handle CORS preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: CORS, body: '' };
+const json = (data, status = 200) =>
+  new Response(JSON.stringify(data), {
+    status,
+    headers: { ...CORS, 'Content-Type': 'application/json' },
+  });
+
+export default async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: CORS });
   }
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: 'method_not_allowed' }) };
+  if (req.method !== 'POST') {
+    return json({ error: 'method_not_allowed' }, 405);
   }
 
   let email, language, source, country;
   try {
-    const body = JSON.parse(event.body ?? '{}');
+    const body = JSON.parse(await req.text() || '{}');
     email    = (body.email  ?? '').trim().toLowerCase();
     language = body.lang === 'fr' ? 'fr' : 'en';
     source   = (body.source ?? 'homepage').slice(0, 64);
     // Netlify CDN injects x-country on every request in production (empty in local dev).
-    country  = (event.headers['x-country'] ?? '').toUpperCase().slice(0, 2);
+    country  = (req.headers.get('x-country') ?? '').toUpperCase().slice(0, 2);
   } catch {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'invalid_json' }) };
+    return json({ error: 'invalid_json' }, 400);
   }
 
   // Server-side email validation — never trust the browser.
   if (!email || !EMAIL_RE.test(email)) {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'invalid_email' }) };
+    return json({ error: 'invalid_email' }, 400);
   }
 
-  // All Firestore operations in one try/catch — catches bad service account JSON too.
   let unsubscribeToken;
   try {
     const db = getAdminDb();
 
-    // Check for duplicate — query by email field.
     const existing = await db.collection('newsletter_subscribers')
       .where('email', '==', email)
       .where('status', '!=', 'unsubscribed')
@@ -69,10 +73,9 @@ export const handler = async (event) => {
       .get();
 
     if (!existing.empty) {
-      return { statusCode: 409, headers: CORS, body: JSON.stringify({ error: 'already_subscribed' }) };
+      return json({ error: 'already_subscribed' }, 409);
     }
 
-    // Generate a cryptographically random unsubscribe token.
     unsubscribeToken = crypto.randomUUID();
 
     await db.collection('newsletter_subscribers').add({
@@ -86,7 +89,7 @@ export const handler = async (event) => {
     });
   } catch (err) {
     console.error('[subscribe] Firestore error:', err.message);
-    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'server_error' }) };
+    return json({ error: 'server_error' }, 500);
   }
 
   // Send welcome email — if it fails, the subscriber is still saved.
@@ -102,17 +105,8 @@ export const handler = async (event) => {
     });
   } catch (err) {
     console.error('[subscribe] Resend welcome email failed:', err.message);
-    // Return success with a flag — subscriber is captured even if email failed.
-    return {
-      statusCode: 200,
-      headers: CORS,
-      body: JSON.stringify({ success: true, emailFailed: true }),
-    };
+    return json({ success: true, emailFailed: true });
   }
 
-  return {
-    statusCode: 200,
-    headers: CORS,
-    body: JSON.stringify({ success: true }),
-  };
+  return json({ success: true });
 };

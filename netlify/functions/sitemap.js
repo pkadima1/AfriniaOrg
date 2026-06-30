@@ -6,6 +6,8 @@
  *
  * Collections queried: posts_fr, posts_en
  * Only documents with status == 'published' are included.
+ *
+ * Runtime: Netlify Functions v2 (export default — no Lambda 4KB env var limit)
  */
 
 import { initializeApp, getApps } from 'firebase/app';
@@ -18,11 +20,11 @@ const FIREBASE_CONFIG = {
   appId: '1:17223733952:web:b10b841c6642161ab65325',
 };
 
-const DOMAIN = 'https://afrinia.org';
+const DOMAIN  = 'https://afrinia.org';
 // Named Firestore database — matches VITE_FIRESTORE_DATABASE_ID in .env
 const DB_NAME = 'afrinia';
 
-// Reuse the Firebase app across warm Lambda invocations.
+// Reuse the Firebase app across warm function invocations.
 let _db = null;
 function getDb() {
   if (_db) return _db;
@@ -68,8 +70,8 @@ function urlBlock(loc, lastmod, changefreq, priority) {
   </url>`;
 }
 
-export const handler = async () => {
-  const db = getDb();
+export default async () => {
+  const db    = getDb();
   const today = new Date().toISOString().slice(0, 10);
 
   // Fetch both language collections in parallel.
@@ -127,13 +129,12 @@ export const handler = async () => {
     '</urlset>',
   ].join('\n');
 
-  return {
-    statusCode: 200,
+  return new Response(xml, {
+    status: 200,
     headers: {
       'Content-Type': 'application/xml; charset=UTF-8',
       // Cache for 1 hour — Googlebot re-crawls sitemaps infrequently anyway.
       'Cache-Control': 'public, max-age=3600, s-maxage=3600',
     },
-    body: xml,
-  };
+  });
 };

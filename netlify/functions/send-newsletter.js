@@ -19,6 +19,8 @@
  *   401  { error: 'unauthorized' }
  *   403  { error: 'forbidden' }
  *   500  { error: 'server_error' }
+ *
+ * Runtime: Netlify Functions v2 (export default — no Lambda 4KB env var limit)
  */
 
 import { getAdminDb, getAdminAuth } from './lib/firebase-admin.js';
@@ -32,21 +34,27 @@ const CORS = {
 
 const SITE_URL = () => process.env.SITE_URL || 'https://afrinia.org';
 
-export const handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: CORS, body: '' };
+const json = (data, status = 200) =>
+  new Response(JSON.stringify(data), {
+    status,
+    headers: { ...CORS, 'Content-Type': 'application/json' },
+  });
+
+export default async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: CORS });
   }
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: 'method_not_allowed' }) };
+  if (req.method !== 'POST') {
+    return json({ error: 'method_not_allowed' }, 405);
   }
 
   // ── 1. Verify Firebase ID token ────────────────────────────────────────────
-  const authHeader = event.headers?.authorization ?? event.headers?.Authorization ?? '';
+  const authHeader = req.headers.get('authorization') ?? '';
   const idToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
   if (!idToken) {
-    return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'unauthorized' }) };
+    return json({ error: 'unauthorized' }, 401);
   }
 
   let uid;
@@ -55,32 +63,33 @@ export const handler = async (event) => {
     uid = decoded.uid;
   } catch (err) {
     console.error('[send-newsletter] Token verification failed:', err.message);
-    return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: 'unauthorized' }) };
+    return json({ error: 'unauthorized' }, 401);
   }
 
   // ── 2. Verify the user is an admin in Firestore ────────────────────────────
   const db = getAdminDb();
   const profileSnap = await db.collection('user_profiles').doc(uid).get();
   if (!profileSnap.exists || profileSnap.data()?.role !== 'admin') {
-    return { statusCode: 403, headers: CORS, body: JSON.stringify({ error: 'forbidden' }) };
+    return json({ error: 'forbidden' }, 403);
   }
 
   // ── 3. Parse and validate the request body ─────────────────────────────────
   let subject_en, subject_fr, body_en, body_fr, lang_filter;
   try {
-    const body = JSON.parse(event.body ?? '{}');
+    const body = JSON.parse(await req.text() || '{}');
     subject_en  = (body.subject_en  ?? '').trim();
     subject_fr  = (body.subject_fr  ?? '').trim();
     body_en     = (body.body_en     ?? '').trim();
     body_fr     = (body.body_fr     ?? '').trim();
     lang_filter = ['en', 'fr', 'all'].includes(body.lang_filter) ? body.lang_filter : 'all';
   } catch {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'invalid_json' }) };
+    return json({ error: 'invalid_json' }, 400);
   }
 
   if (!subject_en || !body_en) {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'missing_fields' }) };
+    return json({ error: 'missing_fields' }, 400);
   }
+
   // French content falls back to English if not provided.
   const effectiveSubjectFr = subject_fr || subject_en;
   const effectiveBodyFr    = body_fr    || body_en;
@@ -91,7 +100,7 @@ export const handler = async (event) => {
     subsSnap = await db.collection('newsletter_subscribers').get();
   } catch (err) {
     console.error('[send-newsletter] Firestore read failed:', err.message);
-    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'server_error' }) };
+    return json({ error: 'server_error' }, 500);
   }
 
   const siteUrl = SITE_URL();
@@ -107,11 +116,7 @@ export const handler = async (event) => {
     });
 
   if (recipients.length === 0) {
-    return {
-      statusCode: 200,
-      headers: CORS,
-      body: JSON.stringify({ sent: 0, failed: 0, errors: [], message: 'no_active_subscribers' }),
-    };
+    return json({ sent: 0, failed: 0, errors: [], message: 'no_active_subscribers' });
   }
 
   // ── 5. Batch send ──────────────────────────────────────────────────────────
@@ -135,9 +140,5 @@ export const handler = async (event) => {
 
   const result = await sendBatch(sends);
 
-  return {
-    statusCode: 200,
-    headers: CORS,
-    body: JSON.stringify(result),
-  };
+  return json(result);
 };

@@ -14,6 +14,8 @@
  *   200  { success: true }
  *   400  { error: 'missing_fields' | 'invalid_email' }
  *   500  { error: 'server_error' }
+ *
+ * Runtime: Netlify Functions v2 (export default — no Lambda 4KB env var limit)
  */
 
 import { sendBatch } from './lib/email-dispatcher.js';
@@ -29,37 +31,43 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SITE_URL    = () => process.env.SITE_URL    || 'https://afrinia.org';
 const ADMIN_EMAIL = () => process.env.ADMIN_EMAIL || 'contact@afrinia.org';
 
-export const handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers: CORS, body: '' };
+const json = (data, status = 200) =>
+  new Response(JSON.stringify(data), {
+    status,
+    headers: { ...CORS, 'Content-Type': 'application/json' },
+  });
+
+export default async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: CORS });
   }
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: 'method_not_allowed' }) };
+  if (req.method !== 'POST') {
+    return json({ error: 'method_not_allowed' }, 405);
   }
 
   let name, email, subject, message, lang;
   try {
-    const body = JSON.parse(event.body ?? '{}');
+    const body = JSON.parse(await req.text() || '{}');
     name    = (body.name    ?? '').trim().slice(0, 120);
     email   = (body.email   ?? '').trim().toLowerCase();
     subject = (body.subject ?? '').trim().slice(0, 200);
     message = (body.message ?? '').trim().slice(0, 4000);
     lang    = body.lang === 'fr' ? 'fr' : 'en';
   } catch {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'invalid_json' }) };
+    return json({ error: 'invalid_json' }, 400);
   }
 
   if (!name || !email || !subject || !message) {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'missing_fields' }) };
+    return json({ error: 'missing_fields' }, 400);
   }
 
   if (!EMAIL_RE.test(email)) {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: 'invalid_email' }) };
+    return json({ error: 'invalid_email' }, 400);
   }
 
-  const siteUrl      = SITE_URL();
-  const submittedAt  = new Date().toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-US', {
+  const siteUrl     = SITE_URL();
+  const submittedAt = new Date().toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-US', {
     dateStyle: 'long',
     timeStyle: 'short',
     timeZone: 'UTC',
@@ -67,7 +75,7 @@ export const handler = async (event) => {
 
   const sharedPayload = { name, email, subject, message, submittedAt, siteUrl };
 
-  const { sent, failed } = await sendBatch([
+  const { sent } = await sendBatch([
     // Notify the Afrinia team.
     {
       event: 'contact.admin_notify',
@@ -88,12 +96,8 @@ export const handler = async (event) => {
   // If both emails failed, report an error.
   if (sent === 0) {
     console.error('[send-contact] Both emails failed');
-    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: 'server_error' }) };
+    return json({ error: 'server_error' }, 500);
   }
 
-  return {
-    statusCode: 200,
-    headers: CORS,
-    body: JSON.stringify({ success: true }),
-  };
+  return json({ success: true });
 };

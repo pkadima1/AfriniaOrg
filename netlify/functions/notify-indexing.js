@@ -15,12 +15,14 @@
  * Called via:  POST /.netlify/functions/notify-indexing
  * Body (JSON): { "url": "https://afrinia.org/fr/blog/my-slug", "type": "URL_UPDATED" }
  *              type is either "URL_UPDATED" (publish) or "URL_DELETED" (unpublish/delete)
+ *
+ * Runtime: Netlify Functions v2 (export default — no Lambda 4KB env var limit)
  */
 
 import { createSign } from 'crypto';
 
-const SCOPE = 'https://www.googleapis.com/auth/indexing';
-const TOKEN_URL = 'https://oauth2.googleapis.com/token';
+const SCOPE        = 'https://www.googleapis.com/auth/indexing';
+const TOKEN_URL    = 'https://oauth2.googleapis.com/token';
 const INDEXING_URL = 'https://indexing.googleapis.com/v3/urlNotifications:publish';
 
 /** Base64url encode (JWT format — no padding, URL-safe chars). */
@@ -34,14 +36,11 @@ function b64url(str) {
  * The JWT is signed with RS256 using the service account private key.
  */
 function buildJwt(clientEmail, privateKey) {
-  const now = Math.floor(Date.now() / 1000);
+  const now    = Math.floor(Date.now() / 1000);
   const header = b64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
-  const claim = b64url(JSON.stringify({
-    iss: clientEmail,
-    scope: SCOPE,
-    aud: TOKEN_URL,
-    exp: now + 3600,
-    iat: now,
+  const claim  = b64url(JSON.stringify({
+    iss: clientEmail, scope: SCOPE, aud: TOKEN_URL,
+    exp: now + 3600, iat: now,
   }));
   const unsigned = `${header}.${claim}`;
   const sign = createSign('RSA-SHA256');
@@ -86,56 +85,49 @@ async function notifyGoogle(accessToken, url, type) {
   return await res.json();
 }
 
-export const handler = async (event) => {
-  // Only accept POST
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method not allowed' };
+const json = (data, status = 200) =>
+  new Response(JSON.stringify(data), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+export default async (req) => {
+  if (req.method !== 'POST') {
+    return new Response('Method not allowed', { status: 405 });
   }
 
-  // Parse the request body
   let url, type;
   try {
-    const body = JSON.parse(event.body || '{}');
-    url = body.url;
+    const body = JSON.parse(await req.text() || '{}');
+    url  = body.url;
     type = body.type || 'URL_UPDATED';
   } catch {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
+    return json({ error: 'Invalid JSON body' }, 400);
   }
 
   if (!url || !url.startsWith('https://afrinia.org/')) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'url must be an afrinia.org URL' }) };
+    return json({ error: 'url must be an afrinia.org URL' }, 400);
   }
 
   if (!['URL_UPDATED', 'URL_DELETED'].includes(type)) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'type must be URL_UPDATED or URL_DELETED' }) };
+    return json({ error: 'type must be URL_UPDATED or URL_DELETED' }, 400);
   }
 
-  // Check credentials are configured
   const clientEmail = process.env.GOOGLE_INDEXING_CLIENT_EMAIL;
-  const privateKey = (process.env.GOOGLE_INDEXING_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+  const privateKey  = (process.env.GOOGLE_INDEXING_PRIVATE_KEY || '').replace(/\\n/g, '\n');
 
   if (!clientEmail || !privateKey) {
     console.warn('[notify-indexing] credentials not configured — skipping');
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ skipped: true, reason: 'credentials_not_configured' }),
-    };
+    return json({ skipped: true, reason: 'credentials_not_configured' });
   }
 
   try {
-    const token = await getAccessToken(clientEmail, privateKey);
+    const token  = await getAccessToken(clientEmail, privateKey);
     const result = await notifyGoogle(token, url, type);
     console.log(`[notify-indexing] notified Google: ${type} ${url}`);
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ok: true, url, type, result }),
-    };
+    return json({ ok: true, url, type, result });
   } catch (err) {
     console.error('[notify-indexing] error:', err.message);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
-    };
+    return json({ error: err.message }, 500);
   }
 };
