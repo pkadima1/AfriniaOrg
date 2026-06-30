@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { 
   User, 
   signInWithEmailAndPassword,
@@ -55,6 +55,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Refs mirror state so async functions like signIn can read the live value
+  // without being trapped by the stale closure captured at render time.
+  const userRef = useRef<User | null>(null);
+  const userProfileRef = useRef<UserProfile | null>(null);
 
   /**
    * Set Firebase auth persistence on mount
@@ -124,6 +129,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         if (currentUser) {
           setUser(currentUser);
+          userRef.current = currentUser;
+
           let profile = await fetchUserProfile(currentUser.uid);
 
           if (!profile) {
@@ -136,9 +143,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
 
           setUserProfile(profile);
+          userProfileRef.current = profile;
         } else {
           setUser(null);
+          userRef.current = null;
           setUserProfile(null);
+          userProfileRef.current = null;
         }
       } catch (error) {
         console.error('Error handling auth state change:', error);
@@ -201,35 +211,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('[Auth] Starting sign in...');
       await signInWithEmailAndPassword(auth, email, password);
       
-      // Wait for auth state and profile to be set by onAuthStateChanged listener
+      // Wait for onAuthStateChanged to populate the refs (not state — state is a
+      // stale closure here; refs always hold the current value).
       let attempts = 0;
       const maxAttempts = 20; // 10 seconds max (500ms intervals)
-      
+
       while (attempts < maxAttempts) {
-        console.log(`[Auth] Waiting for profile... attempt ${attempts + 1}/${maxAttempts}`);
         await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Check if both user and profile are loaded
-        if (user !== null && userProfile !== null && userProfile.is_active) {
-          console.log('[Auth] Profile loaded successfully, sign in complete');
+
+        if (userRef.current !== null && userProfileRef.current !== null) {
+          if (!userProfileRef.current.is_active) {
+            throw new Error('Your account has been deactivated.');
+          }
           return { error: null };
         }
-        
+
         attempts++;
       }
-      
-      // If we get here, something went wrong
-      if (user === null) {
+
+      // Timed out — surface the specific failure reason.
+      if (userRef.current === null) {
         throw new Error('User authentication failed.');
       }
-      if (userProfile === null) {
-        throw new Error('User profile could not be loaded. Please check your internet connection and try again.');
-      }
-      if (!userProfile.is_active) {
-        throw new Error('Your account has been deactivated.');
-      }
-      
-      return { error: null };
+      throw new Error('User profile could not be loaded. Please check your internet connection and try again.');
     } catch (error) {
       console.error('[Auth] Sign in error:', error);
       return { error: error as Error };
