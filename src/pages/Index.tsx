@@ -11,6 +11,7 @@ import { type Lang, getBlogUrl, getPostUrl } from '@/utils/languageUtils';
 import { trackNewsletterSignup } from '@/utils/analytics';
 import { usePageMeta } from '@/utils/pageMeta';
 import Layout from '../components/Layout';
+import { SubscribePopup } from '@/components/SubscribePopup';
 
 // ── Afrinia brand colours (mirrored from CSS variables for inline styles) ──
 const A = {
@@ -275,6 +276,7 @@ const Index = () => {
 
   return (
     <>
+    <SubscribePopup source="home" />
     <Layout>
       {/* ════════════════════════════════════════
           SECTION 1 — HERO

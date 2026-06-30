@@ -132,6 +132,14 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // ── Site config (popup settings, social links, etc.) ─────────────────
+    // Public read: the subscribe popup fetches its template config without auth.
+    // Admin-only write: only admins can change popup content or toggle settings.
+    match /site_config/{docId} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
     // ── Deny everything else (catch-all) ─────────────────────────────────
     match /{document=**} {
       allow read, write: if false;

@@ -7,11 +7,12 @@ import { AudioUpload } from '@/components/admin/AudioUpload';
 import { NewsletterSubscribers } from '@/components/admin/NewsletterSubscribers';
 import { SocialLinksSettings } from '@/components/admin/SocialLinksSettings';
 import { NewsletterAdmin } from '@/pages/admin/NewsletterAdmin';
+import { PopupTemplateAdmin } from '@/components/admin/PopupTemplateAdmin';
 import { ContributorRoute, AdminRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, FileText, Settings, Users, Crown, Edit3, Mic, Mail, Share2 } from "lucide-react";
+import { ArrowLeft, FileText, Settings, Users, Crown, Edit3, Mic, Mail, Share2, BellRing } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 
@@ -193,6 +194,31 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
 
+        <Card
+          className={isAdmin() ? "cursor-pointer hover:shadow-lg transition-shadow" : "opacity-50"}
+          onClick={() => isAdmin() && navigate('/admin/popup')}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BellRing className="w-5 h-5" />
+              Subscribe Popup
+              {!isAdmin() && <Badge variant="outline" className="text-xs">Admin Only</Badge>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              {isAdmin()
+                ? 'Manage the subscribe popup: select template, edit bilingual copy, set trigger timing.'
+                : 'Only administrators can manage the popup.'}
+            </p>
+            {isAdmin() && (
+              <Button className="mt-3" variant="outline" size="sm" onClick={e => { e.stopPropagation(); navigate('/admin/popup'); }}>
+                Configure Popup
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
@@ -324,6 +350,14 @@ export const BlogAdmin = () => {
         element={
           <AdminRoute>
             <NewsletterAdmin />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/popup"
+        element={
+          <AdminRoute>
+            <PopupTemplateAdmin />
           </AdminRoute>
         }
       />

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '@/components/Layout';
+import { SubscribePopup } from '@/components/SubscribePopup';
 import { ArrowLeft, MessageCircle, Reply, Clock, User, Tag } from 'lucide-react';
 import { getPostByLangAndSlug, getPostsByLanguage } from '@/integrations/firebase/blogService';
 import {
@@ -447,6 +448,7 @@ const BlogPost = () => {
 
   return (
     <Layout>
+      <SubscribePopup source="blog_post" />
       {/* ── Post header hero ── */}
       <div style={{
         position: 'relative', display: 'flex', alignItems: 'center',
