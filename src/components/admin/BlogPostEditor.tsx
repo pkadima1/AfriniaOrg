@@ -13,8 +13,8 @@ import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchBlogPostById, saveBlogPost, uploadBlogImage } from "@/integrations/firebase/blogService";
 import { ArrowLeft, Save, Eye, X, Bell } from "lucide-react";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import type { Lang } from "@/utils/languageUtils";
 
 interface BlogPost {
@@ -259,7 +259,19 @@ export const BlogPostEditor = () => {
       // Brand tokens — must match netlify/functions/lib/email-templates/base.js
       const C = { gold: '#B8912A', cream: '#F5F0E8', muted: '#8a9bb5', dark: '#0a1628' };
 
-      const buildBody = (title: string, excerpt: string, ctaLabel: string, eyebrow: string) => `
+      const buildBody = (title: string, excerpt: string, ctaLabel: string, eyebrow: string, featuredImageUrl?: string) => `
+        ${featuredImageUrl ? `
+        <!-- Featured image hero — table-based for email client compatibility -->
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 28px;">
+          <tr>
+            <td style="padding:0;line-height:0;">
+              <img src="${featuredImageUrl}" alt="${title}" width="520"
+                style="display:block;width:100%;max-width:520px;height:auto;border:0;" />
+            </td>
+          </tr>
+        </table>
+        ` : ''}
+
         <!-- Eyebrow -->
         <p style="margin:0 0 16px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:${C.gold};">
           ${eyebrow}
@@ -294,6 +306,7 @@ export const BlogPostEditor = () => {
         publishedPost.excerpt,
         isFr ? 'LIRE L\'ARTICLE' : 'READ THE ARTICLE',
         isFr ? 'Nouvel article' : 'New Article',
+        publishedPost.featured_image_url,
       );
 
       const res = await fetch('/.netlify/functions/send-newsletter', {
