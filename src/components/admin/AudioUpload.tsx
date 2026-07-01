@@ -20,6 +20,11 @@ import {
   uploadAudioEpisode,
   type AudioUploadMetadata,
 } from '@/integrations/firebase/audioAdminService';
+import {
+  SIGNAL_CATEGORIES,
+  CATEGORY_LABEL_MAP,
+} from '@/constants/taxonomy';
+import type { PostCategory } from '@/integrations/firebase/types';
 
 type Lang = 'en' | 'fr';
 
@@ -69,7 +74,9 @@ export const AudioUpload = () => {
   const [episodeNumber, setEpisodeNumber] = useState('');
   const [title, setTitle] = useState('');
   const [duration, setDuration] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState<PostCategory | ''>('');
+  const [categoryEN, setCategoryEN] = useState('');
+  const [categoryFR, setCategoryFR] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<'draft' | 'published'>('published');
 
@@ -145,7 +152,9 @@ export const AudioUpload = () => {
         episode_number: parseInt(episodeNumber, 10),
         title: title.trim(),
         duration: duration.trim(),
-        category: category.trim() || undefined,
+        category:   category   || undefined,
+        categoryEN: categoryEN || undefined,
+        categoryFR: categoryFR || undefined,
         description: description.trim() || undefined,
         status,
         lang,
@@ -179,6 +188,8 @@ export const AudioUpload = () => {
     setTitle('');
     setDuration('');
     setCategory('');
+    setCategoryEN('');
+    setCategoryFR('');
     setDescription('');
     setProgress(0);
   };
@@ -431,13 +442,28 @@ export const AudioUpload = () => {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="ep-category">Category</Label>
-              <Input
-                id="ep-category"
-                placeholder="e.g. Systems + AI"
+              <Label htmlFor="ep-category">Signal Type</Label>
+              <Select
                 value={category}
-                onChange={e => setCategory(e.target.value)}
-              />
+                onValueChange={(value) => {
+                  const key = value as PostCategory;
+                  const labels = CATEGORY_LABEL_MAP[key];
+                  setCategory(key);
+                  setCategoryEN(labels.en);
+                  setCategoryFR(labels.fr);
+                }}
+              >
+                <SelectTrigger id="ep-category">
+                  <SelectValue placeholder="— Select Signal Type —" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SIGNAL_CATEGORIES.map(c => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.labelEN} / {c.labelFR}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-1.5">

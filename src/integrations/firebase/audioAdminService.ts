@@ -18,6 +18,7 @@ import {
 import { db, storage } from '@/integrations/firebase/config';
 import {
   AudioEpisode,
+  PostCategory,
   getAudioCollectionForLang,
 } from '@/integrations/firebase/types';
 
@@ -25,7 +26,9 @@ export interface AudioUploadMetadata {
   episode_number: number;
   title: string;
   duration: string;
-  category?: string;
+  category?: PostCategory;
+  categoryEN?: string;   // derived display label (EN) — never typed manually
+  categoryFR?: string;   // derived display label (FR) — never typed manually
   description?: string;
   status: 'draft' | 'published';
   lang: 'en' | 'fr';
@@ -92,7 +95,9 @@ export async function uploadAudioEpisode(
     episode_number: metadata.episode_number,
     title: metadata.title,
     duration: metadata.duration,
-    category: metadata.category ?? null,
+    category:   metadata.category   ?? null,
+    categoryEN: metadata.categoryEN ?? null,
+    categoryFR: metadata.categoryFR ?? null,
     description: metadata.description ?? null,
     audio_storage_path: storagePath,
     audio_url,
