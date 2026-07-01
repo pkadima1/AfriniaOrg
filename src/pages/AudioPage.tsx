@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '../components/Layout';
 import { fetchAudioEpisodes } from '@/integrations/firebase/audioService';
-import type { AudioEpisode } from '@/integrations/firebase/types';
+import type { AudioEpisode, PostCategory } from '@/integrations/firebase/types';
 import type { Lang } from '@/utils/languageUtils';
+import { getCategoryLabel } from '@/constants/taxonomy';
 import { trackAudioPlay, trackAudioPause } from '@/utils/analytics';
 import { usePageMeta } from '@/utils/pageMeta';
 
@@ -56,9 +57,10 @@ interface CardProps {
   isPlaying: boolean;
   onPlay: (ep: AudioEpisode) => void;
   epLabel: string;
+  lang: Lang;
 }
 
-const EpisodeCard = ({ ep, isActive, isPlaying, onPlay, epLabel }: CardProps) => (
+const EpisodeCard = ({ ep, isActive, isPlaying, onPlay, epLabel, lang }: CardProps) => (
   <div
     onClick={() => ep.audio_url && onPlay(ep)}
     style={{
@@ -110,7 +112,7 @@ const EpisodeCard = ({ ep, isActive, isPlaying, onPlay, epLabel }: CardProps) =>
         {ep.category && (
           <>
             <span style={{ width: 2, height: 2, borderRadius: '50%', background: A.muted, flexShrink: 0, display: 'inline-block' }} />
-            <span>{ep.category}</span>
+            <span>{getCategoryLabel(ep.category as PostCategory, lang)}</span>
           </>
         )}
       </div>
@@ -289,6 +291,7 @@ const AudioPage = () => {
                     isPlaying={nowPlaying?.id === ep.id && audioPlaying}
                     onPlay={handlePlay}
                     epLabel={epLabel}
+                    lang={lang}
                   />
                 ))}
               </div>

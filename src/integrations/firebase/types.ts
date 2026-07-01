@@ -90,8 +90,10 @@ export interface AudioEpisode {
   title: string;
   /** Display duration string, e.g. "7 min 24 sec" */
   duration: string;
-  /** Topic category shown alongside the duration, e.g. "Systems + AI" */
-  category?: string;
+  /** Canonical signal type — same taxonomy as blog posts */
+  category?: PostCategory;
+  categoryEN?: string;  // derived display label (EN)
+  categoryFR?: string;  // derived display label (FR)
   /** Short summary / description */
   description?: string;
   /** Direct link to the episode (Spotify / Apple Podcasts / mp3) — Firebase Storage download URL */
