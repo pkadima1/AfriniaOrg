@@ -223,3 +223,172 @@ Enhanced Measurement is currently toggled OFF (visible in the GA4 screenshot). T
 | 4 | GA4 custom event tracking (blog + audio) | ✅ Done | 2026-04-21 |
 | 5 | Add page meta to AudioPage | ✅ Done | 2026-04-21 |
 | 6 | Enable Enhanced Measurement (GA4 console) | ⏸ Blocked | — |
+| 7 | Fix sitemap serving wrong file (force redirect) | ✅ Done | 2026-07-01 |
+| 8 | Fix production fetching wrong Firestore database | ✅ Done | 2026-07-01 |
+| 9 | Signal Architecture taxonomy design + signalMapSkills.md | ✅ Done | 2026-07-01 |
+| 10 | Signal Architecture — Prompt 1: Audit categories | 🔴 Not started | — |
+| 11 | Signal Architecture — Prompts 2–10: Full implementation | 🔴 Not started | — |
+
+---
+
+---
+
+## SESSION: 2026-07-01 — Branch: `feature/resend-mailing-system`
+
+> This session was on a different branch from the `GoogleAnalyticsSetUp` session above. Both branches are diverged from `main`. `feature/resend-mailing-system` contains all the most recent work including Milestones 7, 8, 9.
+
+---
+
+### MILESTONE 7 — Fix Sitemap Serving Wrong File (force redirect)
+**Status:** ✅ Done — commit `eca0c6e`
+**Branch:** `feature/resend-mailing-system`
+**Date completed:** 2026-07-01
+**DEPLOY NEEDED — not yet live at afrinia.org**
+
+**Root cause:**
+Netlify serves static files over redirects unless the redirect explicitly has `force = true`. The file `public/sitemap.xml` (a static placeholder) is copied to `dist/sitemap.xml` at build time. Netlify CDN was finding that static file and serving it directly, bypassing the dynamic Netlify Function entirely. The result: `afrinia.org/sitemap.xml` showed a comment saying "THIS FILE IS NO LONGER THE LIVE SITEMAP" with no article URLs — exactly the placeholder content.
+
+The dynamic Netlify Function at `netlify/functions/sitemap.js` (which queries Firestore live and returns real article URLs) was never being called in production.
+
+**Files changed:**
+
+| File | What changed |
+|---|---|
+| `netlify.toml` | Added `force = true` to the `[[redirects]]` block for `/sitemap.xml` |
+| `public/_redirects` | Changed `200` to `200!` (the `!` suffix is the force flag for this file format) |
+
+**What you should see after deploying:**
+- `afrinia.org/sitemap.xml` returns XML with `<lastmod>`, `<changefreq>`, `<priority>` fields and all published article URLs
+- The static comment "THIS FILE IS NO LONGER THE LIVE SITEMAP" does NOT appear
+- New articles published via admin panel appear in the sitemap immediately (no deploy needed)
+
+**Post-deploy action required:**
+Resubmit sitemap in Google Search Console: GSC → Sitemaps → delete old entry → add `sitemap.xml` → Submit.
+
+---
+
+### MILESTONE 8 — Fix Production Fetching Wrong Firestore Database
+**Status:** ✅ Done — commit `eca0c6e`
+**Branch:** `feature/resend-mailing-system`
+**Date completed:** 2026-07-01
+**DEPLOY NEEDED — not yet live at afrinia.org**
+
+**Root cause:**
+Firebase project `modified-hull-203004` has TWO Firestore databases:
+- The **default** database — nearly empty, almost no articles
+- A **named** database called `"afrinia"` — contains all real content
+
+`config.ts` was reading an environment variable `VITE_FIRESTORE_DATABASE_ID` to decide which database to connect to. This variable existed in the local `.env` file (`VITE_FIRESTORE_DATABASE_ID=afrinia`) but was never set in Netlify's environment variables panel. At build time, Vite saw the variable as undefined and silently fell back to the default (wrong) database.
+
+Result: Local dev showed rich content (many articles, proper categories). Production at `afrinia.org` showed sparse data (1–2 categories, almost no articles). Same codebase — two completely different databases.
+
+**Files changed:**
+
+| File | What changed |
+|---|---|
+| `src/integrations/firebase/config.ts` | Removed env-var conditional entirely. Hardcoded `getFirestore(firebaseApp, 'afrinia')` — matching what the Netlify backend functions (`sitemap.js`, `firebase-admin.js`) already do. |
+
+**Important:** The Netlify environment variable `VITE_FIRESTORE_DATABASE_ID` is no longer needed and can be left unset or removed from Netlify's dashboard without consequence.
+
+---
+
+### MILESTONE 9 — Signal Architecture: Taxonomy Design + signalMapSkills.md
+**Status:** ✅ Done (design complete, implementation not started)
+**Branch:** `feature/resend-mailing-system`
+**Date completed:** 2026-07-01
+
+**What was done:**
+Designed the canonical 5-category signal taxonomy for Afrinia's content classification system. Wrote and then fully corrected `signalMapSkills.md` — a 10-prompt sequential implementation plan.
+
+**The original `signalMapSkills.md` had critical errors:**
+- Written for Next.js App Router (wrong framework — Afrinia is Vite + React Router v6)
+- Referenced a `signals` Firestore collection (doesn't exist — real collections are `posts_en` / `posts_fr`)
+- All file paths used `lib/` directory (doesn't exist — should be `src/`)
+- Routing patterns used Next.js `useParams` (wrong — should be React Router `useLocation()`)
+- Prompt 9 planned to replace the working Netlify sitemap function with a Next.js sitemap
+
+**The corrected `signalMapSkills.md` now has:**
+- Correct stack facts at the top of the file (hard requirement for any new session)
+- Correct collections: `posts_en` and `posts_fr`
+- Correct file paths: all under `src/`
+- Correct routing: `pathname.startsWith('/fr/')` via `useLocation()`
+- Correct component patterns: shadcn/ui Selects, not native `<select>`
+- ESM script format: `.mjs` extension
+- Phase 2 flag for hreflang per-article alternates (not possible without cross-reference field)
+- CSR limitation documented for JSON-LD (not in raw HTML source — accepted for Phase 1)
+- Reference tables at bottom: field names, TypeScript types, real file paths
+
+**The canonical taxonomy (permanent — do not change without updating signalMapSkills.md):**
+
+| Key | EN Label | FR Label | Meaning |
+|---|---|---|---|
+| `opportunity` | OPPORTUNITY | OPPORTUNITÉ | Market openings, trade plays, sector entry, actionable leads |
+| `analysis` | ANALYSIS | ANALYSE | Macro trends, policy context, structural explanations |
+| `investment` | INVESTMENT | INVESTISSEMENT | Funding rounds, capital flows, DFI activity, M&A |
+| `technote` | TECHNOTE | TECHNOTE | Fintech, AI, digital infrastructure — identical in both languages by design |
+| `builder` | BUILDER | BÂTISSEUR | Founder profiles, startup ecosystems, operator intelligence |
+
+**Note on `signalMapSkills.md` file status:** The file was rewritten this session but is untracked in git (not yet committed). It must be committed before the next session begins.
+
+---
+
+## CURRENT STATE OF THE APP (2026-07-01)
+
+### What is working correctly
+
+| Feature | Confidence | Notes |
+|---|---|---|
+| Blog listing (EN + FR) | High | Fetches from `posts_en`/`posts_fr`, renders cards, filters by category + country |
+| Article detail page | High | Fetches by slug + lang, renders content, related posts, comments, JSON-LD |
+| JSON-LD Article schema | High | All required fields present — `headline`, `description`, `datePublished`, `dateModified`, `author`, `publisher`, `inLanguage`, `url`, `image` (conditional), `keywords`, `isPartOf`. Only missing: `articleSection` (Prompt 8 of signalMapSkills.md) |
+| Canonical + og:url tags | High | Set per-page via `usePageMeta`, removed on unmount |
+| Admin blog editor | High | Save, edit, publish, archive, delete, featured image upload, notify Google on publish |
+| Firebase Auth | High | Sign in/up/out, profile, roles, stale closure bug fixed |
+| Newsletter subscribe/unsubscribe | High | Netlify Functions v2, Resend |
+| Contact form | High | Netlify Function, Resend |
+| Audio page | High | Episodes from Firestore, inline player, fixed mini-player, JSON-LD PodcastSeries |
+| GA4 tracking | High | Page views (SPA), article_view, article_read_complete, newsletter_signup, comment_submitted |
+| robots.txt | High | Correct, Disallow /admin/, points to sitemap.xml |
+| Firestore security rules | High | Deployed, covers all collections, deny-all catch-all |
+| Dynamic sitemap function | High (post-deploy) | Netlify Function queries both collections live — force redirect in place |
+
+### Current bugs and missing items
+
+**CRITICAL — fixed, deploy needed:**
+- Production was fetching wrong Firestore database → fixed commit `eca0c6e`
+- Sitemap serving static placeholder → fixed commit `eca0c6e`
+
+**HIGH — requires signalMapSkills.md execution:**
+- Category field in Firestore is freetext garbage (duplicates, misspellings, mixed languages) → Prompts 1+4
+- Blog filter bar derives categories dynamically from dirty data → shows broken UI → Prompt 6
+- Admin category input is freetext — allows bad data to be entered → Prompt 5
+- Category badges render raw Firestore strings without language respect → Prompt 7
+
+**MEDIUM:**
+- JSON-LD missing `articleSection` field — requires Prompt 3 taxonomy constants first → Prompt 8
+- TypeScript has no enforcement for canonical category values (`category?: string`) → Prompt 2
+- No `src/constants/taxonomy.ts` file yet — single source of truth for labels missing → Prompt 3
+- No cross-reference field between EN and FR articles — hreflang per-article deferred to Phase 2
+- `signalMapSkills.md` is untracked in git — needs commit before next session
+
+**LOW:**
+- Dead auth modal files: `src/components/auth/AuthModal_FIXED.tsx`, `AuthModal_New.tsx`
+- Dead Supabase integration: `src/integrations/supabase/`, `src/utils/supabaseComments.ts`
+- Bundle size 1.7MB — admin components always loaded — Phase 2 optimisation
+
+---
+
+## NEXT SESSION — WHERE TO START
+
+**Step 1:** Commit the untracked `signalMapSkills.md` file.
+
+**Step 2:** Deploy `feature/resend-mailing-system` to Netlify (trigger from Netlify dashboard or merge to main).
+
+**Step 3:** After deploy, verify:
+- `afrinia.org/sitemap.xml` shows dynamic XML with article URLs (not the static placeholder comment)
+- `afrinia.org/en/blog` and `afrinia.org/fr/blog` show same rich article count as local dev
+- Resubmit sitemap in GSC: Sitemaps → delete old → add `sitemap.xml` → Submit
+
+**Step 4:** Begin `signalMapSkills.md` — **start at Prompt 1** (the audit script). Do not skip it.
+
+**The correct order is: read `CurrentStatus.md` → read `signalMapSkills.md` → execute Prompt 1 → confirm output → Prompt 2 → etc.**
