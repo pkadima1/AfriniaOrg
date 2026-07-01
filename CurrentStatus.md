@@ -230,7 +230,7 @@ Enhanced Measurement is currently toggled OFF (visible in the GA4 screenshot). T
 | 11 | Signal Architecture — Prompts 2–10: Full implementation | ✅ Done | 2026-07-01 |
 | 12 | Audio signal taxonomy — migrate + display fix | ✅ Done | 2026-07-01 |
 | 13 | Followable Signals architecture design | ✅ Done | 2026-07-01 |
-| 14 | Followable Signals — Prompts 11–17: Implementation | 🔴 Not started | — |
+| 14 | Followable Signals — Prompts 11–17: Implementation | ✅ Done | 2026-07-01 |
 
 ---
 
@@ -433,25 +433,63 @@ All 10 prompts from `signalMapSkills.md` are done. Commit: `da53b7b`.
 
 ---
 
-### Remaining actions before starting Milestone 14
+---
 
-**Step 1: Deploy** — merge and deploy two branches to `main`:
-1. `feature/resend-mailing-system` (Milestones 7+8 — sitemap redirect + correct DB)
-2. `feature/signal-architecture` (Milestones 10+11+12 — full signal taxonomy + audio fix)
-   Merge order: `feature/resend-mailing-system` first, then `feature/signal-architecture` on top.
+## SESSION: 2026-07-01 — Branch: `feature/followable-signals`
 
-**Step 2: Verify in production after deploy:**
-- `afrinia.org/sitemap.xml` returns dynamic XML with article URLs
+> Created from `feature/signal-architecture`. Contains the full Followable Signals implementation (Milestone 14).
+
+---
+
+### MILESTONE 14 — Followable Signals Implementation (Prompts 11–17)
+**Status:** ✅ Done — commit `f82f61b`
+**Branch:** `feature/followable-signals`
+**Date completed:** 2026-07-01
+
+**Critical schema correction applied during this session:**
+`signalMapSkills.md` described a `subscribers` collection with `lang`/`subscribed_at`/`unsubscribed: boolean`. The actual production code uses `newsletter_subscribers` with `language`/`subscribedAt`/`status: 'active'|'unsubscribed'`/`unsubscribeToken`. All 6 implementation prompts were adapted to the real schema.
+
+**Files changed:**
+
+| File | What changed |
+|---|---|
+| `scripts/migrate-subscriber-signals.mjs` | New script — adds `signals: []` to all 9 existing `newsletter_subscribers` docs. Idempotent. Ran and verified: 0 docs missing signals field. |
+| `src/integrations/firebase/types.ts` | Added `FollowableSignal = PostCategory` and `Subscriber` interface matching real schema |
+| `netlify/functions/subscribe.js` | Accepts optional `signals[]` in POST body, validates each value against `VALID_SIGNALS`, stores on subscriber doc |
+| `netlify/functions/send-newsletter.js` | New `signal` + `includeGeneric` params for per-signal targeting. Logs targeting summary on every send. |
+| `src/components/SignalFollowCTA.tsx` | New component — bilingual "Follow this signal" CTA at end of every article. Calls subscribe with `signals: [signal]`. |
+| `src/pages/BlogPost.tsx` | Mounts `SignalFollowCTA` after `articleEndRef` sentinel, before SocialShare |
+| `src/components/admin/BlogPostEditor.tsx` | Adds `signalTarget` state + radio UI below Notify toggle: "Signal followers only" (default) / "All subscribers". Passes `signal` param to send-newsletter. |
+
+**Verification results:**
+- ✅ tsc --noEmit → zero errors
+- ✅ 9/9 newsletter_subscribers docs have signals field
+- ✅ subscribe.js filters invalid signal values server-side with console.warn
+- ✅ send-newsletter.js signal filter logic covers all three cases (specific, generic-included, all)
+- ✅ SignalFollowCTA renders in EN and FR with correct signal label
+- ✅ Admin radio default is 'signal' (safest — no accidental broadcast)
+
+**What is NOT yet verified (requires running dev server):**
+- SignalFollowCTA visual appearance in browser
+- Subscribe POST returning 200 and writing signals to Firestore
+- Admin radio UI rendering when Notify toggle is ON
+
+---
+
+## NEXT SESSION — WHERE TO START
+
+### Three branches need to be deployed in order:
+1. `feature/resend-mailing-system` — sitemap force redirect + correct Firestore DB
+2. `feature/signal-architecture` — full signal taxonomy (Prompts 1-10) + audio fix
+3. `feature/followable-signals` — followable signals (Prompts 11-16)
+
+Merge order matters: resend-mailing-system → signal-architecture → followable-signals → main.
+
+### Post-deploy verification checklist:
+- `afrinia.org/sitemap.xml` returns dynamic XML with article URLs (not the placeholder comment)
 - `afrinia.org/en/blog` filter bar: ALL · OPPORTUNITY · ANALYSIS · INVESTMENT · TECHNOTE · BUILDER
 - `afrinia.org/fr/blog` filter bar: TOUT · OPPORTUNITÉ · ANALYSE · INVESTISSEMENT · TECHNOTE · BÂTISSEUR
-- `/audio` episode cards show canonical signal labels (BUILDER, OPPORTUNITY, etc.) in correct language
-- Resubmit sitemap in GSC: Sitemaps → delete old → add `sitemap.xml` → Submit
-
-**Step 3: Admin panel check:**
-- Edit any existing post → Signal Type dropdown pre-populates from saved canonical key
-- Sector and Region dropdowns appear
-
-**Step 4: Start Milestone 14** — `feature/followable-signals` branch:
-- Read `CurrentStatus.md` → read `signalMapSkills.md` Prompts 11–17 → audit subscriber schema first
-- Execute sequentially: Prompt 11 → 12 → 13 → 14 → 15 → 16 → 17
-- Do NOT skip the subscriber schema audit in Prompt 11
+- Open any article → `SignalFollowCTA` appears below body in correct language
+- Submit a test email via the CTA → Firestore `newsletter_subscribers` doc has `signals: ['builder']` (or correct signal)
+- Admin → edit a post → toggle Notify → radio appears, "Signal followers only" pre-selected
+- Resubmit sitemap in GSC after deploy
