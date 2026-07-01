@@ -226,8 +226,8 @@ Enhanced Measurement is currently toggled OFF (visible in the GA4 screenshot). T
 | 7 | Fix sitemap serving wrong file (force redirect) | ✅ Done | 2026-07-01 |
 | 8 | Fix production fetching wrong Firestore database | ✅ Done | 2026-07-01 |
 | 9 | Signal Architecture taxonomy design + signalMapSkills.md | ✅ Done | 2026-07-01 |
-| 10 | Signal Architecture — Prompt 1: Audit categories | 🔴 Not started | — |
-| 11 | Signal Architecture — Prompts 2–10: Full implementation | 🔴 Not started | — |
+| 10 | Signal Architecture — Prompt 1: Audit categories | ✅ Done | 2026-07-01 |
+| 11 | Signal Architecture — Prompts 2–10: Full implementation | ✅ Done | 2026-07-01 |
 
 ---
 
@@ -380,15 +380,37 @@ Designed the canonical 5-category signal taxonomy for Afrinia's content classifi
 
 ## NEXT SESSION — WHERE TO START
 
-**Step 1:** Commit the untracked `signalMapSkills.md` file.
+### Completed this session (2026-07-01, branch: `feature/signal-architecture`)
 
-**Step 2:** Deploy `feature/resend-mailing-system` to Netlify (trigger from Netlify dashboard or merge to main).
+All 10 prompts from `signalMapSkills.md` are done. Commit: `da53b7b`.
 
-**Step 3:** After deploy, verify:
-- `afrinia.org/sitemap.xml` shows dynamic XML with article URLs (not the static placeholder comment)
-- `afrinia.org/en/blog` and `afrinia.org/fr/blog` show same rich article count as local dev
+**What was done:**
+- Prompt 1: `scripts/audit-categories.mjs` ran — found 8 unique freetext values across 20 docs
+- Prompt 2: `PostCategory`, `PostSector`, `PostRegion` types added to `types.ts`
+- Prompt 3: `src/constants/taxonomy.ts` created — single source of truth for all labels
+- Prompt 4: `scripts/migrate-categories.mjs` ran — all 20 Firestore docs migrated to canonical keys, `categoryEN`, `categoryFR`, `sector`, `region` fields added
+- Prompt 5: `BlogPostEditor.tsx` — category freetext Input replaced with enforced Select; Sector and Region dropdowns added
+- Prompt 6: `Blog.tsx` — filter bar uses static `SIGNAL_CATEGORIES`, no more dynamic dirty data
+- Prompt 7: `Blog.tsx` + `BlogPost.tsx` — all category badges use `getCategoryLabel`
+- Prompt 8: `BlogPost.tsx` — `articleSection` added to JSON-LD Article schema
+- Prompt 9: sitemap function verified — already correct, no changes needed
+- Prompt 10: full data audit passed — all 20 docs have valid canonical categories + required fields; `tsc --noEmit` zero errors
+
+### Remaining actions
+
+**Step 1:** Merge and deploy — two branches need merging to `main`:
+1. `feature/resend-mailing-system` (Milestones 7+8 — sitemap force redirect + Firestore DB fix)
+2. `feature/signal-architecture` (Milestones 10+11 — full signal taxonomy)
+   Merge order: `feature/resend-mailing-system` first, then `feature/signal-architecture` on top.
+
+**Step 2:** After deploy, verify in production:
+- `afrinia.org/sitemap.xml` returns dynamic XML with article URLs (not static placeholder)
+- `afrinia.org/en/blog` filter bar shows: ALL · OPPORTUNITY · ANALYSIS · INVESTMENT · TECHNOTE · BUILDER
+- `afrinia.org/fr/blog` filter bar shows: TOUT · OPPORTUNITÉ · ANALYSE · INVESTISSEMENT · TECHNOTE · BÂTISSEUR
+- Open any article → category pill shows correct language label
 - Resubmit sitemap in GSC: Sitemaps → delete old → add `sitemap.xml` → Submit
 
-**Step 4:** Begin `signalMapSkills.md` — **start at Prompt 1** (the audit script). Do not skip it.
-
-**The correct order is: read `CurrentStatus.md` → read `signalMapSkills.md` → execute Prompt 1 → confirm output → Prompt 2 → etc.**
+**Step 3:** Admin panel — go to `/admin/blog`, edit any existing post, verify:
+- Signal Type dropdown shows current canonical category (pre-populated)
+- Sector and Region dropdowns appear below Signal Type
+- Save — confirm Firestore doc has `categoryEN`, `categoryFR`, `sector`, `region`
