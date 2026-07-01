@@ -1,5 +1,5 @@
 # Dynamic sitemap — served by Netlify Function (also in netlify.toml for netlify dev).
-/sitemap.xml  /.netlify/functions/sitemap  200
+/sitemap.xml  /.netlify/functions/sitemap  200!
 
 # SPA catch-all lives in netlify.toml under [context.production.redirects].
 # netlify dev ignores that block, so Vite handles routing in dev without interference.

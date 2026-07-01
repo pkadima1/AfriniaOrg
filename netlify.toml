@@ -13,10 +13,13 @@
 
 # Serve the dynamic sitemap from the Netlify function.
 # Status 200 = rewrite (URL stays /sitemap.xml in the browser/crawler).
+# force = true is required because public/sitemap.xml exists as a static file —
+# without it, Netlify CDN serves the static file and ignores this redirect.
 [[redirects]]
   from = "/sitemap.xml"
   to = "/.netlify/functions/sitemap"
   status = 200
+  force = true
 
 # SPA catch-all — production ONLY.
 # netlify dev ignores [context.production] blocks, so Vite handles routing in dev.

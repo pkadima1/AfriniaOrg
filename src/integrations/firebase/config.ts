@@ -24,23 +24,12 @@ const firebaseApp = initializeApp(firebaseConfig);
 // Initialize Firebase services
 export const auth: Auth = getAuth(firebaseApp);
 
-// Firestore: set VITE_FIRESTORE_DATABASE_ID to the database id if using a named database.
-// Leave unset to use the (default) Firestore database.
-// For Afrinia, the (default) database is used — ensure .env does not override this.
-const firestoreDatabaseId =
-  typeof import.meta !== 'undefined' && import.meta.env?.VITE_FIRESTORE_DATABASE_ID;
-export const db: Firestore = firestoreDatabaseId
-  ? getFirestore(firebaseApp, firestoreDatabaseId)
-  : getFirestore(firebaseApp);
+// Firestore: this project uses a named database called "afrinia" (not the default database).
+// Hardcoded to match what the Netlify backend functions (sitemap.js, firebase-admin.js) use.
+// NEVER rely on an env var here — if the var is missing in production, the app silently
+// connects to the default (empty) database and shows no content.
+export const db: Firestore = getFirestore(firebaseApp, 'afrinia');
 
-if (typeof import.meta !== 'undefined' && import.meta.env?.DEV) {
-  console.info(
-    '[Firebase] Firestore database:',
-    firestoreDatabaseId || '(default)',
-    '| Project:',
-    firebaseConfig.projectId
-  );
-}
 // Use project default bucket (matches Console: modified-hull-203004.firebasestorage.app).
 // Rules are deployed to both .appspot.com and .firebasestorage.app so blog images load from either.
 export const storage: FirebaseStorage = getStorage(firebaseApp);
