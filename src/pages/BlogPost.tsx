@@ -11,7 +11,8 @@ import {
   addCommentToPost,
   type Comment,
 } from '@/integrations/firebase/commentService';
-import { BlogPost as FirestorePost } from '@/integrations/firebase/types';
+import { BlogPost as FirestorePost, PostCategory } from '@/integrations/firebase/types';
+import { getCategoryLabel } from '@/constants/taxonomy';
 import { useToast } from '@/hooks/use-toast';
 import SocialShare from '@/components/SocialShare';
 import EmojiPickerComponent from '@/components/EmojiPicker';
@@ -73,7 +74,7 @@ function toRelatedCard(post: FirestorePost, lang: Lang): RelatedCard {
     slug: post.slug,
     title: post.title,
     excerpt: post.excerpt?.replace(/<[^>]+>/g, '') || post.content?.replace(/<[^>]+>/g, '').substring(0, 120) + '…' || '',
-    category: post.category || 'Ideas',
+    category: post.category || 'analysis',
     image: post.featured_image_url,
     readTime: `${mins} min${lang === 'fr' ? ' de lecture' : ' read'}`,
     date: post.published_at
@@ -191,7 +192,7 @@ const BlogPost = () => {
           date: firebasePost.published_at
             ? firebasePost.published_at.split('T')[0]
             : firebasePost.created_at?.split('T')[0] ?? '',
-          category: firebasePost.category || 'Ideas',
+          category: firebasePost.category || 'analysis',
           summary: (firebasePost.excerpt || firebasePost.content || '').replace(/<[^>]+>/g, '').substring(0, 200).trim() || '',
           featuredImageURL: firebasePost.featured_image_url || '',
           readTime: `${mins} min${lang === 'fr' ? ' de lecture' : ' read'}`,
@@ -372,6 +373,7 @@ const BlogPost = () => {
           '@type': 'Article',
           headline: post.title,
           description: post.summary,
+          articleSection: getCategoryLabel((post.category as PostCategory) || 'analysis', lang),
           // Omit image when no cover exists — a missing field is valid schema;
           // a pointer to a non-existent file is an error Google will flag.
           ...(post.featuredImageURL ? { image: post.featuredImageURL } : {}),
@@ -518,7 +520,7 @@ const BlogPost = () => {
                     letterSpacing: '2.5px', textTransform: 'uppercase',
                     color: A.gold, border: `1px solid rgba(184,145,42,0.35)`,
                     padding: '4px 12px', borderRadius: 2,
-                  }}>{post.category}</span>
+                  }}>{getCategoryLabel((post.category as PostCategory) || 'analysis', lang)}</span>
                 </div>
               )}
 
@@ -675,7 +677,7 @@ const BlogPost = () => {
                             letterSpacing: '2px', textTransform: 'uppercase',
                             color: A.gold, border: `1px solid rgba(184,145,42,0.25)`,
                             padding: '2px 8px',
-                          }}>{card.category}</span>
+                          }}>{getCategoryLabel((card.category as PostCategory) || 'analysis', lang)}</span>
                           <span style={{ fontFamily: A.sans, fontSize: '11px', color: A.muted }}>{card.readTime}</span>
                         </div>
                         <h3 style={{

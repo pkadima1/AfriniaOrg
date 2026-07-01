@@ -4,7 +4,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { getPostsByLanguage } from '@/integrations/firebase/blogService';
-import { BlogPost as FirestorePost } from '@/integrations/firebase/types';
+import { BlogPost as FirestorePost, PostCategory } from '@/integrations/firebase/types';
+import { SIGNAL_CATEGORIES, getCategoryLabel } from '@/constants/taxonomy';
 import Layout from '@/components/Layout';
 import {
   type Lang,
@@ -51,7 +52,7 @@ function toCard(post: FirestorePost, lang: Lang): ArticleCard {
     slug: post.slug,
     title: post.title,
     excerpt: post.excerpt || post.content?.replace(/<[^>]+>/g, '').substring(0, 160) + '…' || '',
-    category: post.category || 'Ideas',
+    category: post.category || 'analysis',
     author: post.author_name,
     date: post.published_at
       ? new Date(post.published_at).toLocaleDateString(lang === 'fr' ? 'fr-FR' : 'en-US', {
@@ -122,7 +123,7 @@ const ArticleCard = ({ card, lang }: { card: ArticleCard; lang: Lang }) => {
               letterSpacing: '2.5px', textTransform: 'uppercase',
               color: A.gold, border: `1px solid rgba(184,145,42,0.25)`,
               padding: '3px 10px',
-            }}>{card.category}</span>
+            }}>{getCategoryLabel(card.category as PostCategory, lang)}</span>
             <span style={{ fontFamily: A.sans, fontSize: '11px', color: A.muted }}>{card.readTime}</span>
           </div>
 
@@ -224,11 +225,7 @@ const Blog = () => {
       .finally(() => setLoading(false));
   }, [lang]);
 
-  // Derive unique categories and countries from fetched cards
-  const uniqueCategories = useMemo(
-    () => [...new Set(cards.map(c => c.category).filter(Boolean))].sort(),
-    [cards],
-  );
+  // Countries are still derived dynamically from fetched data
   const uniqueCountries = useMemo(
     () => [...new Set(cards.flatMap(c => c.targetCountries))].sort(),
     [cards],
@@ -335,19 +332,19 @@ const Blog = () => {
             display: 'flex', alignItems: 'center', gap: 0,
             flexWrap: 'wrap', padding: '16px 0',
           }}>
-            {/* Category chips */}
+            {/* Category chips — static canonical taxonomy, always in this order */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', flex: 1 }}>
               <FilterChip
-                label={lang === 'fr' ? 'Tout' : 'All'}
+                label={lang === 'fr' ? 'TOUT' : 'ALL'}
                 active={categoryFilter === 'all'}
                 onClick={() => setCategoryFilter('all')}
               />
-              {uniqueCategories.map(cat => (
+              {SIGNAL_CATEGORIES.map(cat => (
                 <FilterChip
-                  key={cat}
-                  label={cat}
-                  active={categoryFilter === cat}
-                  onClick={() => setCategoryFilter(cat)}
+                  key={cat.id}
+                  label={lang === 'fr' ? cat.labelFR : cat.labelEN}
+                  active={categoryFilter === cat.id}
+                  onClick={() => setCategoryFilter(cat.id)}
                 />
               ))}
             </div>

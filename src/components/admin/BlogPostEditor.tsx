@@ -16,6 +16,13 @@ import { ArrowLeft, Save, Eye, X, Bell } from "lucide-react";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import type { Lang } from "@/utils/languageUtils";
+import {
+  SIGNAL_CATEGORIES,
+  SIGNAL_SECTORS,
+  SIGNAL_REGIONS,
+  CATEGORY_LABEL_MAP,
+} from '@/constants/taxonomy';
+import type { PostCategory, PostSector, PostRegion } from '@/integrations/firebase/types';
 
 interface BlogPost {
   id?: string;
@@ -26,7 +33,11 @@ interface BlogPost {
   featured_image_url?: string;
   author_name: string;
   status: 'draft' | 'published' | 'archived';
-  category: string;
+  category?: PostCategory;
+  categoryEN?: string;
+  categoryFR?: string;
+  sector?: PostSector;
+  region?: PostRegion;
   tags: string[];
   meta_title: string;
   meta_description: string;
@@ -134,7 +145,11 @@ export const BlogPostEditor = () => {
     excerpt: '',
     author_name: 'Admin',
     status: 'draft',
-    category: '',
+    category: undefined,
+    categoryEN: undefined,
+    categoryFR: undefined,
+    sector: undefined,
+    region: undefined,
     tags: [],
     meta_title: '',
     meta_description: '',
@@ -161,7 +176,11 @@ export const BlogPostEditor = () => {
           author_name: data.author_name,
           tags: data.tags || [],
           status: data.status as 'draft' | 'published' | 'archived',
-          category: data.category || '',
+          category: (data.category as PostCategory) || undefined,
+          categoryEN: data.categoryEN,
+          categoryFR: data.categoryFR,
+          sector: (data.sector as PostSector) || undefined,
+          region: (data.region as PostRegion) || undefined,
           content: data.content || '',
           excerpt: data.excerpt || '',
           featured_image_url: data.featured_image_url,
@@ -552,14 +571,70 @@ export const BlogPostEditor = () => {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <Input
-                  id="category"
-                  value={post.category}
-                  onChange={(e) => setPost(prev => ({ ...prev, category: e.target.value }))}
-                  placeholder="e.g., Technology, Business, Tutorial"
-                />
+              <div className="space-y-2">
+                <Label htmlFor="category">Signal Type</Label>
+                <Select
+                  value={post.category || ''}
+                  onValueChange={(value) => {
+                    const key = value as PostCategory;
+                    const labels = CATEGORY_LABEL_MAP[key];
+                    setPost(prev => ({
+                      ...prev,
+                      category: key,
+                      categoryEN: labels.en,
+                      categoryFR: labels.fr,
+                    }));
+                  }}
+                >
+                  <SelectTrigger id="category">
+                    <SelectValue placeholder="— Select Signal Type —" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SIGNAL_CATEGORIES.map(c => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.labelEN} / {c.labelFR}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sector">Sector</Label>
+                <Select
+                  value={post.sector || ''}
+                  onValueChange={(value) =>
+                    setPost(prev => ({ ...prev, sector: value as PostSector }))
+                  }
+                >
+                  <SelectTrigger id="sector">
+                    <SelectValue placeholder="— Select Sector —" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SIGNAL_SECTORS.map(s => (
+                      <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="region">Region</Label>
+                <Select
+                  value={post.region || ''}
+                  onValueChange={(value) =>
+                    setPost(prev => ({ ...prev, region: value as PostRegion }))
+                  }
+                >
+                  <SelectTrigger id="region">
+                    <SelectValue placeholder="— Select Region —" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SIGNAL_REGIONS.map(r => (
+                      <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>

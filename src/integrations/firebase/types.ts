@@ -2,6 +2,35 @@
 
 export type UserRole = 'admin' | 'contributor' | 'viewer';
 
+// ── Taxonomy types — canonical signal classification system ───────────────────
+
+export type PostCategory =
+  | 'opportunity'
+  | 'analysis'
+  | 'investment'
+  | 'technote'
+  | 'builder';
+
+export type PostSector =
+  | 'fintech'
+  | 'agritech'
+  | 'energy'
+  | 'logistics'
+  | 'health'
+  | 'education'
+  | 'real_estate'
+  | 'trade'
+  | 'digital_infrastructure'
+  | 'other';
+
+export type PostRegion =
+  | 'west_africa'
+  | 'east_africa'
+  | 'central_africa'
+  | 'north_africa'
+  | 'southern_africa'
+  | 'pan_african';
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -16,12 +45,16 @@ export interface UserProfile {
 export interface BlogPost {
   id: string;
   author_name: string;
-  category?: string;
   /** In-document content, or empty when content is in Storage (see content_storage_path). */
   content: string;
   /** When set, full content is in Storage at this path; fetch and merge when loading. */
   content_storage_path?: string;
   created_at: string;
+  category?: PostCategory;       // canonical signal type key — used for filtering
+  categoryEN?: string;           // derived display label (EN) — never typed manually
+  categoryFR?: string;           // derived display label (FR) — never typed manually
+  sector?: PostSector;           // secondary metadata — Firestore only in Phase 1
+  region?: PostRegion;           // tertiary metadata — Firestore only in Phase 1
   excerpt?: string;
   featured_image_url?: string;
   meta_description?: string;
