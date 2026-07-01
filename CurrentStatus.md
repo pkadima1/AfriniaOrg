@@ -228,6 +228,9 @@ Enhanced Measurement is currently toggled OFF (visible in the GA4 screenshot). T
 | 9 | Signal Architecture taxonomy design + signalMapSkills.md | ✅ Done | 2026-07-01 |
 | 10 | Signal Architecture — Prompt 1: Audit categories | ✅ Done | 2026-07-01 |
 | 11 | Signal Architecture — Prompts 2–10: Full implementation | ✅ Done | 2026-07-01 |
+| 12 | Audio signal taxonomy — migrate + display fix | ✅ Done | 2026-07-01 |
+| 13 | Followable Signals architecture design | ✅ Done | 2026-07-01 |
+| 14 | Followable Signals — Prompts 11–17: Implementation | 🔴 Not started | — |
 
 ---
 
@@ -396,21 +399,59 @@ All 10 prompts from `signalMapSkills.md` are done. Commit: `da53b7b`.
 - Prompt 9: sitemap function verified — already correct, no changes needed
 - Prompt 10: full data audit passed — all 20 docs have valid canonical categories + required fields; `tsc --noEmit` zero errors
 
-### Remaining actions
+### MILESTONE 12 — Audio Signal Taxonomy
+**Status:** ✅ Done — commit `3261600`
+**Branch:** `feature/signal-architecture`
 
-**Step 1:** Merge and deploy — two branches need merging to `main`:
-1. `feature/resend-mailing-system` (Milestones 7+8 — sitemap force redirect + Firestore DB fix)
-2. `feature/signal-architecture` (Milestones 10+11 — full signal taxonomy)
+**What was done:**
+- Audited `audio_en` (5 docs) and `audio_fr` (12 docs) — same freetext mess as blog posts
+  (`Founder`, `Oportunité` [typo], `Strategies`, `Bâtisseurs`, `Entrepreneurialism`, etc.)
+- `scripts/migrate-audio-categories.mjs` migrated all 17 audio documents to canonical keys,
+  added `categoryEN` and `categoryFR` display fields. Zero unmapped, zero errors.
+- `AudioEpisode.category` in `types.ts` changed from `string` to `PostCategory`
+- `AudioPage.tsx` `EpisodeCard` now uses `getCategoryLabel(ep.category, lang)` —
+  shows BUILDER/BÂTISSEUR, OPPORTUNITY/OPPORTUNITÉ, etc. correctly per language
+
+### MILESTONE 13 — Followable Signals Architecture Design
+**Status:** ✅ Done (design only — implementation not started)
+**Branch:** `feature/signal-architecture`
+
+**Design documented in `signalMapSkills.md` Prompts 11–17:**
+- Prompt 11: Add `signals: []` field to all subscriber Firestore documents
+- Prompt 12: Add `Subscriber` and `FollowableSignal` types to `types.ts`
+- Prompt 13: Update `subscribe` Netlify Function to accept `signals` array
+- Prompt 14: Update `send-newsletter` to support per-signal targeting
+- Prompt 15: Create `SignalFollowCTA` component — end-of-article follow button
+- Prompt 16: Update admin panel to choose "Signal followers only" vs "All subscribers"
+- Prompt 17: End-to-end verification
+
+**Why this is the right next feature:**
+- Converts passive readers into declared signal followers at highest-intent moment (end of article)
+- Per-signal email lists → higher open rates, lower churn, editorial intelligence
+- Foundation for paid tiers (premium signal briefings) — monetisation architecture built-in
+- The taxonomy migration (Milestones 10–12) is the prerequisite — now complete
+
+---
+
+### Remaining actions before starting Milestone 14
+
+**Step 1: Deploy** — merge and deploy two branches to `main`:
+1. `feature/resend-mailing-system` (Milestones 7+8 — sitemap redirect + correct DB)
+2. `feature/signal-architecture` (Milestones 10+11+12 — full signal taxonomy + audio fix)
    Merge order: `feature/resend-mailing-system` first, then `feature/signal-architecture` on top.
 
-**Step 2:** After deploy, verify in production:
-- `afrinia.org/sitemap.xml` returns dynamic XML with article URLs (not static placeholder)
-- `afrinia.org/en/blog` filter bar shows: ALL · OPPORTUNITY · ANALYSIS · INVESTMENT · TECHNOTE · BUILDER
-- `afrinia.org/fr/blog` filter bar shows: TOUT · OPPORTUNITÉ · ANALYSE · INVESTISSEMENT · TECHNOTE · BÂTISSEUR
-- Open any article → category pill shows correct language label
+**Step 2: Verify in production after deploy:**
+- `afrinia.org/sitemap.xml` returns dynamic XML with article URLs
+- `afrinia.org/en/blog` filter bar: ALL · OPPORTUNITY · ANALYSIS · INVESTMENT · TECHNOTE · BUILDER
+- `afrinia.org/fr/blog` filter bar: TOUT · OPPORTUNITÉ · ANALYSE · INVESTISSEMENT · TECHNOTE · BÂTISSEUR
+- `/audio` episode cards show canonical signal labels (BUILDER, OPPORTUNITY, etc.) in correct language
 - Resubmit sitemap in GSC: Sitemaps → delete old → add `sitemap.xml` → Submit
 
-**Step 3:** Admin panel — go to `/admin/blog`, edit any existing post, verify:
-- Signal Type dropdown shows current canonical category (pre-populated)
-- Sector and Region dropdowns appear below Signal Type
-- Save — confirm Firestore doc has `categoryEN`, `categoryFR`, `sector`, `region`
+**Step 3: Admin panel check:**
+- Edit any existing post → Signal Type dropdown pre-populates from saved canonical key
+- Sector and Region dropdowns appear
+
+**Step 4: Start Milestone 14** — `feature/followable-signals` branch:
+- Read `CurrentStatus.md` → read `signalMapSkills.md` Prompts 11–17 → audit subscriber schema first
+- Execute sequentially: Prompt 11 → 12 → 13 → 14 → 15 → 16 → 17
+- Do NOT skip the subscriber schema audit in Prompt 11

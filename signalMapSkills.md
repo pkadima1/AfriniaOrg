@@ -785,12 +785,12 @@ Do not mark this task complete until all 20 checks pass.
 
 | Firestore Field | TypeScript Type | Example Value | Notes |
 |---|---|---|---|
-| `category` | `PostCategory` | `'investment'` | Canonical key — used for queries and client-side filtering |
-| `categoryEN` | `string` | `'INVESTMENT'` | Derived from category on save — display only, never typed manually |
-| `categoryFR` | `string` | `'INVESTISSEMENT'` | Derived from category on save — display only, never typed manually |
-| `sector` | `PostSector` | `'fintech'` | Secondary metadata — Firestore only in Phase 1 |
-| `region` | `PostRegion` | `'west_africa'` | Tertiary metadata — Firestore only in Phase 1 |
-| `country` (existing) | `string[]` (`target_countries`) | `['Nigeria']` | Existing field — keep unchanged |
+| `category` | `PostCategory` | `'investment'` | Canonical key — used for filtering (BlogPost + AudioEpisode) |
+| `categoryEN` | `string` | `'INVESTMENT'` | Derived display label (EN) — never typed manually |
+| `categoryFR` | `string` | `'INVESTISSEMENT'` | Derived display label (FR) — never typed manually |
+| `sector` | `PostSector` | `'fintech'` | Blog posts only — Firestore metadata, Phase 1 |
+| `region` | `PostRegion` | `'west_africa'` | Blog posts only — Firestore metadata, Phase 1 |
+| `country` (existing) | `string[]` (`target_countries`) | `['Nigeria']` | Blog posts only — existing field, unchanged |
 
 ## REFERENCE — Real file paths (use these, never guess)
 
@@ -802,13 +802,365 @@ Do not mark this task complete until all 20 checks pass.
 | Article detail page | `src/pages/BlogPost.tsx` |
 | Admin editor | `src/components/admin/BlogPostEditor.tsx` |
 | Blog service (Firestore) | `src/integrations/firebase/blogService.ts` |
+| Audio page | `src/pages/AudioPage.tsx` |
+| Audio service | `src/integrations/firebase/audioService.ts` |
 | Page meta + JSON-LD hook | `src/utils/pageMeta.ts` |
 | Dynamic sitemap function | `netlify/functions/sitemap.js` |
-| Migration script | `scripts/migrate-categories.mjs` |
-| Audit script | `scripts/audit-categories.mjs` |
+| Blog migration script | `scripts/migrate-categories.mjs` |
+| Blog audit script | `scripts/audit-categories.mjs` |
+| Audio migration script | `scripts/migrate-audio-categories.mjs` |
+| Subscribe Netlify Function | `netlify/functions/subscribe.js` |
+| Send newsletter Function | `netlify/functions/send-newsletter.js` |
+| Subscribers collection | `subscribers` (Firestore) |
+
+---
+
+## PHASE 2 — FOLLOWABLE SIGNALS ARCHITECTURE
+
+> **Status:** Planned. Build AFTER the current branches are merged and deployed to production.
+> **Branch to create:** `feature/followable-signals`
+> **Strategic rationale:** Signals are the core product identity of Afrinia. Making them followable converts a passive reader into a declared audience member. Per-signal email lists are the foundation of monetisation (paid tiers per signal) and editorial intelligence (follow count = content demand signal).
+
+---
+
+### PRE-CONDITION — Read this before starting any Prompt below
+
+The `subscribers` Firestore collection currently stores:
+- `email` — subscriber email address
+- `lang` — 'en' or 'fr' (language preference)
+- `source` — where they subscribed from (e.g. 'blog-page-en', 'home')
+- `subscribed_at` — ISO timestamp
+- `unsubscribed` — boolean (true = unsubscribed)
+
+The current subscribe Netlify Function is at `netlify/functions/subscribe.js`.
+The current send newsletter Function is at `netlify/functions/send-newsletter.js`.
+
+Run this to audit the current subscriber schema before starting:
+```
+node --env-file=.env -e "
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
+let sa; try { sa = JSON.parse(raw); } catch { sa = JSON.parse(Buffer.from(raw,'base64').toString('utf8')); }
+if (!getApps().length) initializeApp({ credential: cert(sa) });
+const db = getFirestore('afrinia');
+const snap = await db.collection('subscribers').limit(5).get();
+snap.docs.forEach(d => console.log(d.id, JSON.stringify(d.data())));
+"
+```
+
+---
+
+## PROMPT 11 — Data: Add `signals` field to subscriber schema
+
+**Objective:** Extend every existing subscriber document with an empty `signals` array. New subscribers will declare which signals they follow at signup time. This field is the backbone of per-signal targeting.
+
+```
+You are working on the Afrinia React + Vite + Firebase project.
+
+Task: Write and run a migration script at `scripts/migrate-subscriber-signals.mjs`.
+
+IMPORTANT:
+- Target collection: `subscribers` in Firestore named database "afrinia".
+- Do NOT delete or overwrite any existing fields — only ADD the `signals` field.
+- Use firebase-admin, following the same pattern as other migration scripts in scripts/.
+- Run: node --env-file=.env scripts/migrate-subscriber-signals.mjs
+
+The script must:
+1. Fetch all documents from the `subscribers` collection.
+2. For each document that does NOT already have a `signals` field:
+   - Set `signals: []` (empty array — no signal preference declared yet)
+3. For each document that ALREADY has a `signals` field: skip it (idempotent).
+4. Use Firestore batch writes (max 400 per batch).
+5. Print summary: total docs, updated, skipped, errors.
+
+After running, verify with:
+  node --env-file=.env -e "
+  import { initializeApp, getApps, cert } from 'firebase-admin/app';
+  import { getFirestore } from 'firebase-admin/firestore';
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
+  let sa; try { sa = JSON.parse(raw); } catch { sa = JSON.parse(Buffer.from(raw,'base64').toString('utf8')); }
+  if (!getApps().length) initializeApp({ credential: cert(sa) });
+  const db = getFirestore('afrinia');
+  const snap = await db.collection('subscribers').get();
+  const missing = snap.docs.filter(d => !Array.isArray(d.data().signals));
+  console.log('Total subscribers:', snap.size, '| Missing signals field:', missing.length);
+  "
+
+Confirm: zero documents missing the signals field.
+```
+
+---
+
+## PROMPT 12 — Types: Add subscriber types
+
+**Objective:** Add a `Subscriber` type and `FollowableSignal` type that make the subscribe flow type-safe end-to-end.
+
+```
+You are working on the Afrinia React + Vite + Firebase project.
+
+Task: Add subscriber types to `src/integrations/firebase/types.ts`.
+
+DO NOT create a new file. Edit the existing file at src/integrations/firebase/types.ts only.
+
+Add after the PostRegion type (before the BlogPost interface):
+
+```typescript
+/** Signal subscription — a subscriber can follow 0–5 signals */
+export type FollowableSignal = PostCategory;
+
+export interface Subscriber {
+  email: string;
+  lang: 'en' | 'fr';
+  source: string;
+  signals: FollowableSignal[];  // [] = all signals (generic subscriber), ['investment', 'builder'] = specific
+  subscribed_at: string;
+  unsubscribed?: boolean;
+}
+```
+
+No other changes in this step.
+```
+
+---
+
+## PROMPT 13 — Backend: Update subscribe Netlify Function to accept signals
+
+**Objective:** Update `netlify/functions/subscribe.js` to accept an optional `signals` array in the request body. Store it on the Firestore subscriber document. Validate that each signal is a valid PostCategory key — reject invalid values.
+
+```
+You are working on the Afrinia React + Vite + Firebase project.
+
+Task: Update `netlify/functions/subscribe.js`.
+
+KEY FACTS:
+- This is a Netlify Functions v2 file (export default async).
+- It reads `email`, `lang`, `source` from request body JSON.
+- It writes to the `subscribers` Firestore collection.
+- The named Firestore database is "afrinia".
+- It uses `netlify/functions/lib/firebase-admin.js` for the Admin SDK.
+
+The VALID_SIGNALS constant to add:
+```javascript
+const VALID_SIGNALS = new Set(['opportunity', 'analysis', 'investment', 'technote', 'builder']);
+```
+
+Changes:
+1. Read `signals` from request body (default to empty array if absent).
+2. Validate: filter out any value not in VALID_SIGNALS. Log a warning if any invalid values are found.
+3. Write `signals: validatedSignals` to the Firestore subscriber document (alongside existing fields).
+4. The existing behaviour for `email`, `lang`, `source`, `subscribed_at` does not change.
+
+Test locally with netlify dev:
+  curl -X POST http://localhost:8888/.netlify/functions/subscribe \
+    -H 'Content-Type: application/json' \
+    -d '{"email":"test@example.com","lang":"en","source":"article-cta","signals":["investment","builder"]}'
+Confirm the Firestore document has signals: ["investment", "builder"].
+```
+
+---
+
+## PROMPT 14 — Backend: Update send-newsletter to support per-signal targeting
+
+**Objective:** Update `netlify/functions/send-newsletter.js` to accept an optional `signal` parameter. When set, only subscribers who have that signal in their `signals` array (OR have an empty `signals` array if `includeGeneric: true`) receive the email.
+
+```
+You are working on the Afrinia React + Vite + Firebase project.
+
+Task: Update `netlify/functions/send-newsletter.js`.
+
+KEY FACTS:
+- This is a Netlify Functions v2 file (export default async).
+- It is called from the admin panel when publishing an article with "Notify subscribers" toggled ON.
+- It currently fetches ALL non-unsubscribed subscribers in the correct language.
+- Read the file before making changes to understand the current query and send logic.
+
+Changes:
+1. Accept an optional `signal` parameter in the request body (one of the 5 PostCategory keys,
+   or null/absent for "all subscribers").
+2. When `signal` is provided:
+   - Query subscribers where `signals` array-contains `signal`
+   - The admin can choose to also include generic subscribers (signals: []) via `includeGeneric: true`
+     parameter. Default: false (strict targeting — only declared followers of that signal).
+3. When `signal` is absent or null: existing behaviour — send to all non-unsubscribed subscribers
+   in the matching language.
+4. Add the signal filter to the send summary log: "Sent to N subscribers | Signal: investment | Lang: en"
+
+The admin panel will pass signal and includeGeneric when triggering. Do not change the admin panel
+in this step — only the Netlify Function.
+
+Test locally:
+  curl -X POST http://localhost:8888/.netlify/functions/send-newsletter \
+    -H 'Content-Type: application/json' \
+    -d '{"subject":"Test","lang":"en","signal":"investment","includeGeneric":false,...}'
+```
+
+---
+
+## PROMPT 15 — Frontend: Signal CTA component at end of articles
+
+**Objective:** Add a "Follow this signal" CTA at the end of every blog article. It appears AFTER the article body, BEFORE the comments section. It captures the reader at highest intent — they just finished the article and want more of this specific signal type.
+
+```
+You are working on the Afrinia React + Vite + Firebase project.
+
+Task: Create `src/components/SignalFollowCTA.tsx` and wire it into BlogPost.tsx.
+
+COMPONENT SPEC:
+
+Props:
+  signal: PostCategory     — the article's signal type
+  lang: Lang               — 'en' | 'fr'
+
+Visual design (inline styles using the A token object — same as BlogPost.tsx):
+  - Background: A.bg2, border: 1px solid A.border, borderRadius: 8
+  - Gold separator line above (same width: 36px as used elsewhere)
+  - Signal label in gold uppercase: "INVESTMENT SIGNAL" / "SIGNAL INVESTISSEMENT"
+  - Heading (Cormorant Garamond): "Follow {label} signals" / "Suivre les signaux {label}"
+  - Subtext (Jost, muted): "Get every {label} article we publish, direct to your inbox."
+    FR: "Recevez chaque article {label} directement dans votre boîte mail."
+  - Email input + submit button (gold outline style matching the existing newsletter forms)
+  - Success state: "You're following {label} signals." / "Vous suivez les signaux {label}."
+  - Already subscribed state: gentle message, no error
+  - Error state: brief message
+
+SUBSCRIBE CALL:
+  POST /.netlify/functions/subscribe
+  Body: { email, lang, source: `article-signal-cta-${signal}`, signals: [signal] }
+
+PLACEMENT in BlogPost.tsx:
+  Add <SignalFollowCTA signal={post.category as PostCategory} lang={lang} />
+  AFTER the article body div (the div that renders post.body HTML)
+  BEFORE the comments section
+
+  Import: import SignalFollowCTA from '@/components/SignalFollowCTA';
+
+KEY FACTS:
+- Use the A token object for brand colors (defined at top of BlogPost.tsx — import or redefine).
+- Do NOT use Tailwind classes — this file uses inline styles like all other page components.
+- The component must be bilingual — use the lang prop for all text.
+- No translation keys needed — strings are short and hardcoded in the component (bilingual inline).
+
+After implementing:
+- Load any article in dev — confirm CTA appears below the article body.
+- Submit with a test email — confirm Firestore subscriber doc has signals: ['investment'] (or the correct signal).
+- Check both EN and FR routes — confirm language switches correctly.
+```
+
+---
+
+## PROMPT 16 — Admin: Add signal targeting to the newsletter send panel
+
+**Objective:** When the admin toggles "Notify subscribers" in BlogPostEditor and saves/publishes, pass the article's signal type to the send-newsletter function. Add a UI choice: "All subscribers" OR "Signal followers only".
+
+```
+You are working on the Afrinia React + Vite + Firebase project.
+
+Task: Update `src/components/admin/BlogPostEditor.tsx` — the newsletter send section.
+
+KEY FACTS:
+- The notify toggle is a Switch near the bottom of the editor form.
+- When the post is published and notifySubscribers is true, the editor calls the
+  send-newsletter Netlify Function.
+- Find the handleSave or handlePublish function that makes this call.
+- The post state already has `post.category` (PostCategory) from our earlier work.
+
+Changes:
+1. Add a state variable: `[signalTarget, setSignalTarget] = useState<'all' | 'signal'>('signal')`
+   Default is 'signal' — the most targeted option (safest default to avoid spam).
+
+2. When notifySubscribers is true, show a small radio/toggle below the switch:
+   - "Signal followers only" (default) — sends only to subscribers who follow this signal
+   - "All subscribers" — sends to everyone in this language
+
+3. When calling send-newsletter, include:
+   - signal: signalTarget === 'signal' ? post.category : null
+   - includeGeneric: false (strict targeting in Phase 1)
+
+4. Show the subscriber count estimate in the UI if possible (Phase 2 feature — skip for now).
+
+Verify: Toggle "Notify subscribers" → radio appears → select "Signal followers only" →
+publish → check Netlify function logs confirm signal param was received.
+```
+
+---
+
+## PROMPT 17 — Verification: Followable signals end-to-end
+
+**Objective:** Before considering this feature complete, verify the full flow works from article → CTA → subscribe → targeted send.
+
+```
+You are working on the Afrinia React + Vite + Firebase project.
+
+Task: Run a full end-to-end verification of the followable signals feature.
+
+Check each of the following and report PASS or FAIL:
+
+SUBSCRIBER DATA
+[ ] 1. All existing subscribers have a `signals` field (run Prompt 11 verification query).
+[ ] 2. A test subscribe via the article CTA writes signals: ['builder'] (or correct signal).
+[ ] 3. A test subscribe via the homepage form writes signals: [] (generic, no signal).
+
+SUBSCRIBE FUNCTION
+[ ] 4. POST with signals: ['investment'] → Firestore doc has signals: ['investment'].
+[ ] 5. POST with signals: ['invalid_value'] → invalid value filtered out, signals: [].
+[ ] 6. POST with no signals key → Firestore doc has signals: [].
+
+SEND FUNCTION
+[ ] 7. POST with signal: 'investment' → only subscribers with 'investment' in signals array receive.
+[ ] 8. POST with signal: null → all non-unsubscribed subscribers receive (existing behaviour).
+
+ARTICLE CTA
+[ ] 9. Article CTA shows correct signal label in EN and FR.
+[ ] 10. CTA submit works — success state shows, no console errors.
+
+ADMIN PANEL
+[ ] 11. Signal target radio appears when Notify toggle is ON.
+[ ] 12. "Signal followers only" is the default selection.
+
+Report each check as PASS or FAIL. Do not mark complete until all 12 pass.
+```
+
+---
+
+## REFERENCE — Field naming convention (canonical, permanent)
+
+| Firestore Field | TypeScript Type | Example Value | Notes |
+|---|---|---|---|
+| `category` | `PostCategory` | `'investment'` | Canonical key — used for filtering (BlogPost + AudioEpisode) |
+| `categoryEN` | `string` | `'INVESTMENT'` | Derived display label (EN) — never typed manually |
+| `categoryFR` | `string` | `'INVESTISSEMENT'` | Derived display label (FR) — never typed manually |
+| `sector` | `PostSector` | `'fintech'` | Blog posts only — Firestore metadata, Phase 1 |
+| `region` | `PostRegion` | `'west_africa'` | Blog posts only — Firestore metadata, Phase 1 |
+| `country` (existing) | `string[]` (`target_countries`) | `['Nigeria']` | Blog posts only — existing field, unchanged |
+| `signals` (subscriber) | `FollowableSignal[]` | `['investment', 'builder']` | On subscriber docs — [] means generic (all signals) |
+
+## REFERENCE — Real file paths (use these, never guess)
+
+| What | Actual path |
+|---|---|
+| Type definitions | `src/integrations/firebase/types.ts` |
+| Taxonomy constants | `src/constants/taxonomy.ts` |
+| Blog listing page | `src/pages/Blog.tsx` |
+| Article detail page | `src/pages/BlogPost.tsx` |
+| Admin editor | `src/components/admin/BlogPostEditor.tsx` |
+| Blog service (Firestore) | `src/integrations/firebase/blogService.ts` |
+| Audio page | `src/pages/AudioPage.tsx` |
+| Audio service | `src/integrations/firebase/audioService.ts` |
+| Signal follow CTA | `src/components/SignalFollowCTA.tsx` |
+| Page meta + JSON-LD hook | `src/utils/pageMeta.ts` |
+| Dynamic sitemap function | `netlify/functions/sitemap.js` |
+| Subscribe Netlify Function | `netlify/functions/subscribe.js` |
+| Send newsletter Function | `netlify/functions/send-newsletter.js` |
+| Blog migration script | `scripts/migrate-categories.mjs` |
+| Blog audit script | `scripts/audit-categories.mjs` |
+| Audio migration script | `scripts/migrate-audio-categories.mjs` |
+| Subscriber signals migration | `scripts/migrate-subscriber-signals.mjs` |
+| Subscribers collection | `subscribers` (Firestore database: "afrinia") |
 
 ---
 
 *signalMapSkills.md — Afrinia Intelligence Platform*
-*Signal Architecture v1.0 — Stack-corrected for React + Vite + React Router v6*
+*Signal Architecture v1.0 + Followable Signals v1.1*
+*Stack-corrected for React + Vite + React Router v6*
 *Do not modify taxonomy constants without updating this document*
