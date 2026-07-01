@@ -5,7 +5,7 @@ import Layout from '../components/Layout';
 import { fetchAudioEpisodes } from '@/integrations/firebase/audioService';
 import type { AudioEpisode, PostCategory } from '@/integrations/firebase/types';
 import type { Lang } from '@/utils/languageUtils';
-import { getCategoryLabel } from '@/constants/taxonomy';
+import { getCategoryLabel, SIGNAL_CATEGORIES } from '@/constants/taxonomy';
 import { trackAudioPlay, trackAudioPause } from '@/utils/analytics';
 import { usePageMeta } from '@/utils/pageMeta';
 
@@ -48,6 +48,32 @@ const PlayBtn = ({ active = false, playing = false }: { active?: boolean; playin
       }} />
     )}
   </div>
+);
+
+// ── Signal filter chip ───────────────────────────────────────────────────────
+const FilterChip = ({
+  label, active, onClick,
+}: { label: string; active: boolean; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    style={{
+      fontFamily: A.sans,
+      fontSize: '10px',
+      fontWeight: active ? 600 : 400,
+      letterSpacing: '2.5px',
+      textTransform: 'uppercase',
+      padding: '8px 18px',
+      border: `1px solid ${active ? A.gold : A.border}`,
+      borderRadius: 4,
+      background: active ? 'rgba(184,145,42,0.12)' : 'transparent',
+      color: active ? A.gold : A.muted,
+      cursor: 'pointer',
+      transition: 'color 0.2s, border-color 0.2s, background 0.2s',
+      whiteSpace: 'nowrap',
+    }}
+  >
+    {label}
+  </button>
 );
 
 // ── Episode card ─────────────────────────────────────────────────────────────
@@ -159,6 +185,7 @@ const AudioPage = () => {
 
   const [episodes, setEpisodes] = useState<AudioEpisode[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categoryFilter, setCategoryFilter] = useState<PostCategory | 'all'>('all');
 
   // Inline player state
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -201,6 +228,10 @@ const AudioPage = () => {
   }, []);
 
   const epLabel = t('audio_page.episode_label');
+
+  const visibleEpisodes = categoryFilter === 'all'
+    ? episodes
+    : episodes.filter(ep => ep.category === categoryFilter);
 
   return (
     <>
@@ -276,25 +307,66 @@ const AudioPage = () => {
               )}
             </div>
 
-            {/* Episode grid */}
+            {/* Signal filter bar — only when episodes are loaded */}
             {!loading && episodes.length > 0 && (
               <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: 24,
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 8,
+                justifyContent: 'center',
+                marginBottom: 40,
               }}>
-                {episodes.map(ep => (
-                  <EpisodeCard
-                    key={ep.id}
-                    ep={ep}
-                    isActive={nowPlaying?.id === ep.id}
-                    isPlaying={nowPlaying?.id === ep.id && audioPlaying}
-                    onPlay={handlePlay}
-                    epLabel={epLabel}
-                    lang={lang}
+                <FilterChip
+                  label={lang === 'fr' ? 'TOUT' : 'ALL'}
+                  active={categoryFilter === 'all'}
+                  onClick={() => setCategoryFilter('all')}
+                />
+                {SIGNAL_CATEGORIES.map(cat => (
+                  <FilterChip
+                    key={cat.id}
+                    label={lang === 'fr' ? cat.labelFR : cat.labelEN}
+                    active={categoryFilter === cat.id}
+                    onClick={() => setCategoryFilter(cat.id)}
                   />
                 ))}
               </div>
+            )}
+
+            {/* Episode grid */}
+            {!loading && episodes.length > 0 && (
+              <>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                  gap: 24,
+                }}>
+                  {visibleEpisodes.map(ep => (
+                    <EpisodeCard
+                      key={ep.id}
+                      ep={ep}
+                      isActive={nowPlaying?.id === ep.id}
+                      isPlaying={nowPlaying?.id === ep.id && audioPlaying}
+                      onPlay={handlePlay}
+                      epLabel={epLabel}
+                      lang={lang}
+                    />
+                  ))}
+                </div>
+
+                {/* Empty filtered state */}
+                {visibleEpisodes.length === 0 && (
+                  <div style={{ textAlign: 'center', paddingTop: 60 }}>
+                    <p style={{
+                      fontFamily: A.sans, fontSize: 14,
+                      color: A.muted, letterSpacing: '0.5px',
+                    }}>
+                      {lang === 'fr'
+                        ? 'Aucun épisode dans cette catégorie pour le moment.'
+                        : 'No episodes in this category yet.'}
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </section>
