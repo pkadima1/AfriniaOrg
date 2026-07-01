@@ -8,10 +8,19 @@
  * POST /.netlify/functions/send-newsletter
  * Headers: { Authorization: 'Bearer {firebaseIdToken}' }
  * Body (JSON): {
- *   subject_en: string,   subject_fr: string,
- *   body_en:    string,   body_fr:    string,
- *   lang_filter: 'en' | 'fr' | 'all'
+ *   subject_en:      string,
+ *   subject_fr:      string,
+ *   body_en:         string,
+ *   body_fr:         string,
+ *   lang_filter:     'en' | 'fr' | 'all',
+ *   signal?:         PostCategory | null,   — when set, only signal followers receive
+ *   includeGeneric?: boolean                — when true, also send to signals:[] subscribers
  * }
+ *
+ * Signal targeting rules:
+ *   signal absent or null  → all active subscribers (existing behaviour)
+ *   signal = 'investment'  → only subscribers where signals array-contains 'investment'
+ *   signal + includeGeneric → same as above PLUS subscribers where signals = []
  *
  * Responses:
  *   200  { sent: N, failed: M, errors: string[] }
@@ -33,6 +42,9 @@ const CORS = {
 };
 
 const SITE_URL = () => process.env.SITE_URL || 'https://afrinia.org';
+
+// Canonical signal keys — mirrors PostCategory / VALID_SIGNALS in subscribe.js
+const VALID_SIGNALS = new Set(['opportunity', 'analysis', 'investment', 'technote', 'builder']);
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -74,14 +86,18 @@ export default async (req) => {
   }
 
   // ── 3. Parse and validate the request body ─────────────────────────────────
-  let subject_en, subject_fr, body_en, body_fr, lang_filter;
+  let subject_en, subject_fr, body_en, body_fr, lang_filter, signal, includeGeneric;
   try {
     const body = JSON.parse(await req.text() || '{}');
-    subject_en  = (body.subject_en  ?? '').trim();
-    subject_fr  = (body.subject_fr  ?? '').trim();
-    body_en     = (body.body_en     ?? '').trim();
-    body_fr     = (body.body_fr     ?? '').trim();
-    lang_filter = ['en', 'fr', 'all'].includes(body.lang_filter) ? body.lang_filter : 'all';
+    subject_en     = (body.subject_en  ?? '').trim();
+    subject_fr     = (body.subject_fr  ?? '').trim();
+    body_en        = (body.body_en     ?? '').trim();
+    body_fr        = (body.body_fr     ?? '').trim();
+    lang_filter    = ['en', 'fr', 'all'].includes(body.lang_filter) ? body.lang_filter : 'all';
+    // signal: valid PostCategory key or null/absent = send to all subscribers
+    signal         = (body.signal && VALID_SIGNALS.has(body.signal)) ? body.signal : null;
+    // includeGeneric: when true, also include subscribers with signals:[] alongside signal followers
+    includeGeneric = body.includeGeneric === true;
   } catch {
     return json({ error: 'invalid_json' }, 400);
   }
@@ -105,7 +121,7 @@ export default async (req) => {
 
   const siteUrl = SITE_URL();
 
-  // Filter: active status + language filter.
+  // Filter: active status + language filter + optional signal targeting.
   // Legacy docs without a status field are treated as active.
   const recipients = subsSnap.docs
     .map(d => ({ id: d.id, ...d.data() }))
@@ -113,7 +129,22 @@ export default async (req) => {
     .filter(s => {
       if (lang_filter === 'all') return true;
       return (s.lang ?? s.language ?? 'en') === lang_filter;
+    })
+    .filter(s => {
+      // No signal targeting → send to everyone.
+      if (!signal) return true;
+      const subs = Array.isArray(s.signals) ? s.signals : [];
+      // Declared follower of this signal.
+      if (subs.includes(signal)) return true;
+      // Generic subscriber (signals: []) included only when explicitly requested.
+      if (includeGeneric && subs.length === 0) return true;
+      return false;
     });
+
+  console.log(
+    `[send-newsletter] Targeting: ${signal ? `signal=${signal}` : 'all'} | ` +
+    `includeGeneric=${includeGeneric} | lang=${lang_filter} | recipients=${recipients.length}`
+  );
 
   if (recipients.length === 0) {
     return json({ sent: 0, failed: 0, errors: [], message: 'no_active_subscribers' });

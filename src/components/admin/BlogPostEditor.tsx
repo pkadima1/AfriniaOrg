@@ -163,6 +163,9 @@ export const BlogPostEditor = () => {
   const [imageUploading, setImageUploading] = useState(false);
   // When true, publishing this post fires an email to subscribers in this language.
   const [notifySubscribers, setNotifySubscribers] = useState(false);
+  // 'signal' = only declared followers of this post's signal type. 'all' = all subscribers.
+  // Default is 'signal' — safest option to avoid sending broadly on every publish.
+  const [signalTarget, setSignalTarget] = useState<'signal' | 'all'>('signal');
 
   const loadPost = async (postId: string) => {
     setIsLoading(true);
@@ -340,6 +343,8 @@ export const BlogPostEditor = () => {
           body_en: bodyHtml,
           body_fr: isFr ? bodyHtml : '',
           lang_filter: lang,
+          signal: signalTarget === 'signal' ? (publishedPost.category ?? null) : null,
+          includeGeneric: false,
         }),
       });
 
@@ -682,6 +687,52 @@ export const BlogPostEditor = () => {
                     onCheckedChange={setNotifySubscribers}
                   />
                 </div>
+
+                {/* Signal targeting — shown when notify is ON */}
+                {notifySubscribers && (
+                  <div className="mt-4 ml-7 space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Send to
+                    </p>
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="signalTarget"
+                        value="signal"
+                        checked={signalTarget === 'signal'}
+                        onChange={() => setSignalTarget('signal')}
+                        className="mt-0.5"
+                      />
+                      <span className="text-sm">
+                        <span className="font-medium">Signal followers only</span>
+                        <span className="block text-xs text-muted-foreground">
+                          Only subscribers who follow the{' '}
+                          <span className="font-semibold">
+                            {post.category ? post.category.toUpperCase() : 'selected signal'}
+                          </span>{' '}
+                          signal receive this email.
+                        </span>
+                      </span>
+                    </label>
+                    <label className="flex items-start gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="signalTarget"
+                        value="all"
+                        checked={signalTarget === 'all'}
+                        onChange={() => setSignalTarget('all')}
+                        className="mt-0.5"
+                      />
+                      <span className="text-sm">
+                        <span className="font-medium">All subscribers</span>
+                        <span className="block text-xs text-muted-foreground">
+                          Sends to every active {lang === 'fr' ? 'French' : 'English'} subscriber
+                          regardless of signal preference.
+                        </span>
+                      </span>
+                    </label>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

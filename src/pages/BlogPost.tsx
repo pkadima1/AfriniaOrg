@@ -28,6 +28,7 @@ import {
   trackArticleReadComplete,
   trackCommentSubmitted,
 } from '@/utils/analytics';
+import SignalFollowCTA from '@/components/SignalFollowCTA';
 
 // ── Afrinia brand tokens ──────────────────────────────────────────────────────
 const A = {
@@ -617,6 +618,11 @@ const BlogPost = () => {
 
             {/* Sentinel: IntersectionObserver watches this to fire article_read_complete */}
             <div ref={articleEndRef} aria-hidden="true" />
+
+            {/* Follow this signal — highest-intent CTA, right after the article body */}
+            {post.category && (
+              <SignalFollowCTA signal={post.category as PostCategory} lang={lang} />
+            )}
 
             <div style={{ marginTop: 48, paddingTop: 32, borderTop: `1px solid ${A.border}` }}>
               <SocialShare title={post.title} url={currentUrl} description={post.summary} />

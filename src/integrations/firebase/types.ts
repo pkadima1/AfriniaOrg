@@ -31,6 +31,25 @@ export type PostRegion =
   | 'southern_africa'
   | 'pan_african';
 
+/** A signal a subscriber can follow — same keys as PostCategory */
+export type FollowableSignal = PostCategory;
+
+export interface Subscriber {
+  email: string;
+  /** Language preference — 'en' | 'fr' */
+  language: 'en' | 'fr';
+  /** Where the subscription came from (e.g. 'blog-page-en', 'article-signal-cta-investment') */
+  source: string;
+  /** Two-letter country code from Netlify CDN header, uppercased — may be empty in local dev */
+  country?: string;
+  /** [] = generic subscriber (all signals); non-empty = specific signal followers */
+  signals: FollowableSignal[];
+  status: 'active' | 'unsubscribed';
+  /** Server-generated UUID used to construct the one-click unsubscribe URL */
+  unsubscribeToken?: string;
+  subscribedAt: string;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
