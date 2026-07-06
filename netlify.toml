@@ -4,9 +4,11 @@
 
 [build.environment]
   # Functions run on the same Node version as the build (Netlify default).
-  # firebase-admin@14 → jwks-rsa@4 → jose@6 needs Node >= 22 (require() of
-  # ES modules); on older runtimes every function importing firebase-admin
-  # crashes at load with ERR_REQUIRE_ESM and returns 502.
+  # Keep >= 22: firebase-admin@14 declares engines.node >= 22. Note the AWS
+  # Lambda nodejs22.x image runs a Node build < 22.12 without require(esm),
+  # which is why package.json pins jwks-rsa to 3.x (jose v4, dual CJS/ESM) —
+  # jwks-rsa@4 pulls the ESM-only jose v6 and crashes every function that
+  # imports firebase-admin at load (ERR_REQUIRE_ESM → 502).
   NODE_VERSION = "22"
 
 [functions]
