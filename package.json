@@ -92,5 +92,8 @@
   "allowScripts": {
     "firebase-admin@14.1.0": true,
     "resend@6.16.0": true
+  },
+  "overrides": {
+    "jwks-rsa": "3.2.0"
   }
 }
