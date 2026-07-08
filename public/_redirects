@@ -1,5 +1,10 @@
 # Dynamic sitemap — served by Netlify Function (also in netlify.toml for netlify dev).
 /sitemap.xml  /.netlify/functions/sitemap  200!
 
-# SPA catch-all lives in netlify.toml under [context.production.redirects].
-# netlify dev ignores that block, so Vite handles routing in dev without interference.
+# SPA catch-all — MUST be last. Serves index.html for React Router routes
+# (e.g. /fr/blog/my-article) so reloads and direct links don't 404 on the CDN.
+# Not forced (no !), so real files (assets, robots.txt, favicons) still win.
+# NOTE: netlify.toml [[context.production.redirects]] is silently IGNORED by
+# Netlify — redirects cannot be scoped to deploy contexts. This file is the
+# only place the catch-all works.
+/*  /index.html  200

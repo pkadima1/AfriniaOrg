@@ -30,10 +30,8 @@
   status = 200
   force = true
 
-# SPA catch-all — production ONLY.
-# netlify dev ignores [context.production] blocks, so Vite handles routing in dev.
-# Without this, React Router sub-routes (e.g. /fr/blog/my-article) return 404 on Netlify CDN.
-[[context.production.redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# SPA catch-all lives in public/_redirects, NOT here.
+# [[context.production.redirects]] is silently ignored by Netlify — redirects
+# and headers cannot be scoped to deploy contexts in netlify.toml (docs:
+# file-based configuration → deploy contexts). Defining it there broke all
+# deep-route reloads from 2026-07-01 to 2026-07-08.
