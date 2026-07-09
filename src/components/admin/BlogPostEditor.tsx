@@ -16,6 +16,7 @@ import { ArrowLeft, Save, Eye, X, Bell } from "lucide-react";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import type { Lang } from "@/utils/languageUtils";
+import { cleanArticleHtml } from '@/utils/contentSanitizer';
 import {
   SIGNAL_CATEGORIES,
   SIGNAL_SECTORS,
@@ -368,6 +369,9 @@ export const BlogPostEditor = () => {
     try {
       const postData = {
         ...post,
+        // Clean on save so the stored document is free of paste artifacts
+        // (inline colors, non-breaking spaces) — not just the rendered view.
+        content: cleanArticleHtml(post.content),
         ...(status && { status }),
         ...(status === 'published' && !post.published_at && { published_at: new Date().toISOString() })
       };
@@ -506,14 +510,17 @@ export const BlogPostEditor = () => {
                         ['blockquote', 'code-block'],
                         ['link', 'image'],
                         [{ 'align': [] }],
-                        [{ 'color': [] }, { 'background': [] }],
                         ['clean']
                       ],
                     }}
+                    // color/background deliberately excluded: the design system owns
+                    // colors. With these formats disallowed, Quill strips inline
+                    // color/background styles from PASTED content automatically —
+                    // the root cause of the white-bar artifacts on the dark theme.
                     formats={[
                       'header', 'bold', 'italic', 'underline', 'strike',
                       'list', 'bullet', 'indent', 'blockquote', 'code-block',
-                      'link', 'image', 'align', 'color', 'background'
+                      'link', 'image', 'align'
                     ]}
                     style={{ height: '480px', marginBottom: '50px', fontSize: '1rem' }}
                   />

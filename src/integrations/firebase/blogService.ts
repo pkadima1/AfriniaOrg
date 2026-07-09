@@ -19,6 +19,7 @@ import {
   convertTimestamp,
 } from '@/integrations/firebase/types';
 import type { Lang } from '@/utils/languageUtils';
+import { cleanArticleHtml } from '@/utils/contentSanitizer';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 /** Firestore document size limit is 1 MiB; keep content under this so doc + other fields fit. */
@@ -74,12 +75,15 @@ function invalidateCache(lang: Lang) {
 
 // ── Document normalisation ────────────────────────────────────────────────────
 
-/** Normalize raw Firestore doc to BlogPost with string dates. */
+/** Normalize raw Firestore doc to BlogPost with string dates.
+ *  Content is sanitized here so every consumer (public pages, admin editor)
+ *  sees clean HTML even when the stored document carries paste artifacts. */
 function toBlogPost(docSnap: { id: string; data: () => DocumentData }): BlogPost {
   const d = docSnap.data();
   return {
     ...d,
     id: docSnap.id,
+    content: typeof d?.content === 'string' ? cleanArticleHtml(d.content) : d?.content,
     created_at: convertTimestamp(d?.created_at),
     updated_at: convertTimestamp(d?.updated_at),
     published_at: d?.published_at != null ? convertTimestamp(d.published_at) : undefined,
@@ -183,7 +187,7 @@ export const getPostByLangAndSlug = async (
     const data = toBlogPost({ id: docSnap.id, data: () => docSnap.data() });
     if (data.content_storage_path) {
       const text = await fetchStorageContent(data.content_storage_path);
-      if (text) data.content = text;
+      if (text) data.content = cleanArticleHtml(text);
     }
 
     setCachedPost(cacheKey, data);
@@ -236,7 +240,7 @@ export const fetchBlogPostById = async (
     const data = toBlogPost({ id: docSnap.id, data: () => docSnap.data()! });
     if (data.content_storage_path) {
       const text = await fetchStorageContent(data.content_storage_path);
-      if (text) data.content = text;
+      if (text) data.content = cleanArticleHtml(text);
     }
 
     setCachedPost(cacheKey, data);
