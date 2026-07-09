@@ -11,6 +11,8 @@ import {
   addCommentToPost,
   type Comment,
 } from '@/integrations/firebase/commentService';
+import { fetchEpisodeForPost, type AudioEpisode } from '@/integrations/firebase/audioService';
+import ArticleAudioPlayer from '@/components/ArticleAudioPlayer';
 import { BlogPost as FirestorePost, PostCategory } from '@/integrations/firebase/types';
 import { getCategoryLabel } from '@/constants/taxonomy';
 import { useToast } from '@/hooks/use-toast';
@@ -130,6 +132,8 @@ const BlogPost = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [relatedPosts, setRelatedPosts] = useState<RelatedCard[]>([]);
+  // Audio version of the article, if one is linked via post_slug (null = none — player hidden)
+  const [audioEpisode, setAudioEpisode] = useState<AudioEpisode | null>(null);
 
   // Comment form state
   const [commentName, setCommentName] = useState('');
@@ -151,6 +155,17 @@ const BlogPost = () => {
       void loadBlogPost();
       void loadComments(true);
     }
+  }, [slug, lang]);
+
+  // Fetch the audio version in parallel with the post — never blocks rendering.
+  useEffect(() => {
+    setAudioEpisode(null);
+    if (!slug) return;
+    let cancelled = false;
+    void fetchEpisodeForPost(slug, lang).then(ep => {
+      if (!cancelled) setAudioEpisode(ep);
+    });
+    return () => { cancelled = true; };
   }, [slug, lang]);
 
   // Fire article_read_complete when the reader scrolls to the bottom of the
@@ -587,6 +602,9 @@ const BlogPost = () => {
                   </>
                 )}
               </div>
+
+              {/* Audio version — appears only when an episode is linked to this article */}
+              {audioEpisode && <ArticleAudioPlayer episode={audioEpisode} />}
 
               {post.summary && (
                 <p style={{

@@ -34,6 +34,9 @@ export interface AudioUploadMetadata {
   lang: 'en' | 'fr';
   /** Optional cover image file — uploaded to audio-thumbnails/{lang}/ */
   imageFile?: File;
+  /** Optional slug of the article this episode is the audio version of —
+   *  BlogPost.tsx shows an inline player when a published episode links here. */
+  post_slug?: string;
 }
 
 export type UploadProgressCallback = (progress: number) => void;
@@ -99,6 +102,7 @@ export async function uploadAudioEpisode(
     categoryEN: metadata.categoryEN ?? null,
     categoryFR: metadata.categoryFR ?? null,
     description: metadata.description ?? null,
+    post_slug: metadata.post_slug ?? null,
     audio_storage_path: storagePath,
     audio_url,
     featured_image_url,
@@ -116,6 +120,7 @@ export async function uploadAudioEpisode(
     title: metadata.title,
     duration: metadata.duration,
     category: metadata.category,
+    post_slug: metadata.post_slug,
     audio_storage_path: storagePath,
     audio_url,
     featured_image_url: featured_image_url ?? undefined,

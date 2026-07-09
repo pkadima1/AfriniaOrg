@@ -723,6 +723,11 @@
     "en": "English",
     "fr": "Français"
   },
+  "article_audio": {
+    "listen": "Listen to this article",
+    "pause": "Pause",
+    "seek": "Seek within the audio"
+  },
   "audio_page": {
     "eyebrow": "The Afrinia Brief — Audio",
     "coming_title": "Every idea, also a conversation.",
