@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Upload, Music, CheckCircle, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,11 @@ import {
   SIGNAL_CATEGORIES,
   CATEGORY_LABEL_MAP,
 } from '@/constants/taxonomy';
+import { getPostsByLanguage } from '@/integrations/firebase/blogService';
 import type { PostCategory } from '@/integrations/firebase/types';
+
+/** Sentinel for the "no linked article" select option — Radix Select forbids empty-string values. */
+const NO_LINKED_ARTICLE = '__none__';
 
 type Lang = 'en' | 'fr';
 
@@ -79,9 +83,20 @@ export const AudioUpload = () => {
   const [categoryFR, setCategoryFR] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<'draft' | 'published'>('published');
+  const [postSlug, setPostSlug] = useState<string>(NO_LINKED_ARTICLE);
+  const [publishedPosts, setPublishedPosts] = useState<{ slug: string; title: string }[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  // Published posts for the "linked article" dropdown — reload when the
+  // language bucket changes, and clear any selection from the other language.
+  useEffect(() => {
+    setPostSlug(NO_LINKED_ARTICLE);
+    getPostsByLanguage(lang, { status: 'published' })
+      .then(posts => setPublishedPosts(posts.map(p => ({ slug: p.slug, title: p.title }))))
+      .catch(() => setPublishedPosts([]));
+  }, [lang]);
 
   const handleImageFile = useCallback((f: File) => {
     if (!f.type.startsWith('image/')) {
@@ -159,6 +174,7 @@ export const AudioUpload = () => {
         status,
         lang,
         imageFile: imageFile ?? undefined,
+        post_slug: postSlug === NO_LINKED_ARTICLE ? undefined : postSlug,
       };
       await uploadAudioEpisode(file, meta, setProgress);
       setUploadDone(true);
@@ -191,6 +207,7 @@ export const AudioUpload = () => {
     setCategoryEN('');
     setCategoryFR('');
     setDescription('');
+    setPostSlug(NO_LINKED_ARTICLE);
     setProgress(0);
   };
 
@@ -460,6 +477,28 @@ export const AudioUpload = () => {
                   {SIGNAL_CATEGORIES.map(c => (
                     <SelectItem key={c.id} value={c.id}>
                       {c.labelEN} / {c.labelFR}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="ep-post-slug">
+                Linked Article{' '}
+                <span className="text-muted-foreground font-normal text-xs">
+                  (shows a player on that article&apos;s page)
+                </span>
+              </Label>
+              <Select value={postSlug} onValueChange={setPostSlug}>
+                <SelectTrigger id="ep-post-slug">
+                  <SelectValue placeholder="— None —" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_LINKED_ARTICLE}>— None —</SelectItem>
+                  {publishedPosts.map(p => (
+                    <SelectItem key={p.slug} value={p.slug}>
+                      {p.title}
                     </SelectItem>
                   ))}
                 </SelectContent>

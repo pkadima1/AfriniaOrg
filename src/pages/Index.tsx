@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getDoc, doc } from 'firebase/firestore';
@@ -8,7 +8,8 @@ import { getPostsByLanguage } from '@/integrations/firebase/blogService';
 import { fetchAudioEpisodes, type AudioEpisode } from '@/integrations/firebase/audioService';
 import { BlogPost } from '@/integrations/firebase/types';
 import { type Lang, getBlogUrl, getPostUrl } from '@/utils/languageUtils';
-import { trackNewsletterSignup } from '@/utils/analytics';
+import { trackNewsletterSignup, trackAudioPlay, trackAudioPause } from '@/utils/analytics';
+import { useAudioPlayer, formatPlayerTime } from '@/hooks/useAudioPlayer';
 import { usePageMeta } from '@/utils/pageMeta';
 import Layout from '../components/Layout';
 import { SubscribePopup } from '@/components/SubscribePopup';
@@ -82,7 +83,18 @@ function episodeToRow(ep: AudioEpisode) {
   const pad = String(ep.episode_number).padStart(3, '0');
   const label = ep.lang === 'fr' ? `Épisode ${pad}` : `Episode ${pad}`;
   const dur = [ep.duration, ep.category].filter(Boolean).join(' · ');
-  return { num: label, title: ep.title, dur, url: ep.audio_url };
+  // id + episodeNumber carried through for GA audio_play/audio_pause events
+  return { num: label, title: ep.title, dur, url: ep.audio_url, id: ep.id, episodeNumber: ep.episode_number };
+}
+
+/** What the inline player needs to play + track one episode. */
+interface NowPlayingTrack {
+  url: string;
+  title: string;
+  num: string;
+  /** Absent for placeholder rows, which are never playable. */
+  id?: string;
+  episodeNumber?: number;
 }
 
 const CATEGORIES = [
@@ -176,40 +188,42 @@ const Index = () => {
   const [builderPost, setBuilderPost] = useState<BuilderCard | null>(null);
   const [episodes, setEpisodes] = useState<AudioEpisode[]>([]);
 
-  // ── Inline audio player state ─────────────────────────────────────────────
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [nowPlaying, setNowPlaying] = useState<{ url: string; title: string; num: string } | null>(null);
-  const [audioPlaying, setAudioPlaying] = useState(false);
-  const [audioTime, setAudioTime] = useState(0);
-  const [audioDuration, setAudioDuration] = useState(0);
-
-  const handleEpisodeClick = useCallback((url: string, title: string, num: string) => {
-    if (!url) return;
-    if (nowPlaying?.url === url) {
-      // Same episode — toggle play/pause
-      if (audioRef.current) {
-        if (audioRef.current.paused) {
-          void audioRef.current.play();
-        } else {
-          audioRef.current.pause();
-        }
+  // ── Inline audio player state — mechanics live in the shared useAudioPlayer hook
+  const [nowPlaying, setNowPlaying] = useState<NowPlayingTrack | null>(null);
+  const player = useAudioPlayer({
+    onPlay: () => {
+      if (nowPlaying?.id) {
+        trackAudioPlay({
+          episode_id: nowPlaying.id,
+          episode_title: nowPlaying.title,
+          episode_number: nowPlaying.episodeNumber ?? 0,
+        });
       }
+    },
+    onPause: listenedSeconds => {
+      if (nowPlaying?.id) {
+        trackAudioPause({
+          episode_id: nowPlaying.id,
+          listen_duration_seconds: listenedSeconds,
+        });
+      }
+    },
+  });
+
+  const handleEpisodeClick = useCallback((track: NowPlayingTrack) => {
+    if (!track.url) return;
+    if (nowPlaying?.url === track.url) {
+      player.toggle(); // same episode — toggle play/pause
     } else {
-      // New episode — swap source and autoplay
-      setAudioTime(0);
-      setAudioDuration(0);
-      setNowPlaying({ url, title, num });
-      setAudioPlaying(false); // will flip to true on 'play' event
+      player.reset(); // new episode — clear progress, swap source, autoplay
+      setNowPlaying(track);
     }
-  }, [nowPlaying]);
+  }, [nowPlaying, player]);
 
   const stopPlayer = useCallback(() => {
-    audioRef.current?.pause();
+    player.stop();
     setNowPlaying(null);
-    setAudioPlaying(false);
-    setAudioTime(0);
-    setAudioDuration(0);
-  }, []);
+  }, [player]);
 
   useEffect(() => {
     // Re-fetch whenever language changes — reads from posts_en or posts_fr accordingly
@@ -794,7 +808,7 @@ const Index = () => {
               ? episodes.map(episodeToRow)
               : lang === 'fr' ? PLACEHOLDER_EPISODES_FR : PLACEHOLDER_EPISODES_EN
             ).map((ep, i) => {
-              const row = ep as { num: string; title: string; dur: string; url?: string };
+              const row = ep as { num: string; title: string; dur: string; url?: string; id?: string; episodeNumber?: number };
               const isActive = !!row.url && nowPlaying?.url === row.url;
               const inner = (
                 <div
@@ -806,9 +820,9 @@ const Index = () => {
                     background: isActive ? 'rgba(184,145,42,0.06)' : undefined,
                     borderRadius: isActive ? 4 : undefined,
                   }}
-                  onClick={row.url ? () => handleEpisodeClick(row.url!, row.title, row.num) : undefined}
+                  onClick={row.url ? () => handleEpisodeClick({ url: row.url!, title: row.title, num: row.num, id: row.id, episodeNumber: row.episodeNumber }) : undefined}
                 >
-                  <PlayBtn active={isActive} playing={isActive && audioPlaying} />
+                  <PlayBtn active={isActive} playing={isActive && player.playing} />
                   <div style={{ flex: 1 }}>
                     <div style={{
                       fontFamily: A.sans, fontSize: '9px',
@@ -904,18 +918,9 @@ const Index = () => {
       </section>
     </Layout>
 
-    {/* ── Hidden audio element ── */}
+    {/* ── Hidden audio element — mechanics + GA tracking handled by useAudioPlayer ── */}
     {nowPlaying && (
-      <audio
-        ref={audioRef}
-        src={nowPlaying.url}
-        autoPlay
-        onPlay={() => setAudioPlaying(true)}
-        onPause={() => setAudioPlaying(false)}
-        onEnded={() => { setAudioPlaying(false); setAudioTime(0); }}
-        onTimeUpdate={() => setAudioTime(audioRef.current?.currentTime ?? 0)}
-        onLoadedMetadata={() => setAudioDuration(audioRef.current?.duration ?? 0)}
-      />
+      <audio src={nowPlaying.url} autoPlay {...player.audioProps} />
     )}
 
     {/* ── Fixed bottom mini-player ── */}
@@ -930,15 +935,10 @@ const Index = () => {
       }}>
         {/* Play/Pause toggle */}
         <button
-          onClick={() => {
-            if (audioRef.current) {
-              if (audioRef.current.paused) void audioRef.current.play();
-              else audioRef.current.pause();
-            }
-          }}
+          onClick={player.toggle}
           style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
         >
-          <PlayBtn active playing={audioPlaying} />
+          <PlayBtn active playing={player.playing} />
         </button>
 
         {/* Episode info */}
@@ -954,22 +954,18 @@ const Index = () => {
         {/* Progress bar */}
         <div style={{ flex: 2, display: 'flex', alignItems: 'center', gap: 10, maxWidth: 400 }}>
           <span style={{ fontFamily: A.sans, fontSize: 11, color: A.muted, flexShrink: 0 }}>
-            {Math.floor(audioTime / 60)}:{String(Math.floor(audioTime % 60)).padStart(2, '0')}
+            {formatPlayerTime(player.time)}
           </span>
           <input
             type="range"
             min={0}
-            max={audioDuration || 1}
-            value={audioTime}
-            onChange={e => {
-              const t = Number(e.target.value);
-              if (audioRef.current) audioRef.current.currentTime = t;
-              setAudioTime(t);
-            }}
+            max={player.duration || 1}
+            value={player.time}
+            onChange={e => player.seek(Number(e.target.value))}
             style={{ flex: 1, accentColor: A.gold, cursor: 'pointer' }}
           />
           <span style={{ fontFamily: A.sans, fontSize: 11, color: A.muted, flexShrink: 0 }}>
-            {audioDuration ? `${Math.floor(audioDuration / 60)}:${String(Math.floor(audioDuration % 60)).padStart(2, '0')}` : '--:--'}
+            {player.duration ? formatPlayerTime(player.duration) : '--:--'}
           </span>
         </div>
 

@@ -723,6 +723,11 @@
     "en": "English",
     "fr": "Français"
   },
+  "article_audio": {
+    "listen": "Écouter cet article",
+    "pause": "Pause",
+    "seek": "Naviguer dans l'audio"
+  },
   "audio_page": {
     "eyebrow": "Le Bref Afrinia — Audio",
     "coming_title": "Chaque idée, aussi une conversation.",
