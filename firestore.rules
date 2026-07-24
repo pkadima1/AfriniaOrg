@@ -132,6 +132,18 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // ── Contact form submissions ──────────────────────────────────────────
+    // All writes go through the send-contact Netlify function, which uses the
+    // Firebase Admin SDK and bypasses these rules. Browser clients never write
+    // to this collection directly — create is denied at the rule level.
+    // Admins can read, mark as read/archived (update), and delete.
+    match /contact_messages/{docId} {
+      allow create: if false;
+      allow read:   if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
     // ── Site config (popup settings, social links, etc.) ─────────────────
     // Public read: the subscribe popup fetches its template config without auth.
     // Admin-only write: only admins can change popup content or toggle settings.
