@@ -70,6 +70,15 @@ service firebase.storage {
       allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Builder profile photos - contributors can upload, anyone can read
+    // Path: builder-photos/{filename}
+    match /builder-photos/{imageId} {
+      allow create: if isAuthenticated() && isValidImage();
+      allow read: if true;
+      allow update: if isAuthenticated() && isValidImage();
+      allow delete: if isAuthenticated();
+    }
+
     // Public uploads directory - for shared/published content
     match /public/{document=**} {
       // Anyone can read

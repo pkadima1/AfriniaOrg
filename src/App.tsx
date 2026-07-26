@@ -21,6 +21,7 @@ import { detectLanguage } from "@/utils/languageUtils";
 import GAPageTracker from "@/components/GAPageTracker";
 
 import Builders from "./pages/Builders";
+import BuilderProfile from "./pages/BuilderProfile";
 import AudioPage from "./pages/AudioPage";
 import Unsubscribed from "./pages/Unsubscribed";
 
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/builders" element={<Builders />} />
+            <Route path="/builders/:slug" element={<BuilderProfile />} />
             <Route path="/audio" element={<AudioPage />} />
 
             {/*

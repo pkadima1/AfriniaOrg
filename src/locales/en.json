@@ -234,7 +234,15 @@
     "empty": "The first decision maps are coming soon.",
     "backToBlog": "See all signals",
     "meta_title": "Builders — Decision Maps | Afrinia",
-    "meta_description": "We map the decisions of African builders — not inspiration stories, but the specific reasoning behind the choices constructing Africa's future economy."
+    "meta_description": "We map the decisions of African builders — not inspiration stories, but the specific reasoning behind the choices constructing Africa's future economy.",
+    "profile": {
+      "decisionFrameworks": "Decision Frameworks",
+      "keyFailures": "Key Failures / Pivots",
+      "mentalModels": "Mental Models",
+      "relatedArticles": "Related Articles",
+      "noArticlesYet": "No published articles link to this profile yet.",
+      "source": "Source"
+    }
   },
   "services": {
     "hero": {

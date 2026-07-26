@@ -234,7 +234,15 @@
     "empty": "Les premières cartes de décision arrivent bientôt.",
     "backToBlog": "Voir tous les signaux",
     "meta_title": "Bâtisseurs — Cartes de décision | Afrinia",
-    "meta_description": "Nous cartographions les décisions des bâtisseurs africains — pas des récits inspirants, mais le raisonnement précis derrière les choix qui construisent l'économie africaine de demain."
+    "meta_description": "Nous cartographions les décisions des bâtisseurs africains — pas des récits inspirants, mais le raisonnement précis derrière les choix qui construisent l'économie africaine de demain.",
+    "profile": {
+      "decisionFrameworks": "Cadres de décision",
+      "keyFailures": "Échecs clés / pivots",
+      "mentalModels": "Modèles mentaux",
+      "relatedArticles": "Articles liés",
+      "noArticlesYet": "Aucun article publié ne fait encore référence à ce profil.",
+      "source": "Source"
+    }
   },
   "services": {
     "hero": {

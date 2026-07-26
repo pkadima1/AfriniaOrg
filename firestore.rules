@@ -144,6 +144,24 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // ── Builder profiles (bilingual, same split as posts_en/posts_fr) ─────
+    // Published docs are readable by anyone; contributors can read/write
+    // everything (drafts included). EN and FR are independent documents —
+    // adapted content, not a translation pair.
+    match /builders_en/{builderId} {
+      allow read:   if resource.data.status == 'published' || isContributor();
+      allow create: if isContributor();
+      allow update: if isContributor();
+      allow delete: if isAdmin();
+    }
+
+    match /builders_fr/{builderId} {
+      allow read:   if resource.data.status == 'published' || isContributor();
+      allow create: if isContributor();
+      allow update: if isContributor();
+      allow delete: if isAdmin();
+    }
+
     // ── Site config (popup settings, social links, etc.) ─────────────────
     // Public read: the subscribe popup fetches its template config without auth.
     // Admin-only write: only admins can change popup content or toggle settings.

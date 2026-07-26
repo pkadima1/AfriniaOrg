@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { fetchBlogPostById, saveBlogPost, uploadBlogImage } from "@/integrations/firebase/blogService";
+import { fetchBuilders } from "@/integrations/firebase/builderService";
 import { ArrowLeft, Save, Eye, X, Bell } from "lucide-react";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
@@ -23,7 +24,7 @@ import {
   SIGNAL_REGIONS,
   CATEGORY_LABEL_MAP,
 } from '@/constants/taxonomy';
-import type { PostCategory, PostSector, PostRegion } from '@/integrations/firebase/types';
+import type { PostCategory, PostSector, PostRegion, Builder } from '@/integrations/firebase/types';
 
 interface BlogPost {
   id?: string;
@@ -47,6 +48,7 @@ interface BlogPost {
   updated_at?: string;
   content_language: 'en' | 'fr' | 'both';
   target_countries: string[];
+  builderId?: string;
 }
 
 interface CountryEntry { name: string; lang: 'fr' | 'en' | 'both' | 'pt' }
@@ -156,12 +158,20 @@ export const BlogPostEditor = () => {
     meta_description: '',
     content_language: 'en' as const,
     target_countries: [],
+    builderId: undefined,
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setSaving] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [imageUploading, setImageUploading] = useState(false);
+  const [builders, setBuilders] = useState<Builder[]>([]);
+
+  // Only builders in this post's own language collection can be linked —
+  // builders_en/builders_fr are independent profiles, same split as posts_en/posts_fr.
+  useEffect(() => {
+    fetchBuilders(lang).then(setBuilders).catch(err => console.error('Error loading builders for linking:', err));
+  }, [lang]);
   // When true, publishing this post fires an email to subscribers in this language.
   const [notifySubscribers, setNotifySubscribers] = useState(false);
   // 'signal' = only declared followers of this post's signal type. 'all' = all subscribers.
@@ -195,6 +205,7 @@ export const BlogPostEditor = () => {
           updated_at: data.updated_at,
           content_language: (data.content_language as 'en' | 'fr' | 'both') || 'en',
           target_countries: (data.target_countries as string[]) || [],
+          builderId: data.builderId,
         });
       }
     } catch (error) {
@@ -644,6 +655,32 @@ export const BlogPostEditor = () => {
                   <SelectContent>
                     {SIGNAL_REGIONS.map(r => (
                       <SelectItem key={r.id} value={r.id}>{r.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="builder">Link to Builder</Label>
+                <p className="text-sm text-muted-foreground">
+                  Optional. If this article discusses a decision made by a builder we
+                  profile, link it here — it will appear on their profile page.
+                </p>
+                <Select
+                  value={post.builderId || 'none'}
+                  onValueChange={(value) =>
+                    setPost(prev => ({ ...prev, builderId: value === 'none' ? undefined : value }))
+                  }
+                >
+                  <SelectTrigger id="builder">
+                    <SelectValue placeholder="— No builder linked —" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">— No builder linked —</SelectItem>
+                    {builders.map(b => (
+                      <SelectItem key={b.id} value={b.id}>
+                        {b.name}{b.status === 'draft' ? ' (draft)' : ''}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

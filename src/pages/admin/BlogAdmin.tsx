@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { BlogPostList } from '@/components/admin/BlogPostList';
 import { BlogPostEditor } from '@/components/admin/BlogPostEditor';
+import { BuilderList } from '@/components/admin/BuilderList';
+import { BuilderEditor } from '@/components/admin/BuilderEditor';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AudioEpisodeList } from '@/components/admin/AudioEpisodeList';
 import { AudioUpload } from '@/components/admin/AudioUpload';
@@ -13,7 +15,7 @@ import { ContributorRoute, AdminRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, FileText, Settings, Users, Crown, Edit3, Mic, Mail, Share2, BellRing, MessageSquare } from "lucide-react";
+import { ArrowLeft, FileText, Settings, Users, Crown, Edit3, Mic, Mail, Share2, BellRing, MessageSquare, UserSquare2 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 
@@ -90,6 +92,24 @@ const AdminDashboard = () => {
                 Manage Users
               </Button>
             )}
+          </CardContent>
+        </Card>
+
+        <Card
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => navigate('/admin/builders')}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <UserSquare2 className="w-5 h-5" />
+              Builder Profiles
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Manage builder entities (e.g. Aliko Dangote) — bio and decision-mind
+              content, separate from the articles that link to them.
+            </p>
           </CardContent>
         </Card>
 
@@ -321,6 +341,32 @@ export const BlogAdmin = () => {
           </AdminRoute>
         } 
       />
+      {/* Builder profile routes */}
+      <Route
+        path="/builders"
+        element={
+          <ContributorRoute>
+            <BuilderList />
+          </ContributorRoute>
+        }
+      />
+      <Route
+        path="/builders/new"
+        element={
+          <ContributorRoute>
+            <BuilderEditor />
+          </ContributorRoute>
+        }
+      />
+      <Route
+        path="/builders/edit/:id"
+        element={
+          <ContributorRoute>
+            <BuilderEditor />
+          </ContributorRoute>
+        }
+      />
+
       {/* Audio management routes */}
       <Route
         path="/audio"
