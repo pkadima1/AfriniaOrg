@@ -205,7 +205,7 @@ The Next.js migration serves the first goal directly and is already the Phase 1 
 
 Each phase lists **scope**, **tests that must exist and pass**, and **exit criteria**. A phase is done only when every exit criterion is verified with evidence and the owner has approved the merge.
 
-#### M0 — Stabilise the live site (Vite, branches from `main`) ◐
+#### M0 — Stabilise the live site (Vite, branches from `main`) ☑ 2026-10-01
 Why: the migration takes ~2 weeks; these fixes stop the damage now and carry into Next.js.
 - `fix/seo-quick-wins` (8 commits): static homepage canonical/og:url and all Lovable tooling removed from the shell; known routes whitelisted in `public/_redirects`, everything else a true 404 via `dist/404.html` (retired pages like `/services` included — no equivalent content, so 404, not a redirect); `afinia.netlify.app` → 301 to afrinia.org; mixed-case paths → lowercase; sitemap served by its function's own path with real `lastmod` only; baseline security headers; one `SITE_URL` constant; articles no longer declare hreflang to a non-existent same-slug translation; newsletter form stacks on phones; admin screens follow the site language (0 TypeScript/lint errors).
 - `fix/comment-email-privacy` (2 commits, stacked on the above): commenter email moved to admin-only `comment_contacts` (atomic batch with the comment); validated comment creation; admin-only moderation; legacy `comments` admin-read. **Rules are published before the frontend.**
@@ -269,6 +269,7 @@ Entry: D1–D5 approved; pending feature branches (e.g. `feature/builders-page`)
 - 2026-09-29 — Diagnosis verified; stack chosen (Next.js); plan written. Awaiting approval of D1–D5 and start of M0.
 - 2026-09-30 — M0 built and verified on Netlify draft deploys. Found and fixed beyond the plan: articles pointed hreflang at "Post not found" pages; `afinia.netlify.app` served an indexable duplicate; the sitemap rewrite only worked in production git builds (now the function's own path).
 - 2026-10-01 — Plan docs and M0 approved by the owner; M0 committed (`fix/seo-quick-wins`, `fix/comment-email-privacy`). D1–D5 still to be confirmed before M1.
+- 2026-10-01 — M0 released. Firestore rules published first (legacy `comments` anonymous read 200 → 403; 21 FR + 8 EN published posts still readable), then `main` deployed (live 50 s after push). `npm run check:site -- --base https://afrinia.org`: **127/127** (was 39/116), incl. `afinia.netlify.app`/`www`/`http` → 301. Live test comment with email: public doc had no email, `comment_contacts` doc 403 to the public and correct for admin; both deleted. Next: Search Console → "Validate fix" on Soft 404 and Duplicate canonical; confirm D1–D5 to start M1.
 
 ---
 
