@@ -191,15 +191,15 @@ The Next.js migration serves the first goal directly and is already the Phase 1 
 
 **Status legend:** ☐ not started · ◐ in progress · ☑ done (with date). Update this section at the end of every phase — it is the single source of truth for migration status.
 
-### 10.1 Decisions (must be approved before M1 starts)
+### 10.1 Decisions (approved by the owner 2026-10-02)
 
 | # | Decision | Options | Recommendation | Status |
 |---|---|---|---|---|
-| D1 | Hosting | (a) **Stay on Netlify** (Next.js runtime) · (b) Move to Vercel (named in SKILLS.md) | (a) — change one thing at a time; the domain, env vars and the existing Netlify Functions (subscribe, send-contact, notify-indexing…) keep working. Vercel can be revisited after cutover. | Proposed |
-| D2 | i18n library | (a) **next-intl** · (b) keep react-i18next | (a) — native server-component support and locale routing; only one string uses `{{…}}` interpolation to convert. | Proposed |
-| D3 | Root URL `/` | (a) **`/` permanently redirects to `/fr`**; every page has a language prefix · (b) `/` is the French homepage without prefix | (a) — one rule for every URL; x-default = `/fr`. Never redirect by browser language. | Proposed |
-| D4 | How public pages read Firestore | (a) **Rules-bound reads** (unauthenticated, like a visitor) · (b) `firebase-admin` (bypasses rules) | (a) — Firestore rules already restrict public reads to `status == 'published'`, so a coding mistake cannot leak a draft. `firebase-admin` is used only where privileged access is required (revalidation auth, existing functions). | Proposed |
-| D5 | Publish → page refresh | Admin save calls `POST /api/revalidate` with the user's Firebase ID token; the server verifies the token and contributor/admin role, then refreshes the article, both lists, the sitemap and the homepage | Only option that keeps ISR fresh without full rebuilds | Proposed |
+| D1 | Hosting | (a) **Stay on Netlify** (Next.js runtime) · (b) Move to Vercel (named in SKILLS.md) | (a) — change one thing at a time; the domain, env vars and the existing Netlify Functions (subscribe, send-contact, notify-indexing…) keep working. Vercel can be revisited after cutover. | **Approved 2026-10-02** |
+| D2 | i18n library | (a) **next-intl** · (b) keep react-i18next | (a) — native server-component support and locale routing; only one string uses `{{…}}` interpolation to convert. | **Approved 2026-10-02** |
+| D3 | Root URL `/` | (a) **`/` permanently redirects to `/fr`**; every page has a language prefix · (b) `/` is the French homepage without prefix | (a) — one rule for every URL; x-default = `/fr`. Never redirect by browser language. | **Approved 2026-10-02** |
+| D4 | How public pages read Firestore | (a) **Rules-bound reads** (unauthenticated, like a visitor) · (b) `firebase-admin` (bypasses rules) | (a) — Firestore rules already restrict public reads to `status == 'published'`, so a coding mistake cannot leak a draft. `firebase-admin` is used only where privileged access is required (revalidation auth, existing functions). | **Approved 2026-10-02** |
+| D5 | Publish → page refresh | Admin save calls `POST /api/revalidate` with the user's Firebase ID token; the server verifies the token and contributor/admin role, then refreshes the article, both lists, the sitemap and the homepage | Only option that keeps ISR fresh without full rebuilds | **Approved 2026-10-02** |
 
 ### 10.2 Phases
 
@@ -214,7 +214,7 @@ Why: the migration takes ~2 weeks; these fixes stop the damage now and carry int
 - Not fixable before Next.js: page text still arrives via JavaScript; unknown article slugs under `/fr|en/blog/*` still answer 200; `/blog/:slug` picks a language client-side.
 
 #### M1 — Foundation ☐
-Entry: D1–D5 approved; pending feature branches (e.g. `feature/builders-page`) merged to `main`; `main` merged into `migration/nextjs`.
+Entry: D1–D5 approved ☑; `feature/builders-page` merged to `main` (via `merge/builders-into-main`, adapted to D3 — see progress log); `main` merged into `migration/nextjs`.
 - Replace Vite with Next.js in place (same repo, same `src/` components). Keep Tailwind config, design tokens, shadcn/ui, locales.
 - Scaffold `app/[locale]/layout.tsx` with correct `<html lang>`, fonts, Header/Footer as server components where possible.
 - Server data layer: `src/server/content/*` — rules-bound, server-only readers for posts (including Storage-offloaded content via `content_storage_path`), builders, audio. Article HTML sanitized on the server (DOMPurify via a server-compatible DOM, e.g. `isomorphic-dompurify`), reusing `cleanArticleHtml` logic — one implementation.
@@ -269,6 +269,7 @@ Entry: D1–D5 approved; pending feature branches (e.g. `feature/builders-page`)
 - 2026-09-29 — Diagnosis verified; stack chosen (Next.js); plan written. Awaiting approval of D1–D5 and start of M0.
 - 2026-09-30 — M0 built and verified on Netlify draft deploys. Found and fixed beyond the plan: articles pointed hreflang at "Post not found" pages; `afinia.netlify.app` served an indexable duplicate; the sitemap rewrite only worked in production git builds (now the function's own path).
 - 2026-10-01 — Plan docs and M0 approved by the owner; M0 committed (`fix/seo-quick-wins`, `fix/comment-email-privacy`). D1–D5 still to be confirmed before M1.
+- 2026-10-02 — D1–D5 approved. Builders branch reviewed and adapted on `merge/builders-into-main`: builder URLs language-prefixed (/fr|en/builders[/slug]); Storage owner folders close a live hole (any signed-up account could delete any blog image, builder photo or podcast file); 42 emulator rule tests. Lesson: the M0 rules release (from `main`) had silently removed the builders/contact rules that were live since 2026-07-26 — releases now compare the live rules with the repo first (verify skill).
 - 2026-10-01 — M0 released. Firestore rules published first (legacy `comments` anonymous read 200 → 403; 21 FR + 8 EN published posts still readable), then `main` deployed (live 50 s after push). `npm run check:site -- --base https://afrinia.org`: **127/127** (was 39/116), incl. `afinia.netlify.app`/`www`/`http` → 301. Live test comment with email: public doc had no email, `comment_contacts` doc 403 to the public and correct for admin; both deleted. Next: Search Console → "Validate fix" on Soft 404 and Duplicate canonical; confirm D1–D5 to start M1.
 
 ---

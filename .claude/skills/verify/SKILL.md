@@ -61,6 +61,20 @@ Status codes: `curl -s -o /dev/null -w '%{http_code} %{redirect_url}\n' <url>` �
 
 **Baseline recorded 2026-09-29 (Vite, production):** every URL → 200, 5,058 B, empty `<div id="root"></div>`, canonical `https://afrinia.org/`, `lang="fr"`, ~0 words. `/this-page-does-not-exist` and `/services` → 200 (soft 404).
 
+### Before publishing Firestore/Storage rules — compare with what is LIVE
+The repo is not the only source of rules: a feature branch may have published its own. Publishing from another branch silently deletes them (happened 2026-10-01: M0's release removed the live builders/contact rules). Before any `firebase deploy --only firestore:rules` or `--only storage`:
+```bash
+T=$(gcloud auth print-access-token); H="x-goog-user-project: modified-hull-203004"
+R=https://firebaserules.googleapis.com/v1/projects/modified-hull-203004
+for rel in cloud.firestore/afrinia firebase.storage/modified-hull-203004.firebasestorage.app; do
+  rs=$(curl -s -H "Authorization: Bearer $T" -H "$H" "$R/releases/$rel" | python3 -c "import json,sys;print(json.load(sys.stdin)['rulesetName'])")
+  curl -s -H "Authorization: Bearer $T" -H "$H" "https://firebaserules.googleapis.com/v1/$rs" \
+    | python3 -c "import json,sys;print(''.join(f['content'] for f in json.load(sys.stdin)['source']['files']),end='')" > /tmp/live-$(echo $rel | cut -d/ -f1).rules
+done
+diff /tmp/live-cloud.firestore.rules firestore.rules; diff /tmp/live-firebase.storage.rules storage.rules
+```
+Every difference must be one this release intends. Rule tests: `npm run test:rules` (Firestore + Storage emulators via `firebase.test.json`, project `demo-afrinia`, files run one at a time because they share one emulator).
+
 ### `scripts/check-live-site.mjs` — exists since M0
 `npm run check:site -- --base <origin>`: 200s for every app route and two sitemap articles; real 404 (with the app shell) for unknown and retired URLs; `/blog` → 301 `/fr/blog`; no static canonical/og:url or `gptengineer` in raw HTML; security headers on page, asset and robots.txt; JS served as JavaScript; sitemap well-formed with no invented `lastmod`. With `--base https://afrinia.org` it also checks that `afinia.netlify.app`, `www` and `http` 301 to `https://afrinia.org`. Keep its `KNOWN_ROUTES` in sync with `src/App.tsx` and `public/_redirects`.
 
