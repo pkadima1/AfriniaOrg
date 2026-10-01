@@ -477,7 +477,9 @@ export const BlogPostEditor = () => {
                 <Input
                   id="slug"
                   value={post.slug}
-                  onChange={(e) => setPost(prev => ({ ...prev, slug: e.target.value }))}
+                  // Same rules as auto-generated slugs: public URLs must be lowercase
+                  // (App.tsx LowercasePathRedirect sends mixed-case paths to lowercase).
+                  onChange={(e) => setPost(prev => ({ ...prev, slug: generateSlug(e.target.value) }))}
                   placeholder="post-url-slug"
                 />
               </div>

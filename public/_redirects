@@ -1,10 +1,59 @@
+# Netlify redirect/rewrite rules — evaluated top to bottom, first match wins.
+# Rules without "!" are skipped when a real file exists at the path, so built
+# assets, robots.txt and favicons are always served as files.
+# NOTE: netlify.toml [[context.production.redirects]] is silently IGNORED by
+# Netlify — redirects cannot be scoped to deploy contexts. Keep SPA rules here.
+
 # Dynamic sitemap — served by Netlify Function (also in netlify.toml for netlify dev).
 /sitemap.xml  /.netlify/functions/sitemap  200!
 
-# SPA catch-all — MUST be last. Serves index.html for React Router routes
-# (e.g. /fr/blog/my-article) so reloads and direct links don't 404 on the CDN.
-# Not forced (no !), so real files (assets, robots.txt, favicons) still win.
-# NOTE: netlify.toml [[context.production.redirects]] is silently IGNORED by
-# Netlify — redirects cannot be scoped to deploy contexts. This file is the
-# only place the catch-all works.
-/*  /index.html  200
+# Netlify's default domain served a full, indexable copy of the site (HTTP 200),
+# competing with afrinia.org as a duplicate. Send it to the real domain.
+# Matches only this exact host — deploy previews (<id>--afinia.netlify.app)
+# are unaffected. www and http are already redirected by Netlify domain settings.
+https://afinia.netlify.app/*  https://afrinia.org/:splat  301!
+
+# Legacy /blog index → French listing (French is the site default / x-default).
+# /blog/:slug stays client-side (see below): the slug's language is unknown here.
+/blog  /fr/blog  301
+
+# ── Known app routes → index.html with HTTP 200 ─────────────────────────────
+# WHY a whitelist: the SPA serves the same index.html for every URL, so unknown
+# URLs used to answer 200 and draw "404" in JavaScript — Google reports those as
+# "Soft 404". Listing the real routes lets everything else return a true 404.
+# MUST mirror the <Route> list in src/App.tsx: a route missing here is served
+# with status 404 and will drop out of Google. Add new routes here and to
+# scripts/check-live-site.mjs in the same commit.
+/                 /index.html  200
+/about            /index.html  200
+/contact          /index.html  200
+/audio            /index.html  200
+/builders         /index.html  200
+/builders/*       /index.html  200
+/en/blog          /index.html  200
+/fr/blog          /index.html  200
+/en/blog/*        /index.html  200
+/fr/blog/*        /index.html  200
+# TEMP: /blog/:slug is redirected client-side to the browser language (App.tsx
+# BlogRedirect). Real fix: server-side 301 using the slug's language, in the
+# Next.js redirect map (CLAUDE.md §10, M5).
+/blog/*           /index.html  200
+/privacy          /index.html  200
+/terms            /index.html  200
+/unsubscribed     /index.html  200
+/profile          /index.html  200
+/settings         /index.html  200
+/admin            /index.html  200
+/admin/*          /index.html  200
+
+# ── Everything else → HTTP 404 ──────────────────────────────────────────────
+# No catch-all rule here, on purpose: Netlify answers unmatched URLs with
+# dist/404.html (a copy of the app, emitted by vite.config.ts) and status 404.
+# A `/* /index.html 404` rule would outrank function paths and break /sitemap.xml.
+# Unmatched includes retired pages of the previous site (/services, /products,
+# /pricing, /solutions, /example-systems, /built-by, /industrial-analytics,
+# /outreachos): they have no equivalent content, so 404 is the honest answer
+# for crawlers (redirecting them to the homepage is itself a soft 404).
+# Visitors still see the app, which sends those legacy paths to the homepage.
+# Known limit until Next.js (M2): an unknown article slug under /fr/blog/* or
+# /en/blog/* still answers 200, because only the database knows which exist.
