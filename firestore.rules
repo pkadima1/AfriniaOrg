@@ -85,35 +85,79 @@ service cloud.firestore {
     }
 
     // ── Comments (bilingual) ──────────────────────────────────────────────
-    // comments_en and comments_fr mirror the blog post split.
-    // Public read + create (no auth required to comment).
-    // Update/delete restricted to admins or the commenter's email.
+    // comments_en / comments_fr are PUBLIC: anyone can read them. They must
+    // therefore never contain personal data. A commenter's optional email is
+    // stored separately in comment_contacts (admin-only), written in the same
+    // batch as the comment — see commentService.addCommentToPost.
+    // Anyone may create a comment (no account needed), but only with exactly
+    // the expected fields and sizes. Update/delete: admins only (moderation).
+    // Keep limits in sync with COMMENT_LIMITS in src/integrations/firebase/types.ts.
+
+    function isValidComment(lang) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['post_slug', 'lang', 'name', 'message', 'created_at', 'updated_at'])
+          && d.keys().hasOnly(['post_slug', 'lang', 'name', 'message', 'parent_id', 'created_at', 'updated_at', 'email'])
+          && d.lang == lang
+          && d.post_slug is string && d.post_slug.size() > 0 && d.post_slug.size() <= 300
+          && d.name is string && d.name.size() > 0 && d.name.size() <= 80
+          && d.message is string && d.message.size() > 0 && d.message.size() <= 2000
+          && (!('parent_id' in d) || d.parent_id == null
+              || (d.parent_id is string && d.parent_id.size() <= 64))
+          && d.created_at is string && d.created_at.size() <= 40
+          && d.updated_at == d.created_at
+          // TEMP: browsers still running the pre-fix bundle send `email: null`
+          // when the field is empty. Accept only null so those comments keep
+          // working, while any real address is rejected here. Remove the
+          // 'email' key from hasOnly once old bundles are gone (they are
+          // replaced on the next page load; index.html is never cached).
+          && (!('email' in d) || d.email == null);
+    }
 
     match /comments_en/{commentId} {
-      allow read:   if true;
-      allow create: if true;
-      allow update: if isSignedIn()
-                    && (isAdmin()
-                        || resource.data.email == request.auth.token.email);
-      allow delete: if isSignedIn()
-                    && (isAdmin()
-                        || resource.data.email == request.auth.token.email);
+      allow read:           if true;
+      allow create:         if isValidComment('en');
+      allow update, delete: if isAdmin();
     }
 
     match /comments_fr/{commentId} {
-      allow read:   if true;
-      allow create: if true;
-      allow update: if isSignedIn()
-                    && (isAdmin()
-                        || resource.data.email == request.auth.token.email);
-      allow delete: if isSignedIn()
-                    && (isAdmin()
-                        || resource.data.email == request.auth.token.email);
+      allow read:           if true;
+      allow create:         if isValidComment('fr');
+      allow update, delete: if isAdmin();
     }
 
-    // ── Legacy comments (read-only — historical data) ─────────────────────
+    // ── Commenter contact emails (private) ───────────────────────────────
+    // Document id == the comment's id. Readable by admins only.
+    // Create is allowed ONLY in the same batch that creates the comment
+    // (!exists before, existsAfter after) — so nobody can attach an email to
+    // someone else's existing comment. Never updated; admins may delete.
+    match /comment_contacts/{commentId} {
+      function commentPath(lang) {
+        return /databases/$(database)/documents/$('comments_' + lang)/$(commentId);
+      }
+      allow read:   if isAdmin();
+      allow create: if request.resource.data.keys().hasOnly(['email', 'comment_id', 'lang', 'post_slug', 'created_at'])
+                    && request.resource.data.keys().hasAll(['email', 'comment_id', 'lang', 'post_slug', 'created_at'])
+                    && request.resource.data.comment_id == commentId
+                    && request.resource.data.lang in ['en', 'fr']
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() <= 254
+                    && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+                    && request.resource.data.post_slug is string
+                    && request.resource.data.post_slug.size() <= 300
+                    && request.resource.data.created_at is string
+                    && request.resource.data.created_at.size() <= 40
+                    && !exists(commentPath(request.resource.data.lang))
+                    && existsAfter(commentPath(request.resource.data.lang))
+                    && getAfter(commentPath(request.resource.data.lang)).data.post_slug
+                         == request.resource.data.post_slug;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    // ── Legacy comments (historical data, no longer used by the app) ──────
+    // Some documents contain commenter emails, so reads are admin-only.
     match /comments/{commentId} {
-      allow read:   if true;
+      allow read:   if isAdmin();
       allow create: if false;
       allow update: if false;
       allow delete: if isAdmin();

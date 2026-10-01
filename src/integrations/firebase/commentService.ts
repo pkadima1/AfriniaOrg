@@ -1,16 +1,27 @@
+/**
+ * commentService.ts — reads and writes article comments.
+ * Comments are public documents; a commenter's optional email is private and
+ * stored apart in comment_contacts (see firestore.rules for the guarantees).
+ */
 import {
   collection,
   query,
   where,
   orderBy,
   getDocs,
-  addDoc,
   updateDoc,
   deleteDoc,
   doc,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from '@/integrations/firebase/config';
-import { Comment, getCommentCollectionForLang, getCurrentTimestamp } from '@/integrations/firebase/types';
+import {
+  COLLECTIONS,
+  Comment,
+  CommentContact,
+  getCommentCollectionForLang,
+  getCurrentTimestamp,
+} from '@/integrations/firebase/types';
 
 /**
  * Fetch all comments for a blog post from the language-specific collection.
@@ -43,6 +54,11 @@ export const fetchCommentsForPost = async (
 /**
  * Add a new comment to the language-specific comments collection.
  * EN articles → comments_en, FR articles → comments_fr.
+ *
+ * Sequence: 1) reserve the comment id, 2) in ONE atomic batch write the public
+ * comment (no email) and, if an email was given, the private contact document
+ * with the same id. Firestore rules only accept the contact document inside
+ * the batch that creates its comment, so either both are saved or neither.
  */
 export const addCommentToPost = async (
   postSlug: string,
@@ -53,19 +69,34 @@ export const addCommentToPost = async (
   parentId?: string,
 ): Promise<string | null> => {
   try {
-    const col = getCommentCollectionForLang(lang as 'en' | 'fr');
+    const commentLang = lang as 'en' | 'fr';
+    const col = getCommentCollectionForLang(commentLang);
     const now = getCurrentTimestamp();
-    const commentRef = await addDoc(collection(db, col), {
+    const commentRef = doc(collection(db, col));
+    const batch = writeBatch(db);
+
+    batch.set(commentRef, {
       post_slug: postSlug,
-      lang,
+      lang: commentLang,
       name,
       message,
-      email: email || null,
       parent_id: parentId || null,
       created_at: now,
       updated_at: now,
-    } as Comment);
+    });
 
+    if (email) {
+      const contact: CommentContact = {
+        email,
+        comment_id: commentRef.id,
+        lang: commentLang,
+        post_slug: postSlug,
+        created_at: now,
+      };
+      batch.set(doc(db, COLLECTIONS.COMMENT_CONTACTS, commentRef.id), contact);
+    }
+
+    await batch.commit();
     return commentRef.id;
   } catch (error) {
     console.error('Error adding comment:', error);

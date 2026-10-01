@@ -212,7 +212,7 @@
       "count": "Comments ({{count}})",
       "addComment": "Add a comment",
       "name": "Name (required)",
-      "email": "Email (optional)",
+      "email": "Email (optional, never shown publicly)",
       "message": "Your message",
       "messageReply": "Write your reply...",
       "submit": "Post Comment",

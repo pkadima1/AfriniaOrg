@@ -13,7 +13,7 @@ import {
 } from '@/integrations/firebase/commentService';
 import { fetchEpisodeForPost, type AudioEpisode } from '@/integrations/firebase/audioService';
 import ArticleAudioPlayer from '@/components/ArticleAudioPlayer';
-import { BlogPost as FirestorePost, PostCategory } from '@/integrations/firebase/types';
+import { BlogPost as FirestorePost, PostCategory, COMMENT_LIMITS } from '@/integrations/firebase/types';
 import { getCategoryLabel } from '@/constants/taxonomy';
 import { useToast } from '@/hooks/use-toast';
 import SocialShare from '@/components/SocialShare';
@@ -285,7 +285,6 @@ const BlogPost = () => {
         const optimistic: Comment = {
           id: newId, post_slug: slug, lang,
           name: commentName.trim(),
-          email: commentEmail.trim() || undefined,
           message: commentMessage.trim(),
           parent_id: replyingTo || undefined,
           created_at: new Date().toISOString(),
@@ -304,15 +303,15 @@ const BlogPost = () => {
         }
 
         setCommentName(''); setCommentEmail(''); setCommentMessage(''); setReplyingTo(null);
-        toast({ title: replyingTo ? 'Reply posted.' : 'Comment posted.' });
+        toast({ title: replyingTo ? t('blog.comments.successReply') : t('blog.comments.success') });
         trackCommentSubmitted({ article_slug: slug, article_lang: lang });
         void loadComments();
       } else {
-        toast({ title: 'Error posting comment.', variant: 'destructive' });
+        toast({ title: t('blog.comments.error'), variant: 'destructive' });
       }
     } catch (error) {
       console.error('Error submitting comment:', error);
-      toast({ title: 'Error posting comment.', variant: 'destructive' });
+      toast({ title: t('blog.comments.error'), variant: 'destructive' });
     }
     setSubmitting(false);
   };
@@ -758,8 +757,8 @@ const BlogPost = () => {
 
               <div className="comment-form-grid">
                 {[
-                  { placeholder: t('blog.comments.name', 'Name *'), value: commentName, onChange: setCommentName, required: true, type: 'text' },
-                  { placeholder: t('blog.comments.email', 'Email (optional)'), value: commentEmail, onChange: setCommentEmail, required: false, type: 'email' },
+                  { placeholder: t('blog.comments.name', 'Name *'), value: commentName, onChange: setCommentName, required: true, type: 'text', maxLength: COMMENT_LIMITS.NAME_MAX },
+                  { placeholder: t('blog.comments.email', 'Email (optional)'), value: commentEmail, onChange: setCommentEmail, required: false, type: 'email', maxLength: COMMENT_LIMITS.EMAIL_MAX },
                 ].map((f, i) => (
                   <input
                     key={i}
@@ -768,6 +767,7 @@ const BlogPost = () => {
                     value={f.value}
                     onChange={e => f.onChange(e.target.value)}
                     required={f.required}
+                    maxLength={f.maxLength}
                     disabled={submitting}
                     style={{
                       background: A.bg2, border: `1px solid ${A.border}`,
@@ -786,6 +786,7 @@ const BlogPost = () => {
                   rows={4}
                   value={commentMessage}
                   onChange={e => setCommentMessage(e.target.value)}
+                  maxLength={COMMENT_LIMITS.MESSAGE_MAX}
                   required
                   disabled={submitting}
                   style={{

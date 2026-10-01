@@ -88,19 +88,41 @@ export interface BlogPost {
   target_countries?: string[];
 }
 
+/**
+ * A public comment (comments_en / comments_fr — readable by anyone).
+ * Never holds personal data: the optional email lives in CommentContact.
+ */
 export interface Comment {
   id: string;
   post_slug: string;
   /** Language of the post this comment belongs to — 'en' | 'fr' */
   lang: string;
   name: string;
-  email?: string;
   message: string;
   parent_id?: string;
   created_at: string;
   updated_at: string;
   replies?: Comment[];
 }
+
+/**
+ * Private contact email for a comment (comment_contacts/{commentId}).
+ * Admin-read-only per firestore.rules; created in the same batch as the comment.
+ */
+export interface CommentContact {
+  email: string;
+  comment_id: string;
+  lang: 'en' | 'fr';
+  post_slug: string;
+  created_at: string;
+}
+
+/** Size limits for comment input — must match isValidComment in firestore.rules. */
+export const COMMENT_LIMITS = {
+  NAME_MAX: 80,
+  MESSAGE_MAX: 2000,
+  EMAIL_MAX: 254,
+} as const;
 
 export interface AudioEpisode {
   id: string;
@@ -138,8 +160,10 @@ export const COLLECTIONS = {
   USER_PROFILES: 'user_profiles',
   /** Legacy single-language collection — kept for reference during migration */
   BLOG_POSTS: 'blog_posts',
-  /** Legacy comments — kept for historical data only */
+  /** Legacy comments — historical data only, admin-read (contains emails) */
   COMMENTS: 'comments',
+  /** Private commenter emails, keyed by comment id — admin-read only */
+  COMMENT_CONTACTS: 'comment_contacts',
   /** Bilingual blog post collections */
   POSTS_EN: 'posts_en',
   POSTS_FR: 'posts_fr',
