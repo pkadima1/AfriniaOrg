@@ -877,7 +877,8 @@ const Index = () => {
           ) : (
             <form
               onSubmit={handleSubscribe}
-              style={{ display: 'flex', maxWidth: 480, margin: '0 auto 20px' }}
+              className="afrinia-subscribe-form"
+              style={{ maxWidth: 480, margin: '0 auto 20px' }}
             >
               <input
                 type="email"
@@ -885,9 +886,10 @@ const Index = () => {
                 onChange={e => setEmail(e.target.value)}
                 placeholder={t('home.newsletter.placeholder')}
                 required
+                // Layout + border: .afrinia-subscribe-form (index.css), which also
+                // stacks the row on narrow phones.
                 style={{
-                  flex: 1, background: A.bg2,
-                  border: `1px solid ${A.border}`, borderRight: 'none',
+                  background: A.bg2,
                   padding: '16px 20px',
                   fontFamily: A.sans, fontSize: 13, fontWeight: 300,
                   color: A.cream, outline: 'none',

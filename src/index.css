@@ -164,6 +164,25 @@
     @apply inline-block font-sans text-[11px] font-medium tracking-[2.5px] uppercase text-afrinia-gold bg-transparent hover:bg-afrinia-gold hover:text-afrinia-bg px-8 py-[13px] border border-afrinia-gold transition-all duration-200 cursor-pointer;
   }
 
+  /* Newsletter row: email field + gold button (homepage and blog listing).
+     Stacks below 480px — side by side, the field was squeezed to ~40px on a
+     320px phone. Border lives here, not inline, so the stacked layout can
+     move the join from the right edge to the bottom edge. */
+  .afrinia-subscribe-form {
+    @apply flex;
+  }
+  .afrinia-subscribe-form > input {
+    @apply flex-1 min-w-0 border border-r-0 border-afrinia-gold/20;
+  }
+  @media (max-width: 479px) {
+    .afrinia-subscribe-form {
+      @apply flex-col;
+    }
+    .afrinia-subscribe-form > input {
+      @apply border-r border-b-0;
+    }
+  }
+
   .afrinia-pillar {
     @apply bg-afrinia-bg2 border border-afrinia-gold/20 p-12 relative overflow-hidden transition-colors duration-300 hover:border-afrinia-gold/40;
   }

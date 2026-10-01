@@ -473,7 +473,7 @@ const Blog = () => {
                 : t('home.newsletter.success', 'You\'re in. Watch your inbox Thursday.')}
             </p>
           ) : (
-            <form onSubmit={handleSubscribe} style={{ display: 'flex', gap: 0, maxWidth: 440, margin: '0 auto' }}>
+            <form onSubmit={handleSubscribe} className="afrinia-subscribe-form" style={{ maxWidth: 440, margin: '0 auto' }}>
               <input
                 type="email"
                 value={email}
@@ -481,9 +481,9 @@ const Blog = () => {
                 placeholder={t('home.newsletter.placeholder', 'your@email.com')}
                 required
                 disabled={nlStatus === 'loading'}
+                // Layout + border: .afrinia-subscribe-form (index.css).
                 style={{
-                  flex: 1, background: A.bg2, border: `1px solid ${A.border}`,
-                  borderRight: 'none', padding: '14px 20px',
+                  background: A.bg2, padding: '14px 20px',
                   fontFamily: A.sans, fontSize: 13, color: A.cream,
                   outline: 'none',
                 }}
