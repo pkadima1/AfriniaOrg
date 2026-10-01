@@ -16,6 +16,7 @@ import {
   orderBy,
 } from 'firebase/firestore';
 import { db, storage } from '@/integrations/firebase/config';
+import { ownedStoragePath } from '@/integrations/firebase/storagePaths';
 import {
   AudioEpisode,
   PostCategory,
@@ -42,7 +43,8 @@ export interface AudioUploadMetadata {
 export type UploadProgressCallback = (progress: number) => void;
 
 /**
- * Upload an audio file to Firebase Storage under audio/{lang}/{filename},
+ * Upload an audio file to Firebase Storage under audio/{lang}/{uid}/{filename}
+ * (owner folder — see storagePaths.ts),
  * then create a matching Firestore document in the audio_en or audio_fr collection.
  * Returns the full AudioEpisode record (with the Storage download URL).
  */
@@ -54,7 +56,7 @@ export async function uploadAudioEpisode(
   // Sanitise filename: keep only safe characters
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
   const epPadded = String(metadata.episode_number).padStart(3, '0');
-  const storagePath = `audio/${metadata.lang}/ep${epPadded}-${safeName}`;
+  const storagePath = ownedStoragePath(`audio/${metadata.lang}`, `ep${epPadded}-${safeName}`);
   const storageRef = ref(storage, storagePath);
 
   // 1 — Upload to Storage with progress tracking
@@ -76,13 +78,13 @@ export async function uploadAudioEpisode(
   // 2 — Get the public download URL
   const audio_url = await getDownloadURL(storageRef);
 
-  // 3 — Optionally upload cover image to audio-thumbnails/{lang}/
+  // 3 — Optionally upload cover image to audio-thumbnails/{lang}/{uid}/
   let featured_image_url: string | null = null;
   let image_storage_path: string | null = null;
 
   if (metadata.imageFile) {
     const safeImg = metadata.imageFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const imgPath = `audio-thumbnails/${metadata.lang}/ep${epPadded}-${safeImg}`;
+    const imgPath = ownedStoragePath(`audio-thumbnails/${metadata.lang}`, `ep${epPadded}-${safeImg}`);
     const imgRef = ref(storage, imgPath);
     await uploadBytes(imgRef, metadata.imageFile, {
       contentType: metadata.imageFile.type || 'image/jpeg',
@@ -165,7 +167,10 @@ export async function updateAudioEpisodeStatus(
 
 /**
  * Delete an episode: removes the Storage file then the Firestore document.
- * Silently ignores Storage 404 errors (file already gone).
+ * Storage errors are ignored: the file may already be gone, or belong to
+ * another uploader / a pre-owner-folder path (storage.rules only lets the
+ * uploader delete) — the episode is still removed; admins clean up orphaned
+ * files in the Firebase console.
  */
 export async function deleteAudioEpisode(episode: AudioEpisode): Promise<void> {
   // Remove audio file from Storage

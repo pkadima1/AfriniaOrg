@@ -32,6 +32,7 @@ import {
 } from '@/integrations/firebase/types';
 import type { Lang } from '@/utils/languageUtils';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ownedStoragePath, uniqueFileName } from '@/integrations/firebase/storagePaths';
 
 function toBuilder(docSnap: { id: string; data: () => DocumentData }): Builder {
   const d = docSnap.data();
@@ -145,12 +146,10 @@ export const deleteBuilder = async (id: string, lang: Lang): Promise<boolean> =>
   }
 };
 
-/** Upload a builder's photo to Storage (path: builder-photos/{fileName}). Language-agnostic. */
+/** Upload a builder's photo (path: builder-photos/{uid}/{file} — see storagePaths.ts). Language-agnostic. */
 export const uploadBuilderPhoto = async (file: File): Promise<string | null> => {
   try {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const storageRef = ref(storage, `builder-photos/${fileName}`);
+    const storageRef = ref(storage, ownedStoragePath('builder-photos', uniqueFileName(file)));
     await uploadBytes(storageRef, file);
     return await getDownloadURL(storageRef);
   } catch (error) {

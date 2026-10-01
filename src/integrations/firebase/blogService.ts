@@ -20,6 +20,7 @@ import {
 } from '@/integrations/firebase/types';
 import { type Lang, getPostUrl } from '@/utils/languageUtils';
 import { absoluteUrl } from '@/constants/site';
+import { ownedStoragePath, uniqueFileName } from '@/integrations/firebase/storagePaths';
 import { cleanArticleHtml } from '@/utils/contentSanitizer';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
@@ -384,13 +385,12 @@ export const deleteBlogPost = async (id: string, lang: Lang = 'en'): Promise<boo
 // ── Storage helpers (language-agnostic) ──────────────────────────────────────
 
 /**
- * Upload image to Firebase Storage for blog (path: blog-images/{imageId})
+ * Upload an image for the blog (or a profile picture) into the uploader's own
+ * folder: blog-images/{uid}/{file} — see storagePaths.ts for why.
  */
 export const uploadBlogImage = async (file: File): Promise<string | null> => {
   try {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-    const storageRef = ref(storage, `blog-images/${fileName}`);
+    const storageRef = ref(storage, ownedStoragePath('blog-images', uniqueFileName(file)));
     await uploadBytes(storageRef, file);
     return await getDownloadURL(storageRef);
   } catch (error) {
