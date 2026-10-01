@@ -5,7 +5,7 @@ import { Menu, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import { UserMenu } from './auth/UserMenu';
-import { getBlogUrl, type Lang } from '@/utils/languageUtils';
+import { getBlogUrl, getBuildersUrl, type Lang } from '@/utils/languageUtils';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,7 +16,7 @@ const Header = () => {
 
   const navigation = [
     { name: t('navigation.ideas'), href: blogUrl },
-    { name: t('navigation.builders'), href: '/builders' },
+    { name: t('navigation.builders'), href: getBuildersUrl(lang) },
     { name: t('navigation.audio'), href: '/audio' },
     { name: t('navigation.about'), href: '/about' },
     { name: t('navigation.contact'), href: '/contact' },

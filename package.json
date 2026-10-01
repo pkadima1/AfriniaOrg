@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "test": "node --test \"tests/unit/**/*.test.js\"",
     "check:site": "node scripts/check-live-site.mjs",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-afrinia \"node --test 'tests/rules/**/*.test.js'\""
+    "test:rules": "firebase emulators:exec --config firebase.test.json --only firestore,storage --project demo-afrinia \"node --test --test-concurrency=1 'tests/rules/**/*.test.js'\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

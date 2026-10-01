@@ -1,7 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getBlogUrl, type Lang } from '@/utils/languageUtils';
+import { getBlogUrl, getBuildersUrl, type Lang } from '@/utils/languageUtils';
 
 const A = {
   bg2:    '#131f35',
@@ -98,7 +98,7 @@ const Footer = () => {
           <div style={colTitle}>{t('afrinia_footer.content')}</div>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             <FooterLink to={blogUrl}>{t('afrinia_footer.links.ideas')}</FooterLink>
-            <FooterLink to="/builders">{t('afrinia_footer.links.builders')}</FooterLink>
+            <FooterLink to={getBuildersUrl(lang)}>{t('afrinia_footer.links.builders')}</FooterLink>
             <FooterLink to={`${blogUrl}?category=opp`}>{t('afrinia_footer.links.opportunity')}</FooterLink>
             <FooterLink to={`${blogUrl}?category=edu`}>{t('afrinia_footer.links.education')}</FooterLink>
             <FooterLink to={`${blogUrl}?category=roots`}>{t('afrinia_footer.links.roots')}</FooterLink>

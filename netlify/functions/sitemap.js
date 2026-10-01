@@ -5,7 +5,7 @@
  * Every request queries Firestore live for all published articles.
  * No deployment needed when a new article is published via the admin panel.
  *
- * Collections queried: posts_fr, posts_en
+ * Collections queried: posts_fr, posts_en, builders_fr, builders_en
  * Only documents with status == 'published' are included.
  * XML building (incl. the real-dates-only <lastmod> rule) lives in
  * lib/sitemap-xml.js so it can be unit-tested without Firebase.
@@ -60,13 +60,16 @@ async function fetchPublished(db, col) {
 export default async () => {
   const db = getDb();
 
-  // Fetch both language collections in parallel.
-  const [frPosts, enPosts] = await Promise.all([
+  // Fetch all published content in parallel. A failed collection yields [] —
+  // the rest of the sitemap is still served.
+  const [frPosts, enPosts, frBuilders, enBuilders] = await Promise.all([
     fetchPublished(db, 'posts_fr'),
     fetchPublished(db, 'posts_en'),
+    fetchPublished(db, 'builders_fr'),
+    fetchPublished(db, 'builders_en'),
   ]);
 
-  return new Response(buildSitemapXml({ frPosts, enPosts }), {
+  return new Response(buildSitemapXml({ frPosts, enPosts, frBuilders, enBuilders }), {
     status: 200,
     headers: {
       'Content-Type': 'application/xml; charset=UTF-8',

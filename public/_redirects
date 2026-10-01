@@ -18,6 +18,9 @@ https://afinia.netlify.app/*  https://afrinia.org/:splat  301!
 # Legacy /blog index → French listing (French is the site default / x-default).
 # /blog/:slug stays client-side (see below): the slug's language is unknown here.
 /blog  /fr/blog  301
+# /builders was a public "coming soon" page; builders now live under a language
+# prefix. Unprefixed profile URLs (/builders/<slug>) were never public → 404.
+/builders  /fr/builders  301
 
 # ── Known app routes → index.html with HTTP 200 ─────────────────────────────
 # WHY a whitelist: the SPA serves the same index.html for every URL, so unknown
@@ -30,12 +33,14 @@ https://afinia.netlify.app/*  https://afrinia.org/:splat  301!
 /about            /index.html  200
 /contact          /index.html  200
 /audio            /index.html  200
-/builders         /index.html  200
-/builders/*       /index.html  200
 /en/blog          /index.html  200
 /fr/blog          /index.html  200
 /en/blog/*        /index.html  200
 /fr/blog/*        /index.html  200
+/en/builders      /index.html  200
+/fr/builders      /index.html  200
+/en/builders/*    /index.html  200
+/fr/builders/*    /index.html  200
 # TEMP: /blog/:slug is redirected client-side to the browser language (App.tsx
 # BlogRedirect). Real fix: server-side 301 using the slug's language, in the
 # Next.js redirect map (CLAUDE.md §10, M5).

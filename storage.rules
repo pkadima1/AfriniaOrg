@@ -34,20 +34,26 @@ service firebase.storage {
       allow write: if false;
     }
 
-    // Blog images - authenticated users can upload, anyone can read
-    // Path: blog-images/{filename}
+    // ── Owner folders ────────────────────────────────────────────────────
+    // Anyone can create an account, so "signed in" is not a permission. For
+    // team-managed media (blog images, builder photos, audio, audio covers) a
+    // user may only write inside a folder named after their own uid; everyone
+    // can read. Paths are built by src/integrations/firebase/storagePaths.ts.
+    // Files uploaded before owner folders (flat paths) are read-only from the
+    // app; admins manage them in the Firebase console.
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Blog images (and profile pictures uploaded by the profile page)
     match /blog-images/{imageId} {
-      // Authenticated users can upload blog images
-      allow create: if isAuthenticated() && isValidImage();
-      
-      // Anyone can read blog images (they are public/shared content)
       allow read: if true;
-      
-      // Authenticated users can update images (replace)
-      allow update: if isAuthenticated() && isValidImage();
-      
-      // Authenticated users can delete images
-      allow delete: if isAuthenticated();
+      allow write: if false;
+    }
+    match /blog-images/{userId}/{imageId} {
+      allow read: if true;
+      allow create, update: if isOwner(userId) && isValidImage();
+      allow delete: if isOwner(userId);
     }
 
     // Profile avatars - users can manage their own, anyone can read
@@ -70,6 +76,17 @@ service firebase.storage {
       allow delete: if isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Builder profile photos
+    match /builder-photos/{imageId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /builder-photos/{userId}/{imageId} {
+      allow read: if true;
+      allow create, update: if isOwner(userId) && isValidImage();
+      allow delete: if isOwner(userId);
+    }
+
     // Public uploads directory - for shared/published content
     match /public/{document=**} {
       // Anyone can read
@@ -84,17 +101,18 @@ service firebase.storage {
       allow read, write: if isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Audio episode cover images — stored under audio-thumbnails/{lang}/{filename}
+    // Audio episode cover images — audio-thumbnails/{lang}/{uid}/{file}
     match /audio-thumbnails/{lang}/{fileName} {
       allow read: if true;
-      allow create, update: if isAuthenticated() && isValidImage();
-      allow delete: if isAuthenticated();
+      allow write: if false;
+    }
+    match /audio-thumbnails/{lang}/{userId}/{fileName} {
+      allow read: if true;
+      allow create, update: if lang in ['en', 'fr'] && isOwner(userId) && isValidImage();
+      allow delete: if isOwner(userId);
     }
 
-    // Audio episodes — stored under audio/{lang}/{filename}
-    // lang is 'en' or 'fr' (enforced at the React/admin layer; Storage rules keep it simple)
-    // Public read so the audio player works without auth.
-    // Write requires Firebase Auth (contributors and admins are authenticated).
+    // Audio episodes — audio/{lang}/{uid}/{file}. Public read for the player.
     function isValidAudio() {
       return request.resource.contentType.matches('audio/.*')
           && request.resource.size <= 200 * 1024 * 1024; // 200 MB max
@@ -102,8 +120,12 @@ service firebase.storage {
 
     match /audio/{lang}/{fileName} {
       allow read: if true;
-      allow create, update: if isAuthenticated() && isValidAudio();
-      allow delete: if isAuthenticated();
+      allow write: if false;
+    }
+    match /audio/{lang}/{userId}/{fileName} {
+      allow read: if true;
+      allow create, update: if lang in ['en', 'fr'] && isOwner(userId) && isValidAudio();
+      allow delete: if isOwner(userId);
     }
 
     // Deny all other paths by default

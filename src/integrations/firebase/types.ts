@@ -86,6 +86,42 @@ export interface BlogPost {
   updated_at: string;
   content_language?: 'en' | 'fr' | 'both';
   target_countries?: string[];
+  /** Optional link to a Builder entity this article discusses a decision by. */
+  builderId?: string;
+}
+
+/**
+ * One extracted piece of a builder's decision mind — a framework, a failure/pivot,
+ * or a mental model. sourceUrl is the citation back to the primary material
+ * (interview, transcript) it was paraphrased from — never a direct quote.
+ */
+export interface DecisionInsight {
+  title: string;
+  sourceUrl?: string;
+}
+
+/**
+ * A builder profile — one entity per person (e.g. Aliko Dangote), not per article.
+ * Lives in a language-specific collection (builders_en / builders_fr), same split as
+ * posts_en/posts_fr: this is adapted content, not a translation, so the EN and FR
+ * profiles for the same person are independent documents with independent IDs —
+ * one may exist without the other. Articles link to a builder via BlogPost.builderId,
+ * which always points at a builder in that article's own language collection.
+ */
+export interface Builder {
+  id: string;
+  slug: string;
+  name: string;
+  role?: string;
+  countries: string[];
+  photo_url?: string;
+  bio: string;
+  decisionFrameworks: DecisionInsight[];
+  keyFailures: DecisionInsight[];
+  mentalModels: DecisionInsight[];
+  status: 'draft' | 'published';
+  created_at: string;
+  updated_at: string;
 }
 
 /**
@@ -173,6 +209,9 @@ export const COLLECTIONS = {
   /** Bilingual audio episode collections */
   AUDIO_EN: 'audio_en',
   AUDIO_FR: 'audio_fr',
+  /** Bilingual builder profile collections — same split as posts_en/posts_fr */
+  BUILDERS_EN: 'builders_en',
+  BUILDERS_FR: 'builders_fr',
 } as const;
 
 /** Returns the Firestore blog-post collection name for a given language */
@@ -188,6 +227,11 @@ export function getCommentCollectionForLang(lang: 'en' | 'fr'): string {
 /** Returns the Firestore audio episode collection name for a given language */
 export function getAudioCollectionForLang(lang: 'en' | 'fr'): string {
   return lang === 'fr' ? COLLECTIONS.AUDIO_FR : COLLECTIONS.AUDIO_EN;
+}
+
+/** Returns the Firestore builder-profile collection name for a given language */
+export function getBuilderCollectionForLang(lang: 'en' | 'fr'): string {
+  return lang === 'fr' ? COLLECTIONS.BUILDERS_FR : COLLECTIONS.BUILDERS_EN;
 }
 
 // Helper function to convert Firestore timestamp to ISO string

@@ -65,7 +65,7 @@ test('listings take their newest article date; homepage the newest of both', () 
 
 test('static pages carry no lastmod (their change date is unknown)', () => {
   const xml = buildSitemapXml({ frPosts, enPosts });
-  for (const path of ['/about', '/audio', '/contact', '/builders', '/privacy', '/terms']) {
+  for (const path of ['/about', '/audio', '/contact', '/privacy', '/terms']) {
     const entry = urlEntry(xml, `https://afrinia.org${path}`);
     assert.ok(entry, `${path} is listed`);
     assert.doesNotMatch(entry, /<lastmod>/, `${path} has no lastmod`);
@@ -91,7 +91,8 @@ test('empty database still yields a valid sitemap with the static pages', () => 
   const xml = buildSitemapXml({ frPosts: [], enPosts: [] });
   assert.ok(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>'));
   assert.ok(xml.trimEnd().endsWith('</urlset>'));
-  assert.equal((xml.match(/<url>/g) || []).length, 9);
+  // home + 2 blog listings + 2 builder directories + 5 static pages
+  assert.equal((xml.match(/<url>/g) || []).length, 10);
 });
 
 test('hreflang alternates are kept on both blog listings', () => {
@@ -102,6 +103,23 @@ test('hreflang alternates are kept on both blog listings', () => {
     assert.match(entry, /hreflang="en" href="https:\/\/afrinia.org\/en\/blog"/);
     assert.match(entry, /hreflang="x-default" href="https:\/\/afrinia.org\/fr\/blog"/);
   }
+});
+
+test('builder profiles get language-prefixed URLs and real dates; directories pair EN/FR', () => {
+  const xml = buildSitemapXml({
+    frPosts: [], enPosts: [],
+    frBuilders: [],
+    enBuilders: [{ slug: 'aliko-mohammad-dangote', updated_at: '2026-07-26T08:00:00Z' }, { status: 'no-slug' }],
+  });
+  assert.match(urlEntry(xml, 'https://afrinia.org/en/builders/aliko-mohammad-dangote'), /<lastmod>2026-07-26<\/lastmod>/);
+  assert.ok(!xml.includes('/fr/builders/aliko'), 'no French URL for an English-only profile');
+  assert.ok(!xml.includes('<loc>https://afrinia.org/builders'), 'no unprefixed builder URL');
+  assert.match(urlEntry(xml, 'https://afrinia.org/en/builders'), /<lastmod>2026-07-26<\/lastmod>/);
+  assert.doesNotMatch(urlEntry(xml, 'https://afrinia.org/fr/builders'), /<lastmod>/, 'empty FR directory has no lastmod');
+  for (const loc of ['https://afrinia.org/fr/builders', 'https://afrinia.org/en/builders']) {
+    assert.match(urlEntry(xml, loc), /hreflang="x-default" href="https:\/\/afrinia.org\/fr\/builders"/);
+  }
+  assert.ok(!xml.includes('undefined'));
 });
 
 test('slugs with special characters cannot break the XML', () => {

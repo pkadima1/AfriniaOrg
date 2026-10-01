@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export type Lang = 'en' | 'fr';
 export const SUPPORTED_LANGS: readonly Lang[] = ['en', 'fr'] as const;
@@ -35,10 +37,36 @@ export function getPostUrl(lang: Lang, slug: string): string {
   return `/${lang}/blog/${slug}`;
 }
 
+/** /en/builders or /fr/builders */
+export function getBuildersUrl(lang: Lang): string {
+  return `/${lang}/builders`;
+}
+
+/** /en/builders/aliko-dangote — a profile exists only in the languages it was written in. */
+export function getBuilderUrl(lang: Lang, slug: string): string {
+  return `/${lang}/builders/${slug}`;
+}
+
+/**
+ * Language of a language-prefixed page (/fr/..., /en/...), taken from the URL —
+ * never from the browser — and mirrored into i18next so the UI text matches.
+ * WHY: the same URL must always show the same language to every visitor and to
+ * Google. Used by every page that lives under a /fr or /en prefix.
+ */
+export function useUrlLang(): Lang {
+  const { pathname } = useLocation();
+  const { i18n } = useTranslation();
+  const lang: Lang = pathname === '/fr' || pathname.startsWith('/fr/') ? 'fr' : 'en';
+  useEffect(() => {
+    if (i18n.language !== lang) void i18n.changeLanguage(lang);
+  }, [lang, i18n]);
+  return lang;
+}
+
 /**
  * Swap the lang prefix in a pathname for supported bilingual routes.
  *
- * Blog rules:
+ * Blog rules (builders follow the same rules):
  *   - Blog listing (/lang/blog)       → /{targetLang}/blog
  *   - Blog post   (/lang/blog/slug)   → /{targetLang}/blog  (listing)
  *     Redirecting to the same slug in another language is unsafe because the
@@ -48,10 +76,17 @@ export function getPostUrl(lang: Lang, slug: string): string {
  */
 export function getAlternateUrl(currentPath: string, targetLang: Lang): string {
   const blogPathRe = /^\/(?:en|fr)?\/blog(?:\/.*)?$/;
+  const buildersPathRe = /^\/(?:en|fr)\/builders(?:\/.*)?$/;
 
   if (blogPathRe.test(currentPath)) {
     // Always redirect to the target-language blog listing
     return `/${targetLang}/blog`;
+  }
+
+  // Builder profiles are separate documents per language (the slug may differ
+  // or not exist), so the switch lands on the directory, like blog posts.
+  if (buildersPathRe.test(currentPath)) {
+    return getBuildersUrl(targetLang);
   }
 
   // Non-blog pages stay on the same route (no lang prefix routing for them)
