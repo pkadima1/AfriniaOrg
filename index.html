@@ -12,8 +12,12 @@
     <link rel="alternate icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
 
-    <!-- ── Canonical ───────────────────────────────────────────────── -->
-    <link rel="canonical" href="https://afrinia.org/" />
+    <!-- ── Canonical / og:url: intentionally NOT set here ─────────────── -->
+    <!-- This file is served for EVERY URL (SPA). A static canonical or og:url
+         would tell crawlers and link previews that every page is the homepage.
+         Each page sets its own via usePageMeta (src/utils/pageMeta.ts), which
+         creates both tags when absent. Server-rendered per-URL tags arrive with
+         the Next.js migration (CLAUDE.md §10, M2). -->
 
     <!-- ── Primary meta ──────────────────────────────────────────────── -->
     <title>Afrinia — Intelligence for Africa's Builders</title>
@@ -26,7 +30,6 @@
     <meta property="og:title" content="Afrinia — Intelligence for Africa's Builders" />
     <meta property="og:description" content="Ideas, analysis and tools for entrepreneurs and innovators across Africa. Bilingual intelligence feed in English and French." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://afrinia.org/" />
     <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/modified-hull-203004.firebasestorage.app/o/Media%2Fabout1.png?alt=media&token=7ccaaeb4-f339-4e06-8cab-97d300d8c2aa" />
     <meta property="og:locale" content="fr_FR" />
     <meta property="og:locale:alternate" content="en_US" />
@@ -79,8 +82,6 @@
 
   <body>
     <div id="root"></div>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
