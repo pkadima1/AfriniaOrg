@@ -18,7 +18,6 @@ const STATIC_PAGES = [
   { path: '/about', changefreq: 'monthly', priority: '0.8' },
   { path: '/audio', changefreq: 'weekly', priority: '0.7' },
   { path: '/contact', changefreq: 'yearly', priority: '0.6' },
-  { path: '/builders', changefreq: 'monthly', priority: '0.5' },
   { path: '/privacy', changefreq: 'yearly', priority: '0.4' },
   { path: '/terms', changefreq: 'yearly', priority: '0.4' },
 ];
@@ -67,21 +66,31 @@ function urlBlock({ loc, lastmod, changefreq, priority, alternates = [] }) {
   return `  <url>\n${lines.join('\n')}\n  </url>`;
 }
 
-const BLOG_ALTERNATES = [
-  { hreflang: 'fr', href: `${DOMAIN}/fr/blog` },
-  { hreflang: 'en', href: `${DOMAIN}/en/blog` },
-  { hreflang: 'x-default', href: `${DOMAIN}/fr/blog` },
-];
+/** EN/FR alternates for a listing that exists in both languages (blog, builders). */
+function listingAlternates(section) {
+  return [
+    { hreflang: 'fr', href: `${DOMAIN}/fr/${section}` },
+    { hreflang: 'en', href: `${DOMAIN}/en/${section}` },
+    { hreflang: 'x-default', href: `${DOMAIN}/fr/${section}` },
+  ];
+}
+
+/** Documents without a slug have no URL — skip rather than emit /undefined. */
+function withLastmod(docs) {
+  return docs.filter(d => d.slug).map(d => ({ slug: d.slug, lastmod: postLastmod(d) }));
+}
 
 /**
- * @param {{ frPosts: Array<object>, enPosts: Array<object> }} posts
- *   Published posts only; each needs `slug` and any of updated_at/published_at/created_at.
+ * @param {{ frPosts: object[], enPosts: object[], frBuilders?: object[], enBuilders?: object[] }} content
+ *   Published documents only; each needs `slug` and any of updated_at/published_at/created_at.
+ *   Builder profiles are separate documents per language (no hreflang pair).
  * @returns {string} sitemap XML
  */
-export function buildSitemapXml({ frPosts, enPosts }) {
-  // Posts without a slug have no URL — skip rather than emit /blog/undefined.
-  const fr = frPosts.filter(p => p.slug).map(p => ({ slug: p.slug, lastmod: postLastmod(p) }));
-  const en = enPosts.filter(p => p.slug).map(p => ({ slug: p.slug, lastmod: postLastmod(p) }));
+export function buildSitemapXml({ frPosts, enPosts, frBuilders = [], enBuilders = [] }) {
+  const fr = withLastmod(frPosts);
+  const en = withLastmod(enPosts);
+  const frB = withLastmod(frBuilders);
+  const enB = withLastmod(enBuilders);
 
   // A listing changes when its newest post changes; the homepage shows both languages.
   const frListLastmod = latest(fr.map(p => p.lastmod));
@@ -99,8 +108,12 @@ export function buildSitemapXml({ frPosts, enPosts }) {
     urlBlock({ loc: `${DOMAIN}/`, lastmod: homeLastmod, changefreq: 'weekly', priority: '1.0' }),
     '',
     '  <!-- Blog listings — hreflang: same page type, two language variants -->',
-    urlBlock({ loc: `${DOMAIN}/fr/blog`, lastmod: frListLastmod, changefreq: 'daily', priority: '0.9', alternates: BLOG_ALTERNATES }),
-    urlBlock({ loc: `${DOMAIN}/en/blog`, lastmod: enListLastmod, changefreq: 'daily', priority: '0.9', alternates: BLOG_ALTERNATES }),
+    urlBlock({ loc: `${DOMAIN}/fr/blog`, lastmod: frListLastmod, changefreq: 'daily', priority: '0.9', alternates: listingAlternates('blog') }),
+    urlBlock({ loc: `${DOMAIN}/en/blog`, lastmod: enListLastmod, changefreq: 'daily', priority: '0.9', alternates: listingAlternates('blog') }),
+    '',
+    '  <!-- Builder directories — lastmod = newest profile in that language -->',
+    urlBlock({ loc: `${DOMAIN}/fr/builders`, lastmod: latest(frB.map(b => b.lastmod)), changefreq: 'weekly', priority: '0.6', alternates: listingAlternates('builders') }),
+    urlBlock({ loc: `${DOMAIN}/en/builders`, lastmod: latest(enB.map(b => b.lastmod)), changefreq: 'weekly', priority: '0.6', alternates: listingAlternates('builders') }),
     '',
     '  <!-- Static pages — no lastmod: their change date is not tracked -->',
     ...STATIC_PAGES.map(p => urlBlock({ loc: `${DOMAIN}${p.path}`, ...p })),
@@ -110,6 +123,10 @@ export function buildSitemapXml({ frPosts, enPosts }) {
     '',
     '  <!-- Anglophone Africa articles (audience: EN-speaking Africa) -->',
     ...en.map(p => urlBlock({ loc: `${DOMAIN}/en/blog/${p.slug}`, lastmod: p.lastmod, changefreq: 'monthly', priority: '0.9' })),
+    '',
+    '  <!-- Builder profiles (each exists only in the language it was written in) -->',
+    ...frB.map(b => urlBlock({ loc: `${DOMAIN}/fr/builders/${b.slug}`, lastmod: b.lastmod, changefreq: 'monthly', priority: '0.7' })),
+    ...enB.map(b => urlBlock({ loc: `${DOMAIN}/en/builders/${b.slug}`, lastmod: b.lastmod, changefreq: 'monthly', priority: '0.7' })),
     '',
     '</urlset>',
   ].join('\n');

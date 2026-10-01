@@ -66,8 +66,15 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/builders" element={<Builders />} />
-            <Route path="/builders/:slug" element={<BuilderProfile />} />
+
+            {/* Builders — language-prefixed like the blog (explicit static routes
+                for the same router-scoring reason). /builders is 301'd to
+                /fr/builders by Netlify; this Navigate covers in-app/dev visits. */}
+            <Route path="/en/builders" element={<Builders />} />
+            <Route path="/fr/builders" element={<Builders />} />
+            <Route path="/en/builders/:slug" element={<BuilderProfile />} />
+            <Route path="/fr/builders/:slug" element={<BuilderProfile />} />
+            <Route path="/builders" element={<Navigate to="/fr/builders" replace />} />
             <Route path="/audio" element={<AudioPage />} />
 
             {/*

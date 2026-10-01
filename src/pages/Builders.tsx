@@ -20,15 +20,24 @@ import { useTranslation } from 'react-i18next';
 import Layout from '@/components/Layout';
 import { getPublishedBuilders } from '@/integrations/firebase/builderService';
 import { A } from '@/components/ArticleCard';
-import { type Lang, getBlogUrl } from '@/utils/languageUtils';
+import {
+  type Lang,
+  getBlogUrl,
+  getBuilderUrl,
+  getBuildersUrl,
+  useHreflangLinks,
+  useUrlLang,
+} from '@/utils/languageUtils';
+import { absoluteUrl } from '@/constants/site';
 import { usePageMeta } from '@/utils/pageMeta';
 import type { Builder } from '@/integrations/firebase/types';
 
 const BuilderCard = ({ builder, lang }: { builder: Builder; lang: Lang }) => {
+  const { t } = useTranslation();
   const insightCount = builder.decisionFrameworks.length + builder.keyFailures.length + builder.mentalModels.length;
 
   return (
-    <Link to={`/builders/${builder.slug}`} style={{ textDecoration: 'none' }}>
+    <Link to={getBuilderUrl(lang, builder.slug)} style={{ textDecoration: 'none' }}>
       <article style={{
         background: A.bg2,
         borderRadius: '16px',
@@ -78,7 +87,7 @@ const BuilderCard = ({ builder, lang }: { builder: Builder; lang: Lang }) => {
               fontFamily: A.sans, fontSize: '9px', fontWeight: 500,
               letterSpacing: '2px', textTransform: 'uppercase',
               color: A.gold, border: `1px solid rgba(184,145,42,0.25)`, padding: '3px 10px',
-            }}>{insightCount} {lang === 'fr' ? 'décisions' : 'decisions'}</span>
+            }}>{t('builders.decisionsCount', { count: insightCount })}</span>
           )}
         </div>
       </article>
@@ -101,14 +110,14 @@ const BuilderCardSkeleton = () => (
 );
 
 const Builders = () => {
-  const { t, i18n } = useTranslation();
-  const lang: Lang = i18n.language === 'fr' ? 'fr' : 'en';
+  const { t } = useTranslation();
+  const lang = useUrlLang();
 
   const [builders, setBuilders] = useState<Builder[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // builders_en/builders_fr are independent collections — re-fetch when the
-  // site's language toggle changes, same pattern as the blog feed.
+  // builders_en/builders_fr are independent collections; the URL prefix
+  // (/fr/builders, /en/builders) decides which one this page lists.
   useEffect(() => {
     setLoading(true);
     setBuilders([]);
@@ -118,11 +127,12 @@ const Builders = () => {
       .finally(() => setLoading(false));
   }, [lang]);
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://afrinia.org';
+  // The directory exists in both languages, so it declares its EN/FR pair.
+  useHreflangLinks(absoluteUrl(getBuildersUrl('en')), absoluteUrl(getBuildersUrl('fr')));
   usePageMeta({
     title: t('builders.meta_title'),
     description: t('builders.meta_description'),
-    ogUrl: `${origin}/builders`,
+    ogUrl: absoluteUrl(getBuildersUrl(lang)),
   });
 
   return (

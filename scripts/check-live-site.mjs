@@ -26,7 +26,7 @@ const UA = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.h
 
 /** App routes that must answer 200 (mirror of public/_redirects whitelist). */
 const KNOWN_ROUTES = [
-  '/', '/about', '/contact', '/audio', '/builders', '/en/blog', '/fr/blog',
+  '/', '/about', '/contact', '/audio', '/en/blog', '/fr/blog', '/en/builders', '/fr/builders',
   '/privacy', '/terms', '/unsubscribed', '/profile', '/settings', '/admin',
 ];
 /** Retired pages of the previous site — no equivalent content, so 404. */
@@ -75,7 +75,8 @@ async function checkRoutesAnswer200(articlePaths) {
 
 async function checkNotFound() {
   const unknown = `/this-page-does-not-exist-${Date.now()}`;
-  for (const path of [unknown, `/fr${unknown}`, '/assets/missing-file.js', ...RETIRED_ROUTES]) {
+  // /builders/<slug> (no language prefix) was never public: builders live under /fr|en.
+  for (const path of [unknown, `/fr${unknown}`, '/assets/missing-file.js', '/builders/some-profile', ...RETIRED_ROUTES]) {
     const r = await get(path);
     record(r.status === 404, `404  ${path}`, `got ${r.status}`);
     // Humans still get the app (its Not Found page / legacy redirect), not a bare error.
@@ -84,9 +85,11 @@ async function checkNotFound() {
 }
 
 async function checkRedirects() {
-  const r = await get('/blog');
-  const location = r.headers.get('location') || '';
-  record(r.status === 301 && /\/fr\/blog$/.test(location), '301  /blog → /fr/blog', `got ${r.status} → ${location}`);
+  for (const [from, to] of [['/blog', '/fr/blog'], ['/builders', '/fr/builders']]) {
+    const r = await get(from);
+    const location = r.headers.get('location') || '';
+    record(r.status === 301 && location.endsWith(to), `301  ${from} → ${to}`, `got ${r.status} → ${location}`);
+  }
 }
 
 /**
@@ -138,15 +141,18 @@ async function checkSitemap() {
     record(Boolean(entry) && !entry.includes('<lastmod>'), `sitemap ${path} has no invented lastmod`, entry ? 'lastmod present' : 'missing');
   }
   const locs = entries.map(e => e.match(/<loc>([^<]+)<\/loc>/)?.[1]).filter(Boolean);
-  const pick = lang => locs.find(l => l.includes(`/${lang}/blog/`));
-  return ['fr', 'en'].map(pick).filter(Boolean).map(u => new URL(u).pathname);
+  const pick = (lang, section) => locs.find(l => l.includes(`/${lang}/${section}/`));
+  const articles = ['fr', 'en'].map(lang => pick(lang, 'blog'));
+  const builderProfile = pick('fr', 'builders') || pick('en', 'builders');
+  return [...articles, builderProfile].filter(Boolean).map(u => new URL(u).pathname);
 }
 
 async function main() {
   console.log(`Checking ${BASE}\n`);
   const articlePaths = await checkSitemap();
   record(articlePaths.length > 0, 'sitemap lists articles', 'no /fr/blog/ or /en/blog/ URL found');
-  if (articlePaths[0]) articlePaths.push(articlePaths[0].replace(/^\/(fr|en)\/blog\//, '/blog/'));
+  const firstArticle = articlePaths.find(p => p.includes('/blog/'));
+  if (firstArticle) articlePaths.push(firstArticle.replace(/^\/(fr|en)\/blog\//, '/blog/'));
   await checkRoutesAnswer200(articlePaths);
   await checkNotFound();
   await checkRedirects();

@@ -232,6 +232,8 @@
     "title": "Cartes de décision.",
     "description": "Nous cartographions les décisions des bâtisseurs africains — pas des récits inspirants, mais le raisonnement précis derrière les choix qui construisent l'économie africaine de demain.",
     "empty": "Les premières cartes de décision arrivent bientôt.",
+    "decisionsCount": "{{count}} décisions",
+    "profileMetaTitle": "{{name}} | Bâtisseurs Afrinia",
     "backToBlog": "Voir tous les signaux",
     "meta_title": "Bâtisseurs — Cartes de décision | Afrinia",
     "meta_description": "Nous cartographions les décisions des bâtisseurs africains — pas des récits inspirants, mais le raisonnement précis derrière les choix qui construisent l'économie africaine de demain.",

@@ -1,6 +1,5 @@
 
 import { useEffect, useState, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { getPostsByLanguage } from '@/integrations/firebase/blogService';
@@ -17,6 +16,7 @@ import {
   type Lang,
   getBlogUrl,
   useHreflangLinks,
+  useUrlLang,
 } from '@/utils/languageUtils';
 import { absoluteUrl } from '@/constants/site';
 import { usePageMeta } from '@/utils/pageMeta';
@@ -59,14 +59,8 @@ const FilterChip = ({ label, active, onClick }: { label: string; active: boolean
 );
 
 const Blog = () => {
-  const { t, i18n } = useTranslation();
-  const { pathname } = useLocation();
-
-  const lang: Lang = pathname.startsWith('/fr/') ? 'fr' : 'en';
-
-  useEffect(() => {
-    if (i18n.language !== lang) void i18n.changeLanguage(lang);
-  }, [lang, i18n]);
+  const { t } = useTranslation();
+  const lang = useUrlLang();
 
   const [cards, setCards] = useState<ArticleCardData[]>([]);
   const [loading, setLoading] = useState(true);

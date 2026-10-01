@@ -232,6 +232,8 @@
     "title": "Decision maps.",
     "description": "We map the decisions of African builders — not inspiration stories, but the specific reasoning behind the choices constructing Africa's future economy.",
     "empty": "The first decision maps are coming soon.",
+    "decisionsCount": "{{count}} decisions",
+    "profileMetaTitle": "{{name}} | Afrinia Builders",
     "backToBlog": "See all signals",
     "meta_title": "Builders — Decision Maps | Afrinia",
     "meta_description": "We map the decisions of African builders — not inspiration stories, but the specific reasoning behind the choices constructing Africa's future economy.",

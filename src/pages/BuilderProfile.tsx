@@ -25,7 +25,8 @@ import {
   ArticleCard,
   SkeletonCard,
 } from '@/components/ArticleCard';
-import { type Lang, getBlogUrl } from '@/utils/languageUtils';
+import { getBlogUrl, getBuilderUrl, getBuildersUrl, useUrlLang } from '@/utils/languageUtils';
+import { absoluteUrl } from '@/constants/site';
 import { usePageMeta } from '@/utils/pageMeta';
 import type { Builder, DecisionInsight } from '@/integrations/firebase/types';
 
@@ -71,8 +72,10 @@ const InsightSection = ({
 
 const BuilderProfile = () => {
   const { slug } = useParams<{ slug: string }>();
-  const { t, i18n } = useTranslation();
-  const lang: Lang = i18n.language === 'fr' ? 'fr' : 'en';
+  const { t } = useTranslation();
+  // The URL decides the language. A profile exists only in the collection it
+  // was written in (builders_en / builders_fr) — no hreflang pair is declared.
+  const lang = useUrlLang();
 
   const [builder, setBuilder] = useState<Builder | null>(null);
   const [articles, setArticles] = useState<ArticleCardData[]>([]);
@@ -100,11 +103,10 @@ const BuilderProfile = () => {
       .finally(() => setLoading(false));
   }, [slug, lang]);
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://afrinia.org';
   usePageMeta({
-    title: builder ? `${builder.name} | Afrinia Builders` : t('builders.meta_title'),
+    title: builder ? t('builders.profileMetaTitle', { name: builder.name }) : t('builders.meta_title'),
     description: builder ? (builder.bio || t('builders.meta_description')) : t('builders.meta_description'),
-    ogUrl: builder ? `${origin}/builders/${builder.slug}` : undefined,
+    ogUrl: builder ? absoluteUrl(getBuilderUrl(lang, builder.slug)) : undefined,
     ogImage: builder?.photo_url,
   });
 
@@ -117,7 +119,7 @@ const BuilderProfile = () => {
       <section style={{ background: A.bg, paddingTop: 140, paddingBottom: 56, borderBottom: `1px solid ${A.border}` }}>
         <div className="page-container">
           <Link
-            to="/builders"
+            to={getBuildersUrl(lang)}
             style={{
               fontFamily: A.sans, fontSize: '10px', fontWeight: 500,
               letterSpacing: '2px', textTransform: 'uppercase',

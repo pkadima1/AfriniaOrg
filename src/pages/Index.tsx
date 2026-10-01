@@ -7,7 +7,7 @@ import { db } from '@/integrations/firebase/config';
 import { getPostsByLanguage } from '@/integrations/firebase/blogService';
 import { fetchAudioEpisodes, type AudioEpisode } from '@/integrations/firebase/audioService';
 import { BlogPost } from '@/integrations/firebase/types';
-import { type Lang, getBlogUrl, getPostUrl } from '@/utils/languageUtils';
+import { type Lang, getBlogUrl, getBuildersUrl, getPostUrl } from '@/utils/languageUtils';
 import { absoluteUrl } from '@/constants/site';
 import { trackNewsletterSignup, trackAudioPlay, trackAudioPause } from '@/utils/analytics';
 import { useAudioPlayer, formatPlayerTime } from '@/hooks/useAudioPlayer';
@@ -763,7 +763,7 @@ const Index = () => {
                   color: A.muted, lineHeight: 1.8, marginBottom: 32,
                 }}>{builderPost?.bio || t('home.builder.bio')}</p>
                 <Link
-                  to={builderPost ? getPostUrl(lang, builderPost.slug) : '/builders'}
+                  to={builderPost ? getPostUrl(lang, builderPost.slug) : getBuildersUrl(lang)}
                   className="afrinia-btn-outline"
                   style={{ alignSelf: 'flex-start' }}
                 >

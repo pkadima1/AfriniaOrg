@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Layout from '@/components/Layout';
 import { SubscribePopup } from '@/components/SubscribePopup';
@@ -22,6 +22,7 @@ import {
   type Lang,
   getBlogUrl,
   getPostUrl,
+  useUrlLang,
 } from '@/utils/languageUtils';
 import { SITE_URL, ORGANIZATION_ID, absoluteUrl } from '@/constants/site';
 import { usePageMeta } from '@/utils/pageMeta';
@@ -116,16 +117,10 @@ function formatPostDate(dateStr: string, lang: Lang): string {
 }
 
 const BlogPost = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
-  const { pathname } = useLocation();
   const { toast } = useToast();
-
-  const lang: Lang = pathname.startsWith('/fr/') ? 'fr' : 'en';
-
-  useEffect(() => {
-    if (i18n.language !== lang) void i18n.changeLanguage(lang);
-  }, [lang, i18n]);
+  const lang = useUrlLang();
 
   const [post, setPost] = useState<DisplayPost | null>(null);
   const [content, setContent] = useState('');
