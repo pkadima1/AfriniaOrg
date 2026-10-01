@@ -59,10 +59,14 @@ export function getAlternateUrl(currentPath: string, targetLang: Lang): string {
 }
 
 /**
- * Injects hreflang + canonical link tags into document.head.
- * Self-cleans on unmount or when URLs change.
+ * Injects hreflang alternate links into document.head; self-cleans on unmount.
+ * Only for pages that truly exist in both languages at the given URLs (e.g. the
+ * blog listings). Articles must NOT use it until posts store their translation's
+ * slug: FR and EN articles have different slugs, and pointing hreflang at the
+ * same slug in the other language sent Google to "Post not found" pages.
+ * The canonical link is owned by usePageMeta (ogUrl), not by this hook.
  */
-export function useSeoHead(enUrl: string, frUrl: string, canonicalUrl: string) {
+export function useHreflangLinks(enUrl: string, frUrl: string) {
   useEffect(() => {
     const added: HTMLLinkElement[] = [];
 
@@ -76,8 +80,7 @@ export function useSeoHead(enUrl: string, frUrl: string, canonicalUrl: string) {
     add({ rel: 'alternate', hreflang: 'en', href: enUrl });
     add({ rel: 'alternate', hreflang: 'fr', href: frUrl });
     add({ rel: 'alternate', hreflang: 'x-default', href: frUrl }); // French is the platform default
-    add({ rel: 'canonical', href: canonicalUrl });
 
     return () => { added.forEach(el => el.remove()); };
-  }, [enUrl, frUrl, canonicalUrl]);
+  }, [enUrl, frUrl]);
 }

@@ -20,18 +20,32 @@
   targetPort = 8080
   port = 8888
 
-# Serve the dynamic sitemap from the Netlify function.
-# Status 200 = rewrite (URL stays /sitemap.xml in the browser/crawler).
-# force = true is required because public/sitemap.xml exists as a static file —
-# without it, Netlify CDN serves the static file and ignores this redirect.
-[[redirects]]
-  from = "/sitemap.xml"
-  to = "/.netlify/functions/sitemap"
-  status = 200
-  force = true
+# The dynamic sitemap is NOT routed here: netlify/functions/sitemap.js claims
+# /sitemap.xml itself via `export const config = { path }` (see why there).
 
 # SPA catch-all lives in public/_redirects, NOT here.
 # [[context.production.redirects]] is silently ignored by Netlify — redirects
 # and headers cannot be scoped to deploy contexts in netlify.toml (docs:
 # file-based configuration → deploy contexts). Defining it there broke all
 # deep-route reloads from 2026-07-01 to 2026-07-08.
+
+# Baseline security headers for every response (pages, assets, functions).
+# Deliberately NOT a Content-Security-Policy yet: a CSP must list every origin
+# the app loads (GA, Firebase, Storage, fonts) and is tested as a unit in the
+# Next.js hardening phase (CLAUDE.md §10, M6). These four have no such risk:
+#   X-Content-Type-Options — browsers must trust the declared file type (blocks
+#                            content-sniffing attacks on uploaded files).
+#   X-Frame-Options        — other sites cannot embed Afrinia in a frame
+#                            (clickjacking); same-origin framing still works.
+#   Referrer-Policy        — other sites see only "afrinia.org", never the full
+#                            URL a visitor came from.
+#   Permissions-Policy     — the site never uses camera, microphone, location
+#                            or payments, so no script (incl. third-party) can.
+# Strict-Transport-Security is already sent by Netlify for the custom domain.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"

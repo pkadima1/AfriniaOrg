@@ -15,7 +15,8 @@ import { fetchBlogPostById, saveBlogPost, uploadBlogImage } from "@/integrations
 import { ArrowLeft, Save, Eye, X, Bell } from "lucide-react";
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import type { Lang } from "@/utils/languageUtils";
+import { type Lang, getPostUrl } from "@/utils/languageUtils";
+import { absoluteUrl } from "@/constants/site";
 import { cleanArticleHtml } from '@/utils/contentSanitizer';
 import {
   SIGNAL_CATEGORIES,
@@ -276,7 +277,7 @@ export const BlogPostEditor = () => {
     if (!user) return;
     try {
       const idToken = await user.getIdToken();
-      const articleUrl = `https://afrinia.org/${lang}/blog/${publishedPost.slug}`;
+      const articleUrl = absoluteUrl(getPostUrl(lang, publishedPost.slug));
       const isFr = lang === 'fr';
 
       // Brand tokens — must match netlify/functions/lib/email-templates/base.js
@@ -477,7 +478,9 @@ export const BlogPostEditor = () => {
                 <Input
                   id="slug"
                   value={post.slug}
-                  onChange={(e) => setPost(prev => ({ ...prev, slug: e.target.value }))}
+                  // Same rules as auto-generated slugs: public URLs must be lowercase
+                  // (App.tsx LowercasePathRedirect sends mixed-case paths to lowercase).
+                  onChange={(e) => setPost(prev => ({ ...prev, slug: generateSlug(e.target.value) }))}
                   placeholder="post-url-slug"
                 />
               </div>

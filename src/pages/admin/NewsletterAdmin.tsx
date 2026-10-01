@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/integrations/firebase/config';
 import { useAuth } from '@/contexts/AuthContext';
@@ -87,7 +88,7 @@ const UI = {
     previewLabel: 'Aperçu',
     hidePreview: 'Masquer l\'aperçu',
     confirmTitle: 'Confirmer l\'envoi',
-    confirmBody: (n: number) => `Vous êtes sur le point d\'envoyer un e-mail à ${n} abonné${n !== 1 ? 's' : ''}. Cette action est irréversible.`,
+    confirmBody: (n: number) => `Vous êtes sur le point d'envoyer un e-mail à ${n} abonné${n !== 1 ? 's' : ''}. Cette action est irréversible.`,
     cancel: 'Annuler',
     confirm: 'Envoyer maintenant',
     successMsg: (r: SendResult) => `Envoyé à ${r.sent} abonné${r.sent !== 1 ? 's' : ''}${r.failed > 0 ? `. ${r.failed} échec(s).` : '.'}`,
@@ -100,9 +101,11 @@ const UI = {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export const NewsletterAdmin = () => {
-  const { user, userProfile } = useAuth();
-  // Admin UI language follows the admin's profile language preference.
-  const uiLang: 'en' | 'fr' = userProfile?.language === 'fr' ? 'fr' : 'en';
+  const { user } = useAuth();
+  const { i18n } = useTranslation();
+  // Admin UI follows the language chosen in the site's language switcher.
+  // (User profiles store no language preference — planned for Phase 2.)
+  const uiLang: 'en' | 'fr' = i18n.language === 'fr' ? 'fr' : 'en';
   const copy = UI[uiLang];
 
   // ── Subscriber stats ──────────────────────────────────────────────────────

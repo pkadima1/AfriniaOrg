@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
@@ -38,6 +38,20 @@ const BlogRedirect = () => {
   return <Navigate to={target} replace />;
 };
 
+/**
+ * Sends mixed-case URLs (/About) to their lowercase form (/about).
+ * WHY: Netlify matches public/_redirects case-sensitively, so /About answers
+ * HTTP 404 to crawlers — correct, it is not a real URL — while React Router,
+ * being case-insensitive, would still draw the About page there. Visitors are
+ * moved to the real URL instead. Safe because every route and slug is
+ * lowercase (the admin editor enforces it for slugs).
+ */
+const LowercasePathRedirect = () => {
+  const { pathname, search, hash } = useLocation();
+  const lower = pathname.toLowerCase();
+  return lower === pathname ? null : <Navigate to={`${lower}${search}${hash}`} replace />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -46,6 +60,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <GAPageTracker />
+          <LowercasePathRedirect />
           <Routes>
             {/* Afrinia public routes */}
             <Route path="/" element={<Index />} />
@@ -90,7 +105,9 @@ const App = () => (
               }
             />
 
-            {/* Legacy redirects — keeps old URLs from 404ing */}
+            {/* Retired pages of the previous site. Netlify answers these with
+                HTTP 404 for crawlers (public/_redirects); visitors who follow an
+                old link are sent to the homepage instead of a dead end. */}
             <Route path="/services" element={<Navigate to="/" replace />} />
             <Route path="/products" element={<Navigate to="/" replace />} />
             <Route path="/example-systems" element={<Navigate to="/" replace />} />

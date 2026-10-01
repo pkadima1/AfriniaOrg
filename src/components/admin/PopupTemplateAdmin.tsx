@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Save, Eye, EyeOff, Loader2, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
 import {
   getPopupConfig,
   savePopupConfig,
@@ -149,8 +149,10 @@ const FieldRow = ({
 
 export const PopupTemplateAdmin = () => {
   const navigate = useNavigate();
-  const { userProfile } = useAuth();
-  const uiLang: 'en' | 'fr' = userProfile?.language === 'fr' ? 'fr' : 'en';
+  const { i18n } = useTranslation();
+  // Admin UI follows the language chosen in the site's language switcher.
+  // (User profiles store no language preference — planned for Phase 2.)
+  const uiLang: 'en' | 'fr' = i18n.language === 'fr' ? 'fr' : 'en';
 
   const [config, setConfig] = useState<PopupConfig>(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(true);

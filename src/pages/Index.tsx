@@ -8,6 +8,7 @@ import { getPostsByLanguage } from '@/integrations/firebase/blogService';
 import { fetchAudioEpisodes, type AudioEpisode } from '@/integrations/firebase/audioService';
 import { BlogPost } from '@/integrations/firebase/types';
 import { type Lang, getBlogUrl, getPostUrl } from '@/utils/languageUtils';
+import { absoluteUrl } from '@/constants/site';
 import { trackNewsletterSignup, trackAudioPlay, trackAudioPause } from '@/utils/analytics';
 import { useAudioPlayer, formatPlayerTime } from '@/hooks/useAudioPlayer';
 import { usePageMeta } from '@/utils/pageMeta';
@@ -177,7 +178,7 @@ const Index = () => {
     description: lang === 'fr'
       ? 'Idées, analyses et outils pour les entrepreneurs et innovateurs africains. Flux d\'intelligence bilingue en français et en anglais.'
       : 'Ideas, analysis and tools for entrepreneurs and innovators across Africa. Bilingual intelligence feed in English and French.',
-    ogUrl: 'https://afrinia.org/',
+    ogUrl: absoluteUrl('/'),
   });
 
   const [email, setEmail] = useState('');
@@ -876,7 +877,8 @@ const Index = () => {
           ) : (
             <form
               onSubmit={handleSubscribe}
-              style={{ display: 'flex', maxWidth: 480, margin: '0 auto 20px' }}
+              className="afrinia-subscribe-form"
+              style={{ maxWidth: 480, margin: '0 auto 20px' }}
             >
               <input
                 type="email"
@@ -884,9 +886,10 @@ const Index = () => {
                 onChange={e => setEmail(e.target.value)}
                 placeholder={t('home.newsletter.placeholder')}
                 required
+                // Layout + border: .afrinia-subscribe-form (index.css), which also
+                // stacks the row on narrow phones.
                 style={{
-                  flex: 1, background: A.bg2,
-                  border: `1px solid ${A.border}`, borderRight: 'none',
+                  background: A.bg2,
                   padding: '16px 20px',
                   fontFamily: A.sans, fontSize: 13, fontWeight: 300,
                   color: A.cream, outline: 'none',

@@ -3,6 +3,7 @@ import ContactForm from '../components/ContactForm';
 import { useTranslation } from 'react-i18next';
 import { useSocialLinks } from '@/hooks/useSocialLinks';
 import { usePageMeta } from '@/utils/pageMeta';
+import { absoluteUrl } from '@/constants/site';
 
 const BG   = '#0a1628';
 const GOLD = '#B8912A';
@@ -22,7 +23,7 @@ const Contact = () => {
   usePageMeta({
     title: 'Contact — Afrinia',
     description: 'Contactez l\'équipe Afrinia pour toute question éditoriale, partenariat ou collaboration.',
-    ogUrl: 'https://afrinia.org/contact',
+    ogUrl: absoluteUrl('/contact'),
   });
 
   return (
