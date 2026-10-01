@@ -1,10 +1,13 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { BlogPostList } from '@/components/admin/BlogPostList';
 import { BlogPostEditor } from '@/components/admin/BlogPostEditor';
+import { BuilderList } from '@/components/admin/BuilderList';
+import { BuilderEditor } from '@/components/admin/BuilderEditor';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { AudioEpisodeList } from '@/components/admin/AudioEpisodeList';
 import { AudioUpload } from '@/components/admin/AudioUpload';
 import { NewsletterSubscribers } from '@/components/admin/NewsletterSubscribers';
+import { ContactMessages } from '@/components/admin/ContactMessages';
 import { SocialLinksSettings } from '@/components/admin/SocialLinksSettings';
 import { NewsletterAdmin } from '@/pages/admin/NewsletterAdmin';
 import { PopupTemplateAdmin } from '@/components/admin/PopupTemplateAdmin';
@@ -12,7 +15,7 @@ import { ContributorRoute, AdminRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, FileText, Settings, Users, Crown, Edit3, Mic, Mail, Share2, BellRing } from "lucide-react";
+import { ArrowLeft, FileText, Settings, Users, Crown, Edit3, Mic, Mail, Share2, BellRing, MessageSquare, UserSquare2 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 
@@ -89,6 +92,24 @@ const AdminDashboard = () => {
                 Manage Users
               </Button>
             )}
+          </CardContent>
+        </Card>
+
+        <Card
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => navigate('/admin/builders')}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <UserSquare2 className="w-5 h-5" />
+              Builder Profiles
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              Manage builder entities (e.g. Aliko Dangote) — bio and decision-mind
+              content, separate from the articles that link to them.
+            </p>
           </CardContent>
         </Card>
 
@@ -196,6 +217,31 @@ const AdminDashboard = () => {
 
         <Card
           className={isAdmin() ? "cursor-pointer hover:shadow-lg transition-shadow" : "opacity-50"}
+          onClick={() => isAdmin() && navigate('/admin/messages')}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5" />
+              Contact Messages
+              {!isAdmin() && <Badge variant="outline" className="text-xs">Admin Only</Badge>}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground">
+              {isAdmin()
+                ? 'View, reply to, and manage messages submitted through the contact form.'
+                : 'Only administrators can view contact messages.'}
+            </p>
+            {isAdmin() && (
+              <Button className="mt-3" variant="outline" size="sm" onClick={e => { e.stopPropagation(); navigate('/admin/messages'); }}>
+                View Messages
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card
+          className={isAdmin() ? "cursor-pointer hover:shadow-lg transition-shadow" : "opacity-50"}
           onClick={() => isAdmin() && navigate('/admin/popup')}
         >
           <CardHeader>
@@ -295,6 +341,32 @@ export const BlogAdmin = () => {
           </AdminRoute>
         } 
       />
+      {/* Builder profile routes */}
+      <Route
+        path="/builders"
+        element={
+          <ContributorRoute>
+            <BuilderList />
+          </ContributorRoute>
+        }
+      />
+      <Route
+        path="/builders/new"
+        element={
+          <ContributorRoute>
+            <BuilderEditor />
+          </ContributorRoute>
+        }
+      />
+      <Route
+        path="/builders/edit/:id"
+        element={
+          <ContributorRoute>
+            <BuilderEditor />
+          </ContributorRoute>
+        }
+      />
+
       {/* Audio management routes */}
       <Route
         path="/audio"
@@ -341,6 +413,22 @@ export const BlogAdmin = () => {
                 <h1 className="text-3xl font-bold">Social Links Settings</h1>
               </div>
               <SocialLinksSettings />
+            </div>
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/messages"
+        element={
+          <AdminRoute>
+            <div className="container mx-auto px-4 py-8">
+              <div className="flex items-center gap-4 mb-6">
+                <Button variant="ghost" onClick={() => window.history.back()}>
+                  <ArrowLeft className="w-4 h-4 mr-2" />Back
+                </Button>
+                <h1 className="text-3xl font-bold">Contact Messages</h1>
+              </div>
+              <ContactMessages />
             </div>
           </AdminRoute>
         }

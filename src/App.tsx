@@ -20,8 +20,8 @@ import { BlogAdmin } from "./pages/admin/BlogAdmin";
 import { detectLanguage } from "@/utils/languageUtils";
 import GAPageTracker from "@/components/GAPageTracker";
 
-// Phase 1 placeholder for Builders page
-import ComingSoon from "./pages/ComingSoon";
+import Builders from "./pages/Builders";
+import BuilderProfile from "./pages/BuilderProfile";
 import AudioPage from "./pages/AudioPage";
 import Unsubscribed from "./pages/Unsubscribed";
 
@@ -66,7 +66,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/builders" element={<ComingSoon section="builders" />} />
+            <Route path="/builders" element={<Builders />} />
+            <Route path="/builders/:slug" element={<BuilderProfile />} />
             <Route path="/audio" element={<AudioPage />} />
 
             {/*

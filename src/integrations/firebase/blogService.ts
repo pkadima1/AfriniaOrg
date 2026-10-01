@@ -199,6 +199,30 @@ export const getPostByLangAndSlug = async (
   }
 };
 
+/**
+ * Fetch all published articles that link to a given builder profile, in one language.
+ * No orderBy on the query (avoids requiring a new composite index) — sorted
+ * client-side by published date instead.
+ */
+export const getPostsByBuilderId = async (builderId: string, lang: Lang): Promise<BlogPost[]> => {
+  try {
+    const col = getCollectionForLang(lang);
+    const q = query(
+      collection(db, col),
+      where('builderId', '==', builderId),
+      where('status', '==', 'published'),
+    );
+    const snap = await getDocs(q);
+    const posts = snap.docs.map(d => toBlogPost({ id: d.id, data: () => d.data() }));
+    return posts.sort((a, b) =>
+      new Date(b.published_at || b.created_at).getTime() - new Date(a.published_at || a.created_at).getTime(),
+    );
+  } catch (error) {
+    console.error(`Error fetching posts_${lang} for builder ${builderId}:`, error);
+    return [];
+  }
+};
+
 // ── Backward-compatible service functions (default lang = 'en') ───────────────
 
 /**
