@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "test": "node --test \"tests/unit/**/*.test.js\"",
-    "check:site": "node scripts/check-live-site.mjs"
+    "check:site": "node scripts/check-live-site.mjs",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-afrinia \"node --test 'tests/rules/**/*.test.js'\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -76,6 +77,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@firebase/rules-unit-testing": "^3.0.4",
     "@tailwindcss/typography": "^0.5.15",
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.3",
