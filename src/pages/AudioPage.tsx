@@ -5,6 +5,7 @@ import Layout from '../components/Layout';
 import { fetchAudioEpisodes } from '@/integrations/firebase/audioService';
 import type { AudioEpisode, PostCategory } from '@/integrations/firebase/types';
 import type { Lang } from '@/utils/languageUtils';
+import { ORGANIZATION_ID, absoluteUrl } from '@/constants/site';
 import { getCategoryLabel, SIGNAL_CATEGORIES } from '@/constants/taxonomy';
 import { trackAudioPlay, trackAudioPause } from '@/utils/analytics';
 import { useAudioPlayer, formatPlayerTime } from '@/hooks/useAudioPlayer';
@@ -162,24 +163,24 @@ const AudioPage = () => {
   usePageMeta({
     title: t('audio_page.page_title'),
     description: t('audio_page.page_description'),
-    ogUrl: 'https://afrinia.org/audio',
+    ogUrl: absoluteUrl('/audio'),
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'PodcastSeries',
-      '@id': 'https://afrinia.org/audio#podcast',
+      '@id': `${absoluteUrl('/audio')}#podcast`,
       name: 'The Afrinia Brief',
       description: 'Ideas, analysis, and conversations for Africa\'s entrepreneurs and builders. Available in English and French.',
-      url: 'https://afrinia.org/audio',
+      url: absoluteUrl('/audio'),
       inLanguage: ['en', 'fr'],
       author: {
         '@type': 'Organization',
         name: 'Afrinia',
-        '@id': 'https://afrinia.org/#organization',
+        '@id': ORGANIZATION_ID,
       },
       publisher: {
         '@type': 'Organization',
         name: 'Afrinia',
-        '@id': 'https://afrinia.org/#organization',
+        '@id': ORGANIZATION_ID,
       },
     },
   });

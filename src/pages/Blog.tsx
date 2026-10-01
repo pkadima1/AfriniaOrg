@@ -9,9 +9,11 @@ import { SIGNAL_CATEGORIES, getCategoryLabel } from '@/constants/taxonomy';
 import Layout from '@/components/Layout';
 import {
   type Lang,
+  getBlogUrl,
   getPostUrl,
-  useSeoHead,
+  useHreflangLinks,
 } from '@/utils/languageUtils';
+import { absoluteUrl } from '@/constants/site';
 import { usePageMeta } from '@/utils/pageMeta';
 import { trackNewsletterSignup } from '@/utils/analytics';
 
@@ -242,12 +244,7 @@ const Blog = () => {
 
   const activeFilters = (categoryFilter !== 'all' ? 1 : 0) + (countryFilter !== 'all' ? 1 : 0);
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://afrinia.org';
-  useSeoHead(
-    `${origin}/en/blog`,
-    `${origin}/fr/blog`,
-    `${origin}/${lang}/blog`,
-  );
+  useHreflangLinks(absoluteUrl(getBlogUrl('en')), absoluteUrl(getBlogUrl('fr')));
 
   usePageMeta({
     title: lang === 'fr'
@@ -256,7 +253,7 @@ const Blog = () => {
     description: lang === 'fr'
       ? 'Explorez les idées, analyses et outils d\'Afrinia pour les entrepreneurs et innovateurs africains. Bimensuel, bilingue.'
       : 'Explore Afrinia\'s ideas, analysis and tools for African entrepreneurs and innovators. Bilingual, biweekly.',
-    ogUrl: `${origin}/${lang}/blog`,
+    ogUrl: absoluteUrl(getBlogUrl(lang)),
   });
 
   const handleSubscribe = async (e: React.FormEvent) => {

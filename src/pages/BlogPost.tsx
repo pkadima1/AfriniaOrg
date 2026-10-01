@@ -22,8 +22,8 @@ import {
   type Lang,
   getBlogUrl,
   getPostUrl,
-  useSeoHead,
 } from '@/utils/languageUtils';
+import { SITE_URL, ORGANIZATION_ID, absoluteUrl } from '@/constants/site';
 import { usePageMeta } from '@/utils/pageMeta';
 import {
   trackArticleView,
@@ -362,15 +362,8 @@ const BlogPost = () => {
     </div>
   );
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://afrinia.org';
-  const currentSlug = slug || '';
-  const postUrl = `${origin}/${lang}/blog/${currentSlug}`;
-
-  useSeoHead(
-    `${origin}/en/blog/${currentSlug}`,
-    `${origin}/fr/blog/${currentSlug}`,
-    postUrl,
-  );
+  // No hreflang alternates here: see useHreflangLinks for why articles skip them.
+  const postUrl = absoluteUrl(getPostUrl(lang, slug || ''));
 
   // Dynamic per-post meta tags + JSON-LD Article schema
   usePageMeta({
@@ -400,18 +393,18 @@ const BlogPost = () => {
           author: {
             '@type': 'Organization',
             name: 'Afrinia',
-            url: 'https://afrinia.org',
+            url: SITE_URL,
           },
           publisher: {
             '@type': 'Organization',
-            '@id': 'https://afrinia.org/#organization',
+            '@id': ORGANIZATION_ID,
             name: 'Afrinia',
-            url: 'https://afrinia.org',
+            url: SITE_URL,
           },
           keywords: post.tags.join(', '),
           isPartOf: {
             '@type': 'Blog',
-            '@id': `${origin}/${lang}/blog`,
+            '@id': absoluteUrl(getBlogUrl(lang)),
             name: lang === 'fr' ? 'Afrinia — Flux d\'Intelligence' : 'Afrinia Intelligence Feed',
           },
         }

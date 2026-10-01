@@ -18,7 +18,8 @@ import {
   getCurrentTimestamp,
   convertTimestamp,
 } from '@/integrations/firebase/types';
-import type { Lang } from '@/utils/languageUtils';
+import { type Lang, getPostUrl } from '@/utils/languageUtils';
+import { absoluteUrl } from '@/constants/site';
 import { cleanArticleHtml } from '@/utils/contentSanitizer';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
@@ -324,7 +325,7 @@ export const saveBlogPost = async (
     // Notify Google Indexing API when an article is published or unpublished.
     // Fire-and-forget — a failed notification never blocks the save.
     if (post.slug && (post.status === 'published' || post.status === 'archived')) {
-      const articleUrl = `https://afrinia.org/${lang}/blog/${post.slug}`;
+      const articleUrl = absoluteUrl(getPostUrl(lang, post.slug));
       const indexingType = post.status === 'published' ? 'URL_UPDATED' : 'URL_DELETED';
       fetch('/.netlify/functions/notify-indexing', {
         method: 'POST',
