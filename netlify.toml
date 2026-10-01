@@ -20,15 +20,8 @@
   targetPort = 8080
   port = 8888
 
-# Serve the dynamic sitemap from the Netlify function.
-# Status 200 = rewrite (URL stays /sitemap.xml in the browser/crawler).
-# force = true is required because public/sitemap.xml exists as a static file —
-# without it, Netlify CDN serves the static file and ignores this redirect.
-[[redirects]]
-  from = "/sitemap.xml"
-  to = "/.netlify/functions/sitemap"
-  status = 200
-  force = true
+# The dynamic sitemap is NOT routed here: netlify/functions/sitemap.js claims
+# /sitemap.xml itself via `export const config = { path }` (see why there).
 
 # SPA catch-all lives in public/_redirects, NOT here.
 # [[context.production.redirects]] is silently ignored by Netlify — redirects

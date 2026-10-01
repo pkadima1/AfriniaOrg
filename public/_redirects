@@ -4,8 +4,10 @@
 # NOTE: netlify.toml [[context.production.redirects]] is silently IGNORED by
 # Netlify — redirects cannot be scoped to deploy contexts. Keep SPA rules here.
 
-# Dynamic sitemap — served by Netlify Function (also in netlify.toml for netlify dev).
-/sitemap.xml  /.netlify/functions/sitemap  200!
+# /sitemap.xml is served by netlify/functions/sitemap.js, which claims that path
+# itself (config.path). Rules in this file are evaluated BEFORE function paths,
+# so no rule here may match /sitemap.xml — in particular, never add a `/*`
+# catch-all (verified on a draft deploy, 2026-09-30).
 
 # Netlify's default domain served a full, indexable copy of the site (HTTP 200),
 # competing with afrinia.org as a duplicate. Send it to the real domain.
