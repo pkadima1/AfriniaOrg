@@ -9,7 +9,9 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "node --test \"tests/unit/**/*.test.js\""
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "test": "node --test \"tests/unit/**/*.test.js\"",
+    "check:site": "node scripts/check-live-site.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
