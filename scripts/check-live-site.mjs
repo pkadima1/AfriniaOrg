@@ -113,9 +113,19 @@ async function checkCanonicalHost() {
 
 async function checkHeaders() {
   const html = await get('/');
-  // Assets are the files nosniff protects most; the first script in the shell is the app bundle.
-  const bundle = html.body.match(/<script[^>]+type="module"[^>]+src="([^"]+)"/)?.[1];
-  const targets = [['/', html.headers], ['/robots.txt', (await get('/robots.txt')).headers]];
+  // Assets are the files nosniff protects most: take the app's first JavaScript
+  // file — a Next.js chunk (/_next/static/…) or, on the Vite build, the module script.
+  const bundle = html.body.match(/<script[^>]+src="(\/_next\/static\/[^"]+\.js)"/)?.[1]
+    ?? html.body.match(/<script[^>]+type="module"[^>]+src="([^"]+)"/)?.[1];
+  record(Boolean(bundle), 'app JavaScript file found in the page', 'no script src matched');
+  // A plain page, an app route, the 404 page, a static file and a script:
+  // each is served by a different mechanism on Netlify + Next.js.
+  const targets = [
+    ['/', html.headers],
+    ['/fr/blog', (await get('/fr/blog')).headers],
+    ['/this-page-does-not-exist (404)', (await get('/this-page-does-not-exist')).headers],
+    ['/robots.txt', (await get('/robots.txt')).headers],
+  ];
   if (bundle) {
     const js = await get(bundle);
     targets.push([bundle, js.headers]);
