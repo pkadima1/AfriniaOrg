@@ -5,6 +5,7 @@ import { AuthModal } from '@/components/auth/AuthModal';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Loader2, Shield, ShieldAlert } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { isLoading, isAuthenticated, hasPermission, userProfile } = useAuth();
   const [showModal, setShowModal] = useState(false);
+  const { t } = useTranslation();
 
   // Show loading spinner while checking authentication
   if (isLoading) {
@@ -36,7 +38,7 @@ export function ProtectedRoute({
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center space-y-4">
           <Loader2 className="w-8 h-8 animate-spin mx-auto text-accent-blue" />
-          <p className="text-gray-400">Checking authentication...</p>
+          <p className="text-gray-400">{t('auth.guard.checking')}</p>
         </div>
       </div>
     );
@@ -50,13 +52,13 @@ export function ProtectedRoute({
           <div className="text-center space-y-6 max-w-md mx-4">
             <div className="space-y-2">
               <Shield className="w-12 h-12 mx-auto text-accent-blue" />
-              <h2 className="text-2xl font-bold">Authentication Required</h2>
+              <h2 className="text-2xl font-bold">{t('auth.guard.requiredTitle')}</h2>
               <p className="text-gray-400">
-                You need to sign in to access this page.
+                {t('auth.guard.requiredBody')}
               </p>
             </div>
             <Button onClick={() => setShowModal(true)} className="w-full">
-              Sign In
+              {t('auth.signIn')}
             </Button>
             <AuthModal 
               isOpen={showModal} 
@@ -77,15 +79,17 @@ export function ProtectedRoute({
         <div className="text-center space-y-6 max-w-md mx-4">
           <div className="space-y-2">
             <ShieldAlert className="w-12 h-12 mx-auto text-red-500" />
-            <h2 className="text-2xl font-bold">Access Denied</h2>
+            <h2 className="text-2xl font-bold">{t('auth.guard.deniedTitle')}</h2>
             <p className="text-gray-400">
-              You don't have permission to access this page.
+              {t('auth.guard.deniedBody')}
             </p>
             {userProfile && (
               <Alert className="text-left">
                 <AlertDescription>
-                  Your current role is <strong>{userProfile.role}</strong>. 
-                  This page requires <strong>{requiredRole}</strong> level access or higher.
+                  {t('auth.guard.roleInfo', {
+                    role: t(`auth.roles.${userProfile.role}`, userProfile.role),
+                    required: t(`auth.roles.${requiredRole}`, requiredRole),
+                  })}
                 </AlertDescription>
               </Alert>
             )}
@@ -95,7 +99,7 @@ export function ProtectedRoute({
             variant="outline"
             className="w-full"
           >
-            Go Back
+            {t('auth.guard.goBack')}
           </Button>
         </div>
       </div>
