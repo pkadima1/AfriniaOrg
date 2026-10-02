@@ -32,10 +32,13 @@ Verified 2026-09-30 (M0). Routing, redirects, headers and function paths must be
 - Netlify CLI deploys rewrite `deno.lock`; run `git checkout deno.lock` afterwards.
 - Never keep uncommitted work in the session scratchpad (e.g. a git worktree there) — it is wiped when a session restarts.
 
-### Next.js app (migration branches)
-- `npm run dev` → dev server on **http://localhost:8080** (keep the same port).
-- **ISR, caching, redirects and real status codes only behave like production in a production build:** `npm run build && npm run start`. Always run SEO checks against the production build or a deploy preview, never against `next dev`.
-- Scripts (created in M1): `npm run typecheck`, `npm run lint`, `npm run test` (Vitest), `npm run test:e2e` (Playwright), `npm run seo:check -- --base <url>`.
+### Next.js app (migration branches, worktree `../AfriniaOrg-nextjs`)
+- `npm run dev` → `next dev` on **http://localhost:8080**. Production build: `npm run build && npm run start` (port 8080; use `npx next start -p 3100` to run beside a dev server).
+- **Behaviour like production (statuses, redirects, caching) only in the production build** — never sign off from `next dev`.
+- `next start` does not run Netlify Functions: locally `/sitemap.xml` is 404 (8 expected `check:site` failures). Everything else must pass locally; the draft deploy must pass 100%.
+- macOS disks ignore letter case: if Next.js ever stores per-URL pages again, `/Terms` and `/terms` collide locally. The app-shell design (one stored page) avoids it — check `.next/server/route-cache` stays at 2 pages after requesting random URLs.
+- Netlify + Next.js facts (draft deploys, 2026-10-02): `next.config` headers reach rendered pages only; `netlify.toml` headers reach static files and functions only — both carry `config/security-headers.json` (unit-tested). Netlify Functions with `config.path` (the sitemap) still win over Next.js routes. Deploy logs show `Using Next.js Runtime - v5.x`.
+- Scripts: `npm run typecheck` (`tsc --noEmit`), `npm run lint` (ignores `.next/`), `npm test`, `npm run test:rules`, `npm run check:site -- --base <url>`. From step 3: Vitest, Playwright (`test:e2e`), `seo:check`.
 
 ### Data safety (both apps)
 - Local runs talk to the **real production Firestore** (named database `afrinia`). Reads are safe. **Never write/create/delete documents as part of verification.** Writes (comments, rules changes, publish flows) are tested against the Firestore emulator (`firebase emulators:start --only firestore`) or on a deploy preview with an explicitly created test post that is deleted afterwards — and only with the owner's OK.

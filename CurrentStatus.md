@@ -1,32 +1,109 @@
 # CurrentStatus.md — Afrinia Live Project Tracker
 
-> This file is the single source of truth for what has been done, what is in progress, and what is next.
-> It is updated at the end of every milestone — never before it is fully completed and tested.
-> Branch context is noted per milestone so any session can locate the exact code change.
+> **The single source of truth for where the project stands.** Read the top section first — it always answers: what is live, what is in progress, what is next, and what is waiting on the owner.
+> Updated at the end of **every step** (not only milestones), in the same branch as the work. Plan and rules live in `CLAUDE.md` (Section 10 = migration plan); this file records progress against that plan.
+
+**Legend:** ✅ done & verified · 🟡 in progress · 🔴 not started · ⏸ waiting on the owner or an external action
 
 ---
 
-## HOW TO READ THIS FILE
+## 1. NOW — at a glance  *(last updated: 2026-10-02)*
 
-- 🔴 **Not started** — identified, planned, not touched yet
-- 🟡 **In progress** — branch created, work begun, not yet committed/tested
-- ✅ **Done** — code committed, locally verified, success criteria confirmed
-- ⏸ **Blocked** — waiting on an external action (GSC console, GA4 console, deployment)
+| | |
+|---|---|
+| **Live on afrinia.org** | `main` @ `3aebad8` — Vite app on **React 19**, with M0 SEO fixes, builder profiles, Storage owner folders, translated sign-in |
+| **Production health** | `npm run check:site -- --base https://afrinia.org` → **140/140** (2026-10-02). Sitemap: 40 URLs. Live Firestore/Storage rules == repo |
+| **Current phase** | Phase 1 — Authority Engine · Next.js migration **M1 — Foundation** (CLAUDE.md §10) |
+| **In progress** | ⏸ M1 step 2 — Next.js serves the existing site unchanged: **built and verified on a draft deploy (146/146)**, awaiting the owner's OK to commit to `migration/m1-nextjs-shell` → `migration/nextjs` (not production) |
+| **Next** | M1 step 3 — route map, metadata helper, server data readers, Vitest + Playwright, `seo:check` |
+| **Search Console baseline** | 11 indexed / 52 not indexed (GSC data of 2026-09-21). "Validate fix" started by the owner on Soft 404 + Duplicate canonical (2026-10-02) |
+
+### Waiting on the owner ⏸
+0. **Approve committing M1 step 2** (Next.js shell) to the migration branch — evidence in section 3.
+1. **Admin → Social Links → Save** once (first save that actually persists — before 2026-10-02 every save was rejected).
+2. **Upload one image in the admin** (article cover or builder photo) — confirms the Storage owner-folder rules from the user's side.
+3. **Send one test message** via https://afrinia.org/contact — confirm the email arrives and the message appears in the admin inbox.
+4. **Search Console**: check the validation progress weekly; record indexed / not-indexed counts in section 3.
+
+### Known open issues (scheduled)
+| Issue | Why it is not fixed yet | Fixed in |
+|---|---|---|
+| Page text arrives only via JavaScript (empty raw HTML) | Needs server rendering | M2 |
+| Unknown article/builder slugs answer HTTP 200 ("Not Found" drawn in JS) | Only the database knows which slugs exist; needs the server | M2 |
+| `<html lang>` is always `fr` in raw HTML | Same — set per page by the server | M2 |
+| Articles declare no hreflang pair | Posts don't store their translation's slug yet (`translation_slug`) | M2 |
+| `/blog/<slug>` redirects by browser language, client-side | Needs a server redirect map with the slug's language | M5 |
+| One 1.7 MB JavaScript bundle (admin editor shipped to visitors) | Split per route with Next.js | M3/M4 |
+| Admin screens partly English-only (e.g. "Access Denied" toasts) | Admin-only; low priority | M4 |
+| `npm audit` findings, dead Supabase files, 11 lint warnings | Hardening pass | M6 |
+| `firestore.rules` TEMP: comments accept `email: null` from old bundles | Remove once no pre-M0 bundle can still be open | M6 |
+| TypeScript runs in non-strict mode (`strict: false`), unlike CLAUDE.md §9 | Turning it on is a large change of its own | M6 |
+| Security headers written twice (next.config for rendered pages, netlify.toml for static files) | Netlify applies neither mechanism to the other's responses; one list in `config/security-headers.json`, a unit test fails on drift | accepted |
+| `proxy.ts` sends every known path to one app shell (migration scaffolding) | Pages are still the client-side app | removed as pages move to server routes (M2) |
 
 ---
 
-## CURRENT BRANCH: `GoogleAnalyticsSetUp`
+## 2. MIGRATION PROGRESS (Next.js, CLAUDE.md §10)
 
-Parent goal: Get Afrinia fully instrumented on Google Analytics 4 and correctly indexed by Google Search Console.
-See **SKILLS.md Section 8** for the full audit findings and 6-step fix plan.
+| Phase | Status | Notes |
+|---|---|---|
+| D1–D5 decisions | ✅ 2026-10-02 | Netlify · next-intl · `/` → `/fr` · rules-bound public reads · authenticated on-demand revalidation |
+| M0 — Stabilise the live site | ✅ 2026-10-01 | 39/116 → 127/127 crawler checks; commenter emails private |
+| Builders merge + Storage owner folders | ✅ 2026-10-02 | /fr\|en/builders; strangers can no longer delete media |
+| M1 step 1 — React 19 | ✅ 2026-10-02 | Released on the current app; + social links fix, sign-in EN/FR |
+| M1 step 2 — Next.js runs the existing site | ⏸ | built + verified on draft; awaiting commit OK |
+| M1 step 3 — foundations (route map, metadata, data layer, tests) | 🔴 | |
+| M2 — Server-rendered public pages (SEO core) | 🔴 | |
+| M3 — Interactive islands | 🔴 | |
+| M4 — Auth & admin, publish → refresh | 🔴 | |
+| M5 — SEO infrastructure (sitemap, redirects, OG) | 🔴 | |
+| M6 — Hardening (CSP, audit, performance) | 🔴 | |
+| M7 — Cutover & 4-week monitoring | 🔴 | |
 
 ---
 
-## MILESTONE LOG
+## 3. PROGRESS LOG (newest first)
+
+### 2026-10-02 — M1 step 2 built and verified on a draft ⏸ (awaiting commit OK)
+- Where: branch `migration/m1-nextjs-shell` (from `migration/nextjs` = `main` @ `3aebad8`), worktree `../AfriniaOrg-nextjs`; nothing reaches production before M7.
+- What changed: Next.js 16.3 replaces Vite. `index.html` → `app/layout.tsx` (same metadata, fonts, Organization JSON-LD, still no site-wide canonical); `main.tsx` → `src/spa.tsx` + `src/ClientApp.tsx` (the existing app, browser-only); `public/_redirects` → `next.config.ts` redirects (301 kept) + `proxy.ts` + `src/routing/spaRoutes.ts` (known path → one static app shell; anything else → Next's static 404); `src/pages` renamed `src/views` (Next.js reserves `pages/`).
+- Found and fixed while building: (1) a per-URL page cache let random URLs create stored 404 pages (storage-abuse risk) and, on case-insensitive disks, served `/terms` as 404 after `/Terms` → replaced by one shared shell + proxy; 100 random URLs now add 0 cache entries. (2) On Netlify, `next.config` headers miss static files and `netlify.toml` headers miss rendered pages → one list (`config/security-headers.json`) applied by both, with a drift test. (3) ESLint was scanning generated `.next/` files.
+- Evidence: draft `check:site` **146/146** (production today 140/140 — 6 new header checks); 9 interactive flows, sign-in + footer in FR/EN, 404 page, legacy links, in-app navigation (0 full reloads) identical to production; subscribe/contact functions answer as in production; unit tests 22/22 (+ route list, header drift); rule tests 45/45; typecheck 0 errors; lint 0 errors (11 old warnings).
+- Measured: article page JavaScript 669 KB → 716 KB (+7%, Next.js runtime); real reductions come when the admin editor stops shipping to visitors (M3/M4).
+
+### 2026-10-02 — Docs: tracker restructured
+- `CurrentStatus.md` restructured as the live tracker (NOW · migration table · dated log · July archive); `CLAUDE.md` requires updating it at the end of every step and no longer keeps its own progress log.
+
+### 2026-10-02 — M1 step 1 released ✅ (`chore/react-19` → `main` @ `edacb38`)
+- Removed 28 unused UI components + 25 libraries (~4,800 lines) that blocked React 19; upgraded to React 19.3 (+ sonner 2, next-themes 0.4, Radix latest) — 0 peer-dependency problems.
+- Social links: settings were saved to `site_settings`, which no rule covered — every admin save failed. Moved to `site_config/social_links` (one service file); the footer now shows only enabled platforms (Facebook).
+- Sign-in journey translated EN/FR (~60 strings; 568 keys in each language); Firebase errors mapped to clear messages.
+- Evidence: production `check:site` 140/140; 9 interactive flows OK in Chrome; FR/EN sign-in and footer verified; rule tests 45/45.
+
+### 2026-10-02 — Builders + Storage release ✅ (`merge/builders-into-main` → `main` @ `d8e08f5`)
+- July builders work merged; builder URLs language-prefixed (`/fr|en/builders[/slug]`), `/builders` → 301 `/fr/builders`; builders in the sitemap.
+- Storage owner folders: any signed-up account could delete any blog image, builder photo or podcast file — now only the uploader can.
+- Lesson: the M0 rules release had silently removed builders/contact rules live since 2026-07-26 → every rules release now diffs the live rules first (verify skill).
+- Evidence: rules published first (+30 lines, nothing removed), then Storage rules, then `main` 2 s later; production 140/140; 45 Storage files and all 25 episodes load.
+
+### 2026-10-01 — M0 released ✅
+- Real 404s, no homepage canonical in raw HTML, `afinia.netlify.app` → 301, sitemap with real dates, security headers, articles no longer point hreflang at "Post not found" pages, commenter emails private (`comment_contacts`, admin-only).
+- Evidence: production `check:site` 39/116 → 127/127; live test comment verified and deleted.
+
+### 2026-09-29 — Diagnosis ✅
+- Raw HTML for every URL is the same empty 5 KB shell; Google sees one canonical (the homepage) for every page; unknown URLs answer 200. Decision: migrate to Next.js (plan in CLAUDE.md §10).
 
 ---
 
-### MILESTONE 0 — Foundation & Planning
+## 4. ARCHIVE — milestones before the Next.js migration (April–July 2026)
+
+> Historical record, kept unchanged below. Its "current branch" and "next session" notes are **out of date** (those branches were deployed in July) — use sections 1–3 above for the current state.
+
+#### MILESTONE LOG (archive)
+
+---
+
+#### MILESTONE 0 — Foundation & Planning
 **Status:** ✅ Done
 **Date completed:** 2026-04-21
 **Branch:** `GoogleAnalyticsSetUp`
@@ -42,7 +119,7 @@ Without a clear map of what is broken and in what order to fix it, every subsequ
 
 ---
 
-### MILESTONE 1 — Fix Domain Mismatch (afrinia.com → afrinia.org)
+#### MILESTONE 1 — Fix Domain Mismatch (afrinia.com → afrinia.org)
 **Status:** ✅ Done
 **Date completed:** 2026-04-21
 **Branch:** `GoogleAnalyticsSetUp`
@@ -77,7 +154,7 @@ The site is live at `https://afrinia.org/` (confirmed via Google Search Console 
 
 ---
 
-### MILESTONE 2 — Fix Sitemap Structure (Add Missing Pages, Remove Non-Indexable)
+#### MILESTONE 2 — Fix Sitemap Structure (Add Missing Pages, Remove Non-Indexable)
 **Status:** ✅ Done (completed as part of Milestone 1 — same file, same commit)
 **Date completed:** 2026-04-21
 **Branch:** `GoogleAnalyticsSetUp`
@@ -95,7 +172,7 @@ The site is live at `https://afrinia.org/` (confirmed via Google Search Console 
 
 ---
 
-### MILESTONE 3 — GA4 SPA Route-Change Tracking
+#### MILESTONE 3 — GA4 SPA Route-Change Tracking
 **Status:** ✅ Done
 **Date completed:** 2026-04-21
 **Branch:** `GoogleAnalyticsSetUp`
@@ -126,7 +203,7 @@ React Router swaps page components without reloading the browser. Firebase Analy
 
 ---
 
-### MILESTONE 4 — GA4 Custom Event Tracking (Blog + Audio)
+#### MILESTONE 4 — GA4 Custom Event Tracking (Blog + Audio)
 **Status:** ✅ Done
 **Date completed:** 2026-04-21
 **Branch:** `GoogleAnalyticsSetUp`
@@ -160,7 +237,7 @@ All typed event functions were defined in `src/utils/analytics.ts` (Milestone 3)
 
 ---
 
-### MILESTONE 5 — Add Page Meta to AudioPage
+#### MILESTONE 5 — Add Page Meta to AudioPage
 **Status:** ✅ Done
 **Date completed:** 2026-04-21
 **Branch:** `GoogleAnalyticsSetUp`
@@ -193,7 +270,7 @@ The `PodcastSeries` schema block tells Google that `/audio` is a podcast series 
 
 ---
 
-### MILESTONE 6 — Enable Enhanced Measurement in GA4 Console
+#### MILESTONE 6 — Enable Enhanced Measurement in GA4 Console
 **Status:** ⏸ Blocked (manual console action)
 **Owner:** Project owner (pkadima1@gmail.com)
 
@@ -212,7 +289,7 @@ Enhanced Measurement is currently toggled OFF (visible in the GA4 screenshot). T
 
 ---
 
-## SUMMARY TABLE
+### SUMMARY TABLE
 
 | Milestone | Description | Status | Date |
 |-----------|-------------|--------|------|
@@ -236,13 +313,13 @@ Enhanced Measurement is currently toggled OFF (visible in the GA4 screenshot). T
 
 ---
 
-## SESSION: 2026-07-01 — Branch: `feature/resend-mailing-system`
+### SESSION: 2026-07-01 — Branch: `feature/resend-mailing-system`
 
 > This session was on a different branch from the `GoogleAnalyticsSetUp` session above. Both branches are diverged from `main`. `feature/resend-mailing-system` contains all the most recent work including Milestones 7, 8, 9.
 
 ---
 
-### MILESTONE 7 — Fix Sitemap Serving Wrong File (force redirect)
+#### MILESTONE 7 — Fix Sitemap Serving Wrong File (force redirect)
 **Status:** ✅ Done — commit `eca0c6e`
 **Branch:** `feature/resend-mailing-system`
 **Date completed:** 2026-07-01
@@ -270,7 +347,7 @@ Resubmit sitemap in Google Search Console: GSC → Sitemaps → delete old entry
 
 ---
 
-### MILESTONE 8 — Fix Production Fetching Wrong Firestore Database
+#### MILESTONE 8 — Fix Production Fetching Wrong Firestore Database
 **Status:** ✅ Done — commit `eca0c6e`
 **Branch:** `feature/resend-mailing-system`
 **Date completed:** 2026-07-01
@@ -295,7 +372,7 @@ Result: Local dev showed rich content (many articles, proper categories). Produc
 
 ---
 
-### MILESTONE 9 — Signal Architecture: Taxonomy Design + signalMapSkills.md
+#### MILESTONE 9 — Signal Architecture: Taxonomy Design + signalMapSkills.md
 **Status:** ✅ Done (design complete, implementation not started)
 **Branch:** `feature/resend-mailing-system`
 **Date completed:** 2026-07-01
@@ -335,9 +412,9 @@ Designed the canonical 5-category signal taxonomy for Afrinia's content classifi
 
 ---
 
-## CURRENT STATE OF THE APP (2026-07-01)
+### CURRENT STATE OF THE APP (2026-07-01)
 
-### What is working correctly
+#### What is working correctly
 
 | Feature | Confidence | Notes |
 |---|---|---|
@@ -355,7 +432,7 @@ Designed the canonical 5-category signal taxonomy for Afrinia's content classifi
 | Firestore security rules | High | Deployed, covers all collections, deny-all catch-all |
 | Dynamic sitemap function | High (post-deploy) | Netlify Function queries both collections live — force redirect in place |
 
-### Current bugs and missing items
+#### Current bugs and missing items
 
 **CRITICAL — fixed, deploy needed:**
 - Production was fetching wrong Firestore database → fixed commit `eca0c6e`
@@ -381,9 +458,9 @@ Designed the canonical 5-category signal taxonomy for Afrinia's content classifi
 
 ---
 
-## NEXT SESSION — WHERE TO START
+### NEXT SESSION — WHERE TO START
 
-### Completed this session (2026-07-01, branch: `feature/signal-architecture`)
+#### Completed this session (2026-07-01, branch: `feature/signal-architecture`)
 
 All 10 prompts from `signalMapSkills.md` are done. Commit: `da53b7b`.
 
@@ -399,7 +476,7 @@ All 10 prompts from `signalMapSkills.md` are done. Commit: `da53b7b`.
 - Prompt 9: sitemap function verified — already correct, no changes needed
 - Prompt 10: full data audit passed — all 20 docs have valid canonical categories + required fields; `tsc --noEmit` zero errors
 
-### MILESTONE 12 — Audio Signal Taxonomy
+#### MILESTONE 12 — Audio Signal Taxonomy
 **Status:** ✅ Done — commit `3261600`
 **Branch:** `feature/signal-architecture`
 
@@ -412,7 +489,7 @@ All 10 prompts from `signalMapSkills.md` are done. Commit: `da53b7b`.
 - `AudioPage.tsx` `EpisodeCard` now uses `getCategoryLabel(ep.category, lang)` —
   shows BUILDER/BÂTISSEUR, OPPORTUNITY/OPPORTUNITÉ, etc. correctly per language
 
-### MILESTONE 13 — Followable Signals Architecture Design
+#### MILESTONE 13 — Followable Signals Architecture Design
 **Status:** ✅ Done (design only — implementation not started)
 **Branch:** `feature/signal-architecture`
 
@@ -435,13 +512,13 @@ All 10 prompts from `signalMapSkills.md` are done. Commit: `da53b7b`.
 
 ---
 
-## SESSION: 2026-07-01 — Branch: `feature/followable-signals`
+### SESSION: 2026-07-01 — Branch: `feature/followable-signals`
 
 > Created from `feature/signal-architecture`. Contains the full Followable Signals implementation (Milestone 14).
 
 ---
 
-### MILESTONE 14 — Followable Signals Implementation (Prompts 11–17)
+#### MILESTONE 14 — Followable Signals Implementation (Prompts 11–17)
 **Status:** ✅ Done — commit `f82f61b`
 **Branch:** `feature/followable-signals`
 **Date completed:** 2026-07-01
@@ -476,16 +553,16 @@ All 10 prompts from `signalMapSkills.md` are done. Commit: `da53b7b`.
 
 ---
 
-## NEXT SESSION — WHERE TO START
+### NEXT SESSION — WHERE TO START
 
-### Three branches need to be deployed in order:
+#### Three branches need to be deployed in order:
 1. `feature/resend-mailing-system` — sitemap force redirect + correct Firestore DB
 2. `feature/signal-architecture` — full signal taxonomy (Prompts 1-10) + audio fix
 3. `feature/followable-signals` — followable signals (Prompts 11-16)
 
 Merge order matters: resend-mailing-system → signal-architecture → followable-signals → main.
 
-### Post-deploy verification checklist:
+#### Post-deploy verification checklist:
 - `afrinia.org/sitemap.xml` returns dynamic XML with article URLs (not the placeholder comment)
 - `afrinia.org/en/blog` filter bar: ALL · OPPORTUNITY · ANALYSIS · INVESTMENT · TECHNOTE · BUILDER
 - `afrinia.org/fr/blog` filter bar: TOUT · OPPORTUNITÉ · ANALYSE · INVESTISSEMENT · TECHNOTE · BÂTISSEUR

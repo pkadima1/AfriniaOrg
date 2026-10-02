@@ -2,7 +2,8 @@
 
 > This file governs how any AI assistant (Claude or otherwise) must think, communicate, and act when working on the Afrinia codebase. These rules are non-negotiable and apply to every task, every file, every decision.
 >
-> **Active initiative:** migration from the Vite single-page app to Next.js so search engines receive real HTML. Plan and status: Section 10. Verification recipes: `.claude/skills/verify/SKILL.md`.
+> **Where things stand:** `CurrentStatus.md` — read its section 1 ("NOW") at the start of every session.
+> **Active initiative:** migration from the Vite single-page app to Next.js so search engines receive real HTML. Plan: Section 10. Verification recipes: `.claude/skills/verify/SKILL.md`.
 
 ---
 
@@ -120,6 +121,14 @@ Every change made to this codebase is treated as if it is going live to real use
 - **Nothing is committed, pushed, or merged without the owner's OK.** Build and verify freely on a branch, then stop and present: what changed, why, what was verified (with evidence), what remains. Wait for approval.
 - **Migration branches:** all Next.js work lives on the integration branch `migration/nextjs`. Each phase is built on its own branch (`migration/m2-public-pages`, etc.) cut from `migration/nextjs` and merged back into it after its exit criteria pass. Only the cutover phase (M7) merges `migration/nextjs` into `main`.
 - Fixes to the live site during the migration (e.g. M0) branch from `main` and merge to `main`, then `main` is merged into `migration/nextjs` so the two never drift.
+- Parallel work (e.g. migration code while a docs or hotfix branch is open) uses a git worktree **beside** the repo (`../AfriniaOrg-<name>`), never in a temporary/scratch folder.
+
+### Progress tracking (`CurrentStatus.md`)
+At the end of **every step** — not only phases — and in the same branch as the work, update `CurrentStatus.md`:
+1. Section 1 "NOW": what is live, what is in progress, what is next, what waits on the owner, known open issues.
+2. Section 2: the phase/step status table.
+3. Section 3: a dated log entry — what changed, why, and the evidence (commands run and their results).
+`CLAUDE.md` holds the rules and the plan; it is not a progress log.
 
 ---
 
@@ -189,7 +198,7 @@ The Next.js migration serves the first goal directly and is already the Phase 1 
 
 ## 10. NEXT.JS MIGRATION PLAN
 
-**Status legend:** ☐ not started · ◐ in progress · ☑ done (with date). Update this section at the end of every phase — it is the single source of truth for migration status.
+**Status legend:** ☐ not started · ◐ in progress · ☑ done (with date). This section is the **plan**; day-to-day progress and evidence are recorded in `CurrentStatus.md` (sections 2–3). Update the phase marks here when a phase closes.
 
 ### 10.1 Decisions (approved by the owner 2026-10-02)
 
@@ -213,16 +222,15 @@ Why: the migration takes ~2 weeks; these fixes stop the damage now and carry int
 - Exit: `npm run check:site -- --base https://afrinia.org` passes; legacy comment emails not anonymously readable; a test comment with email posts on production, its email stored only in `comment_contacts`, then deleted.
 - Not fixable before Next.js: page text still arrives via JavaScript; unknown article slugs under `/fr|en/blog/*` still answer 200; `/blog/:slug` picks a language client-side.
 
-#### M1 — Foundation ☐
-Entry: D1–D5 approved ☑; `feature/builders-page` merged to `main` (via `merge/builders-into-main`, adapted to D3 — see progress log); `main` merged into `migration/nextjs`.
-- Replace Vite with Next.js in place (same repo, same `src/` components). Keep Tailwind config, design tokens, shadcn/ui, locales.
-- Scaffold `app/[locale]/layout.tsx` with correct `<html lang>`, fonts, Header/Footer as server components where possible.
-- Server data layer: `src/server/content/*` — rules-bound, server-only readers for posts (including Storage-offloaded content via `content_storage_path`), builders, audio. Article HTML sanitized on the server (DOMPurify via a server-compatible DOM, e.g. `isomorphic-dompurify`), reusing `cleanArticleHtml` logic — one implementation.
-- Route map module + metadata helper (Section 9 rules 2 and 4).
-- Test tooling: `npm run typecheck | lint | test | test:e2e | seo:check`; Vitest and Playwright configured; `scripts/seo-check.mjs` implemented (spec in the verify skill).
-- Fix the known `UserProfile.language` type errors so `typecheck` is green from day one.
-- Netlify (or Vercel) deploy preview of `migration/nextjs` builds and serves.
-- Exit: deploy preview serves `/fr` and `/en` home with correct raw `<html lang>`, title and canonical; all five npm scripts run green; unit tests cover route map, metadata helper, sanitizer.
+#### M1 — Foundation ◐
+Entry: D1–D5 approved ☑; `feature/builders-page` merged to `main` ☑; `main` merged into `migration/nextjs`.
+Built in three steps so each change can be verified on its own (refined 2026-10-02):
+- **Step 1 — React 19 on the current app ☑ 2026-10-02.** The Next.js App Router requires React 19. Upgraded (and the 28 unused UI components that blocked it removed) on the live Vite app and released, so the cutover carries one less change. `UserProfile.language` type errors were fixed in M0.
+- **Step 2 — Next.js serves the existing site unchanged ◐ (built + verified on a draft; awaiting commit OK).** Next.js 16 replaces Vite following the official "migrate from Vite" path. `index.html` → `app/layout.tsx`; `main.tsx` → `src/spa.tsx` + `src/ClientApp.tsx` (browser-only); `src/pages` → `src/views` (Next.js reserves `pages/`). Routing: `proxy.ts` sends every known path (`src/routing/spaRoutes.ts`) to **one** static app shell (`app/page.tsx`); anything else gets Next.js's static 404 (`app/not-found.tsx`) — a per-URL catch-all was rejected because it stores a page per requested URL (random URLs → stored 404s). Redirects in `next.config.ts` (301s kept). Security headers: one list in `config/security-headers.json`, applied by `next.config.ts` (rendered pages) **and** `netlify.toml` (static files, functions) — on Netlify neither reaches the other's responses; a unit test fails if they differ. Netlify Functions (subscribe, send-contact, sitemap…) keep working beside Next.js.
+  Exit: `check:site` passes on a draft deploy (146/146 on 2026-10-02); every interactive flow identical in Chrome (EN/FR, 375px + desktop); typecheck/lint/test/test:rules/build green.
+- **Step 3 — Foundations ☐.** Route map module + metadata helper (Section 9 rules 2 and 4); server data readers in `src/server/content/*` (rules-bound Firestore REST reads, D4, cacheable with fetch tags for D5), including Storage-offloaded post content, with article HTML sanitized on the server by the same `cleanArticleHtml` logic; Vitest (TypeScript unit tests) and Playwright (`tests/e2e/`); `scripts/seo-check.mjs` (spec in the verify skill).
+  Exit: unit tests cover route map, metadata helper, sanitizer and data mappers; `npm run typecheck | lint | test | test:rules | test:e2e | seo:check` exist and run green against the draft deploy (seo:check is expected to report the not-yet-server-rendered pages — it becomes a hard gate in M2).
+- next-intl (D2) is installed in M2, together with the first server-rendered text, so it is never added unused.
 
 #### M2 — Public content pages (the SEO core) ☐
 - Article translations: add a `translation_slug` field to posts (editor + Firestore) so an article can point to its real counterpart in the other language. Until it exists, articles declare no hreflang (M0 removed the broken same-slug version).
@@ -266,13 +274,7 @@ Entry: D1–D5 approved ☑; `feature/builders-page` merged to `main` (via `merg
 - Exit: indexed count rising, no new Soft 404 / duplicate-canonical entries.
 
 ### 10.3 Progress log
-- 2026-09-29 — Diagnosis verified; stack chosen (Next.js); plan written. Awaiting approval of D1–D5 and start of M0.
-- 2026-09-30 — M0 built and verified on Netlify draft deploys. Found and fixed beyond the plan: articles pointed hreflang at "Post not found" pages; `afinia.netlify.app` served an indexable duplicate; the sitemap rewrite only worked in production git builds (now the function's own path).
-- 2026-10-01 — Plan docs and M0 approved by the owner; M0 committed (`fix/seo-quick-wins`, `fix/comment-email-privacy`). D1–D5 still to be confirmed before M1.
-- 2026-10-02 — M1 step 1 released (`chore/react-19`): 28 unused UI components + 25 libraries removed; React 19.3 (required by the Next.js App Router) shipped on the current app first so the cutover carries one less change; social links fixed (they were saved to an uncovered `site_settings` collection — every save failed) and now drive the footer (Facebook only); sign-in journey translated EN/FR with friendly errors. Production: `check:site` 140/140, 9 interactive flows OK, FR/EN verified. Owner to re-save Admin → Social Links once.
-- 2026-10-02 — Builders + Storage release, in order: Firestore rules (live diff: +30 lines, nothing removed) → draft re-checked with live builder data → Storage rules → `main` pushed 2 s later (live 40 s after). Production: `check:site` **140/140**; sitemap 40 URLs incl. /en/builders/aliko-mohammad-dangote; all live rules == repo; 45 Storage files across 6 pages and all 25 published episodes load. Pending owner checks: one admin image upload, one contact-form message.
-- 2026-10-02 — D1–D5 approved. Builders branch reviewed and adapted on `merge/builders-into-main`: builder URLs language-prefixed (/fr|en/builders[/slug]); Storage owner folders close a live hole (any signed-up account could delete any blog image, builder photo or podcast file); 42 emulator rule tests. Lesson: the M0 rules release (from `main`) had silently removed the builders/contact rules that were live since 2026-07-26 — releases now compare the live rules with the repo first (verify skill).
-- 2026-10-01 — M0 released. Firestore rules published first (legacy `comments` anonymous read 200 → 403; 21 FR + 8 EN published posts still readable), then `main` deployed (live 50 s after push). `npm run check:site -- --base https://afrinia.org`: **127/127** (was 39/116), incl. `afinia.netlify.app`/`www`/`http` → 301. Live test comment with email: public doc had no email, `comment_contacts` doc 403 to the public and correct for admin; both deleted. Next: Search Console → "Validate fix" on Soft 404 and Duplicate canonical; confirm D1–D5 to start M1.
+Moved to `CurrentStatus.md` section 3 (newest first, with evidence) — one place for progress.
 
 ---
 
@@ -282,7 +284,7 @@ Tests exist to prove a claim, not to raise a number. Each layer answers a differ
 
 | Layer | Tool | Answers | Lives in |
 |---|---|---|---|
-| Unit | Node's built-in runner today (`npm test`, `tests/unit/`); Vitest from M1 for TypeScript | Is this function correct? (sitemap, route map, metadata, sanitizer, data mappers, revalidate auth) | `tests/unit/` (M1: next to the code, `*.test.ts`) |
+| Unit | Node's built-in runner today (`npm test`, `tests/unit/`); Vitest from M1 step 3 for TypeScript | Is this function correct? (sitemap, route map, metadata, sanitizer, data mappers, revalidate auth) | `tests/unit/` (M1: next to the code, `*.test.ts`) |
 | Rules | `@firebase/rules-unit-testing@3` + Firestore emulator (`npm run test:rules`, project `demo-afrinia`, port 8085) | Can a visitor/viewer/contributor/admin do exactly what they should — and nothing more? | `tests/rules/` |
 | Browser | Playwright | Does the feature work for a real user in EN and FR, at 375px and desktop? | `tests/e2e/` |
 | HTTP | `scripts/check-live-site.mjs` (`npm run check:site -- --base <url>`) | Do status codes, redirects, security headers, raw head tags and the sitemap behave as intended on a real Netlify deploy? | `scripts/` |
