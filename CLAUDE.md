@@ -98,7 +98,7 @@ Every change made to this codebase is treated as if it is going live to real use
 - **Public pages must be readable without JavaScript.** Their text, title, canonical and language must be present in the raw HTML the server sends (checked with `curl`, not only in a browser).
 
 **Testing checklist before any commit:**
-- [ ] `npm run typecheck`, `npm run lint` (0 errors), `npm test` pass; `npm run test:rules` too when `firestore.rules` or data access changed
+- [ ] `npm run typecheck`, `npm run lint` (0 errors), `npm test` pass — judged by **exit code 0**, never by reading one summary line; `npm run test:rules` when rules or data access changed; on the Next.js branch also `npm run test:integration` (server readers vs emulator) and `npm run test:e2e` (Playwright)
 - [ ] `npm run build` succeeds
 - [ ] The feature works on localhost, driven in a real browser
 - [ ] The feature works in both English and French
@@ -106,7 +106,7 @@ Every change made to this codebase is treated as if it is going live to real use
 - [ ] No console errors in the browser
 - [ ] Firestore security rules allow the new operations — and nothing more
 - [ ] All new strings have EN and FR translations
-- [ ] For routing, headers, redirects, sitemap or public pages: `npm run check:site` passes on a Netlify **draft deploy** (local `netlify serve` does not route like production — see the verify skill). From M1, also `npm run seo:check`.
+- [ ] For routing, headers, redirects, sitemap or public pages: `npm run check:site` passes on a Netlify **draft deploy** (local `netlify serve` does not route like production — see the verify skill), and `npm run seo:check` does not regress (from M2: passes).
 
 ---
 
@@ -222,23 +222,28 @@ Why: the migration takes ~2 weeks; these fixes stop the damage now and carry int
 - Exit: `npm run check:site -- --base https://afrinia.org` passes; legacy comment emails not anonymously readable; a test comment with email posts on production, its email stored only in `comment_contacts`, then deleted.
 - Not fixable before Next.js: page text still arrives via JavaScript; unknown article slugs under `/fr|en/blog/*` still answer 200; `/blog/:slug` picks a language client-side.
 
-#### M1 — Foundation ◐
+#### M1 — Foundation ☑ 2026-10-02
 Entry: D1–D5 approved ☑; `feature/builders-page` merged to `main` ☑; `main` merged into `migration/nextjs`.
 Built in three steps so each change can be verified on its own (refined 2026-10-02):
 - **Step 1 — React 19 on the current app ☑ 2026-10-02.** The Next.js App Router requires React 19. Upgraded (and the 28 unused UI components that blocked it removed) on the live Vite app and released, so the cutover carries one less change. `UserProfile.language` type errors were fixed in M0.
-- **Step 2 — Next.js serves the existing site unchanged ◐ (built + verified on a draft; awaiting commit OK).** Next.js 16 replaces Vite following the official "migrate from Vite" path. `index.html` → `app/layout.tsx`; `main.tsx` → `src/spa.tsx` + `src/ClientApp.tsx` (browser-only); `src/pages` → `src/views` (Next.js reserves `pages/`). Routing: `proxy.ts` sends every known path (`src/routing/spaRoutes.ts`) to **one** static app shell (`app/page.tsx`); anything else gets Next.js's static 404 (`app/not-found.tsx`) — a per-URL catch-all was rejected because it stores a page per requested URL (random URLs → stored 404s). Redirects in `next.config.ts` (301s kept). Security headers: one list in `config/security-headers.json`, applied by `next.config.ts` (rendered pages) **and** `netlify.toml` (static files, functions) — on Netlify neither reaches the other's responses; a unit test fails if they differ. Netlify Functions (subscribe, send-contact, sitemap…) keep working beside Next.js.
+- **Step 2 — Next.js serves the existing site unchanged ☑ 2026-10-02.** Next.js 16 replaces Vite following the official "migrate from Vite" path. `index.html` → `app/layout.tsx`; `main.tsx` → `src/spa.tsx` + `src/ClientApp.tsx` (browser-only); `src/pages` → `src/views` (Next.js reserves `pages/`). Routing: `proxy.ts` sends every known path (`src/routing/spaRoutes.ts`) to **one** static app shell (`app/page.tsx`); anything else gets Next.js's static 404 (`app/not-found.tsx`) — a per-URL catch-all was rejected because it stores a page per requested URL (random URLs → stored 404s). Redirects in `next.config.ts` (301s kept). Security headers: one list in `config/security-headers.json`, applied by `next.config.ts` (rendered pages) **and** `netlify.toml` (static files, functions) — on Netlify neither reaches the other's responses; a unit test fails if they differ. Netlify Functions (subscribe, send-contact, sitemap…) keep working beside Next.js.
   Exit: `check:site` passes on a draft deploy (146/146 on 2026-10-02); every interactive flow identical in Chrome (EN/FR, 375px + desktop); typecheck/lint/test/test:rules/build green.
-- **Step 3 — Foundations ☐.** Route map module + metadata helper (Section 9 rules 2 and 4); server data readers in `src/server/content/*` (rules-bound Firestore REST reads, D4, cacheable with fetch tags for D5), including Storage-offloaded post content, with article HTML sanitized on the server by the same `cleanArticleHtml` logic; Vitest (TypeScript unit tests) and Playwright (`tests/e2e/`); `scripts/seo-check.mjs` (spec in the verify skill).
-  Exit: unit tests cover route map, metadata helper, sanitizer and data mappers; `npm run typecheck | lint | test | test:rules | test:e2e | seo:check` exist and run green against the draft deploy (seo:check is expected to report the not-yet-server-rendered pages — it becomes a hard gate in M2).
+- **Step 3 — Foundations ☑ 2026-10-02.** Route map `src/routing/routes.ts` (every function takes the language, so D3 is a one-file change; old helpers delegate to it); metadata helper `src/seo/metadata.ts` (canonical + og:url + hreflang + OG/Twitter together); shared document mappers (`mappers.ts`) and Firebase identifiers (`publicConfig.ts`) used by browser and server; server readers `src/server/content/*` (anonymous Firestore REST, `server-only`, Next.js cache tags for D5) with the SAME article cleaner run on jsdom; Vitest (`npm test`), emulator integration tests (`npm run test:integration` — proves D4: drafts never returned, an unfiltered query is refused), Playwright (`npm run test:e2e`), `npm run seo:check` (rules unit-tested).
+  Exit (met on draft 2026-10-02): unit 66, integration 9, rules 45, e2e 25, check:site 146/146; seo:check reports the baseline **1/44** (= production) — M2 must reach 44/44.
 - next-intl (D2) is installed in M2, together with the first server-rendered text, so it is never added unused.
 
 #### M2 — Public content pages (the SEO core) ☐
-- Article translations: add a `translation_slug` field to posts (editor + Firestore) so an article can point to its real counterpart in the other language. Until it exists, articles declare no hreflang (M0 removed the broken same-slug version).
-- Article `/[locale]/blog/[slug]`: full body in raw HTML, `generateMetadata`, JSON-LD `Article` + `BreadcrumbList`, `hreflang` to the translation via `translation_slug`, `notFound()` for unknown/unpublished slugs, `generateStaticParams` for published posts + ISR.
-- Blog lists `/[locale]/blog` (with category filters as real URLs if indexable), builders list and profile `/[locale]/builders[/slug]`, home `/[locale]`, about, contact, audio, privacy, terms, unsubscribed.
-- Loading, empty and error states for every data fetch (`loading.tsx`, `error.tsx`, `not-found.tsx` per segment, translated).
-- Tests: unit tests for data mappers; Playwright tests per page type in both languages; `seo:check` against the deploy preview for every URL in the sitemap.
-- Exit: every public URL passes `seo:check` (200, own canonical, hreflang, lang, title, H1, body text present without JS); unknown slug returns 404; pages match the current design at 375px and desktop.
+Entry: M1 ☑ — `migration/nextjs` has the route map, `buildMetadata`, server readers (`src/server/content/*`), and the gates (`seo:check` baseline 1/44, Playwright 25/25, check:site 146/146). Work on `migration/m2-*` branches cut from `migration/nextjs`, in the worktree `../AfriniaOrg-nextjs`.
+Build order (each step is its own branch + draft-verified merge; the page moves from the app shell to a real server route, and `proxy.ts`/`spaRoutes.ts` lose that path):
+1. **i18n + locale layout:** install next-intl (D2) reading `src/locales/*.json` (convert i18next `{{x}}` to `{x}` for the strings server pages use); `app/[locale]/layout.tsx` with `<html lang={locale}>`; only `fr` and `en` are valid locales (others → 404). Header/Footer rendered on the server where possible (interactive parts stay client islands).
+2. **Article page `/[locale]/blog/[slug]`** — the highest-value page: full body in raw HTML (via `getPublishedPost`, already sanitized), `generateMetadata` via `buildMetadata` (type article, dates, image), JSON-LD `Article` + `BreadcrumbList`, `notFound()` for unknown/unpublished slugs, static params for published posts + on-demand cache. Comments, audio player and share stay client islands, mounted on the server-rendered page.
+3. **Blog listings `/[locale]/blog`** (hreflang pair via `listingAlternates`; category filter keeps working).
+4. **Builders `/[locale]/builders` and `/[locale]/builders/[slug]`.**
+5. **Home, about, audio, contact, privacy, terms, unsubscribed** — moving under `/fr` and `/en` (D3): the route map changes in one place; `/` → 308 `/fr`; old unprefixed URLs (`/about`, `/audio`, `/contact`, `/privacy`, `/terms`) → 301/308 to `/fr/...` (permanent redirects, tested).
+6. **Article translations:** a `translation_slug` field on posts (editor + Firestore) so an article can declare its real counterpart (hreflang). Until then articles declare no pair.
+- Per page: loading, empty and error states (`loading.tsx`, `error.tsx`, `not-found.tsx`, translated); design identical to today at 375px and desktop; `'use client'` only on interactive leaves (§9 rule 1).
+- Tests per step: unit tests for any new mapping/metadata logic; Playwright specs per page type (EN/FR, desktop + 375px); `seo:check` on the draft must not regress and the pages moved in that step must pass all rules.
+- Exit: `npm run seo:check -- --base <draft>` → **44/44** (every sitemap URL: 200, own canonical, hreflang where paired, correct lang, unique title, one H1, body text without JS, Article JSON-LD on articles; unknown slugs 404); check:site and Playwright green; no console errors.
 
 #### M3 — Interactive islands ☐
 - Client components only where interaction is needed: audio player (`useAudioPlayer`) + mini-player, comments (read + post), newsletter subscribe + popup, contact form, language switcher (links to the translated URL, not a toggle), social share, GA4 page-view tracking on route change.
@@ -284,14 +289,17 @@ Tests exist to prove a claim, not to raise a number. Each layer answers a differ
 
 | Layer | Tool | Answers | Lives in |
 |---|---|---|---|
-| Unit | Node's built-in runner today (`npm test`, `tests/unit/`); Vitest from M1 step 3 for TypeScript | Is this function correct? (sitemap, route map, metadata, sanitizer, data mappers, revalidate auth) | `tests/unit/` (M1: next to the code, `*.test.ts`) |
+| Unit | Vitest (`npm test`; on `main` until cutover: Node's runner) | Is this function correct? (sitemap, route map, metadata, sanitizer, mappers, seo rules, revalidate auth) | `tests/unit/` and next to the code (`*.test.ts`) |
+| Integration | Vitest + Firestore/Storage emulators (`npm run test:integration`) | Do the server content readers return exactly what the rules allow a visitor to see? | `tests/integration/` |
 | Rules | `@firebase/rules-unit-testing@3` + Firestore emulator (`npm run test:rules`, project `demo-afrinia`, port 8085) | Can a visitor/viewer/contributor/admin do exactly what they should — and nothing more? | `tests/rules/` |
 | Browser | Playwright | Does the feature work for a real user in EN and FR, at 375px and desktop? | `tests/e2e/` |
 | HTTP | `scripts/check-live-site.mjs` (`npm run check:site -- --base <url>`) | Do status codes, redirects, security headers, raw head tags and the sitemap behave as intended on a real Netlify deploy? | `scripts/` |
-| SEO | `scripts/seo-check.mjs` (from M1; no JavaScript, like a crawler) | Does the raw HTML of every public URL carry its content, canonical, language and correct status? | `scripts/` |
+| SEO | `scripts/seo-check.mjs` (`npm run seo:check -- --base <url>`; no JavaScript, like a crawler; rules in `scripts/lib/seo-rules.mjs`) | Does the raw HTML of every public URL carry its content, canonical, language and correct status? | `scripts/` |
 
 Rules:
 - Every bug fix adds a test that fails before the fix and passes after.
 - Uncommitted work never lives in a temporary/scratch folder (it is wiped when a session restarts); back it up beside the repo or commit once approved.
 - Tests never write to the production Firestore. Writes are tested against the emulator; browser tests against production data are read-only.
 - A phase's exit criteria cite the command that was run and its result.
+- A check passes when its command exits 0. Never infer success from one line of output (2026-10-02: "Tests 66 passed" hid "1 failed file").
+- Never automate logins against production Firebase (rate-limited after repeated attempts); login messages are a manual, one-off check.
