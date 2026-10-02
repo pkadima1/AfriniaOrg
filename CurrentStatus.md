@@ -14,12 +14,12 @@
 | **Live on afrinia.org** | `main` @ `3aebad8` — Vite app on **React 19**, with M0 SEO fixes, builder profiles, Storage owner folders, translated sign-in |
 | **Production health** | `npm run check:site -- --base https://afrinia.org` → **140/140** (2026-10-02). Sitemap: 40 URLs. Live Firestore/Storage rules == repo |
 | **Current phase** | Phase 1 — Authority Engine · Next.js migration **M1 — Foundation** (CLAUDE.md §10) |
-| **In progress** | ⏸ M1 step 2 — Next.js serves the existing site unchanged: **built and verified on a draft deploy (146/146)**, awaiting the owner's OK to commit to `migration/m1-nextjs-shell` → `migration/nextjs` (not production) |
-| **Next** | M1 step 3 — route map, metadata helper, server data readers, Vitest + Playwright, `seo:check` |
+| **In progress** | 🟡 M1 step 3 — foundations (route map, metadata helper, server data readers, Vitest, Playwright, `seo:check`) on `migration/m1-foundations` |
+| **Next** | M2 — server-rendered public pages (the SEO core) |
+| **Migration branch** | `migration/nextjs` @ `d8c400f` — Next.js 16 serving the existing app (draft-verified 146/146); not in production until M7 |
 | **Search Console baseline** | 11 indexed / 52 not indexed (GSC data of 2026-09-21). "Validate fix" started by the owner on Soft 404 + Duplicate canonical (2026-10-02) |
 
 ### Waiting on the owner ⏸
-0. **Approve committing M1 step 2** (Next.js shell) to the migration branch — evidence in section 3.
 1. **Admin → Social Links → Save** once (first save that actually persists — before 2026-10-02 every save was rejected).
 2. **Upload one image in the admin** (article cover or builder photo) — confirms the Storage owner-folder rules from the user's side.
 3. **Send one test message** via https://afrinia.org/contact — confirm the email arrives and the message appears in the admin inbox.
@@ -51,8 +51,8 @@
 | M0 — Stabilise the live site | ✅ 2026-10-01 | 39/116 → 127/127 crawler checks; commenter emails private |
 | Builders merge + Storage owner folders | ✅ 2026-10-02 | /fr\|en/builders; strangers can no longer delete media |
 | M1 step 1 — React 19 | ✅ 2026-10-02 | Released on the current app; + social links fix, sign-in EN/FR |
-| M1 step 2 — Next.js runs the existing site | ⏸ | built + verified on draft; awaiting commit OK |
-| M1 step 3 — foundations (route map, metadata, data layer, tests) | 🔴 | |
+| M1 step 2 — Next.js runs the existing site | ✅ 2026-10-02 | on `migration/nextjs` (not production) |
+| M1 step 3 — foundations (route map, metadata, data layer, tests) | 🟡 | |
 | M2 — Server-rendered public pages (SEO core) | 🔴 | |
 | M3 — Interactive islands | 🔴 | |
 | M4 — Auth & admin, publish → refresh | 🔴 | |
@@ -63,6 +63,10 @@
 ---
 
 ## 3. PROGRESS LOG (newest first)
+
+### 2026-10-02 — M1 step 2 committed ✅ · step 3 started 🟡
+- Owner approved. `migration/m1-nextjs-shell` (3 commits: rename `src/pages`→`src/views`; Next.js shell; header drift test + wider crawler checks) merged into `migration/nextjs`, then `main` merged in (docs) → `migration/nextjs` @ `d8c400f`, pushed. Each commit verified alone (clean install, typecheck, build, unit tests); the merged branch builds and passes.
+- Step 3 branch: `migration/m1-foundations` (worktree `../AfriniaOrg-nextjs`).
 
 ### 2026-10-02 — M1 step 2 built and verified on a draft ⏸ (awaiting commit OK)
 - Where: branch `migration/m1-nextjs-shell` (from `migration/nextjs` = `main` @ `3aebad8`), worktree `../AfriniaOrg-nextjs`; nothing reaches production before M7.
