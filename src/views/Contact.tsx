@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useSocialLinks } from '@/hooks/useSocialLinks';
 import { usePageMeta } from '@/utils/pageMeta';
 import { absoluteUrl } from '@/constants/site';
+import { routes } from '@/routing/routes';
+import { useUiLang } from '@/utils/languageUtils';
 
 const BG   = '#0a1628';
 const GOLD = '#B8912A';
@@ -20,10 +22,11 @@ const Contact = () => {
   const { t } = useTranslation();
   const { links: socialLinks } = useSocialLinks();
 
+  const lang = useUiLang();
   usePageMeta({
     title: 'Contact — Afrinia',
     description: 'Contactez l\'équipe Afrinia pour toute question éditoriale, partenariat ou collaboration.',
-    ogUrl: absoluteUrl('/contact'),
+    ogUrl: absoluteUrl(routes.contact(lang)),
   });
 
   return (

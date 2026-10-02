@@ -22,6 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { routes } from '@/routing/routes';
 
 const Settings = () => {
   const { isAuthenticated, signOut, user, isLoading: authLoading } = useAuth();
@@ -33,7 +34,7 @@ const Settings = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   if (!authLoading && !isAuthenticated) {
-    navigate('/');
+    navigate(routes.home());
     return null;
   }
 

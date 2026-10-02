@@ -28,24 +28,14 @@ import {
   Builder,
   getBuilderCollectionForLang,
   getCurrentTimestamp,
-  convertTimestamp,
 } from '@/integrations/firebase/types';
 import type { Lang } from '@/utils/languageUtils';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { ownedStoragePath, uniqueFileName } from '@/integrations/firebase/storagePaths';
+import { mapBuilder } from '@/integrations/firebase/mappers';
 
 function toBuilder(docSnap: { id: string; data: () => DocumentData }): Builder {
-  const d = docSnap.data();
-  return {
-    ...d,
-    id: docSnap.id,
-    countries: d?.countries ?? [],
-    decisionFrameworks: d?.decisionFrameworks ?? [],
-    keyFailures: d?.keyFailures ?? [],
-    mentalModels: d?.mentalModels ?? [],
-    created_at: convertTimestamp(d?.created_at),
-    updated_at: convertTimestamp(d?.updated_at),
-  } as Builder;
+  return mapBuilder(docSnap.id, docSnap.data() ?? {});
 }
 
 /** Public directory — published builders only, in one language collection. */

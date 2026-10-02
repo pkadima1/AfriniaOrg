@@ -3,7 +3,7 @@
  * (static files, functions) must hold exactly the list in
  * config/security-headers.json (used by next.config.ts for rendered pages).
  */
-import { test } from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 

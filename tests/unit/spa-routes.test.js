@@ -5,7 +5,7 @@
  * back soft 404s. Node runs the TypeScript module directly (type stripping).
  */
 
-import { test } from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { isKnownSpaPath, pathFromSlug } from '../../src/routing/spaRoutes.ts';
 
