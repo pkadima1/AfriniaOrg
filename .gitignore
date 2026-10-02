@@ -15,6 +15,10 @@ dist-ssr
 .next
 next-env.d.ts
 *.tsbuildinfo
+
+# Playwright reports
+test-results
+playwright-report
 *.local
 
 # Environment variables — never commit credentials

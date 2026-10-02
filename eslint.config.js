@@ -5,8 +5,9 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  // Generated output is not our code: Next.js build files and its type stub.
-  { ignores: ["dist", ".next", "next-env.d.ts"] },
+  // Generated output is not our code: Next.js and Netlify build files, test
+  // reports, and Next's type stub.
+  { ignores: ["dist", ".next", ".netlify", "test-results", "playwright-report", "next-env.d.ts"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

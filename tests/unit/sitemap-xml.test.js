@@ -5,7 +5,7 @@
  * Run: npm test  (Node's built-in test runner, no dependencies)
  */
 
-import { test } from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { buildSitemapXml, toDate, postLastmod, latest, escapeXml } from '../../netlify/functions/lib/sitemap-xml.js';
 
