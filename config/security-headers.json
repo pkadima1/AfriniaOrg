@@ -1,0 +1,9 @@
+{
+  "_comment": "Baseline security headers (M0). Single list: next.config.ts applies it to pages Next.js renders; netlify.toml [[headers]] must hold the same values for static files and functions (tests/unit/security-headers.test.js fails if they differ). CSP is added in M6.",
+  "headers": [
+    { "key": "X-Content-Type-Options", "value": "nosniff" },
+    { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+    { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+    { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=()" }
+  ]
+}

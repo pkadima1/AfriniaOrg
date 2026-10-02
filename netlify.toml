@@ -1,5 +1,6 @@
 [build]
-  publish = "dist"
+  # Next.js on Netlify (decision D1): Netlify's Next.js runtime serves .next.
+  publish = ".next"
   command = "npm run build"
 
 [build.environment]
@@ -23,11 +24,14 @@
 # The dynamic sitemap is NOT routed here: netlify/functions/sitemap.js claims
 # /sitemap.xml itself via `export const config = { path }` (see why there).
 
-# SPA catch-all lives in public/_redirects, NOT here.
-# [[context.production.redirects]] is silently ignored by Netlify — redirects
-# and headers cannot be scoped to deploy contexts in netlify.toml (docs:
-# file-based configuration → deploy contexts). Defining it there broke all
-# deep-route reloads from 2026-07-01 to 2026-07-08.
+# Redirects live in next.config.ts. Security headers: the list is
+# config/security-headers.json. next.config.ts applies it to pages Next.js
+# renders; the [[headers]] block below MUST repeat the same values for static
+# files and functions (Netlify applies neither mechanism to the other's
+# responses — verified on draft deploys 2026-10-02). A unit test enforces it.
+# Unknown URLs get a real 404 from app/not-found.tsx via src/routing/spaRoutes.ts.
+# Note: [[context.production.redirects]] is silently ignored by Netlify —
+# redirects and headers cannot be scoped to deploy contexts in netlify.toml.
 
 # Baseline security headers for every response (pages, assets, functions).
 # Deliberately NOT a Content-Security-Policy yet: a CSP must list every origin
