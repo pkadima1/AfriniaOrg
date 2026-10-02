@@ -9,7 +9,7 @@ import { AudioUpload } from '@/components/admin/AudioUpload';
 import { NewsletterSubscribers } from '@/components/admin/NewsletterSubscribers';
 import { ContactMessages } from '@/components/admin/ContactMessages';
 import { SocialLinksSettings } from '@/components/admin/SocialLinksSettings';
-import { NewsletterAdmin } from '@/pages/admin/NewsletterAdmin';
+import { NewsletterAdmin } from '@/views/admin/NewsletterAdmin';
 import { PopupTemplateAdmin } from '@/components/admin/PopupTemplateAdmin';
 import { ContributorRoute, AdminRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';

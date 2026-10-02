@@ -15,7 +15,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import Layout from '@/components/Layout';
-import NotFound from '@/pages/NotFound';
+import NotFound from '@/views/NotFound';
 import { getBuilderBySlug } from '@/integrations/firebase/builderService';
 import { getPostsByBuilderId } from '@/integrations/firebase/blogService';
 import {
