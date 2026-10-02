@@ -11,6 +11,7 @@ import {
   AudioEpisode,
   getAudioCollectionForLang,
 } from '@/integrations/firebase/types';
+import { mapEpisode } from '@/integrations/firebase/mappers';
 
 /**
  * Fetch published audio episodes for a given language.
@@ -33,7 +34,7 @@ export const fetchAudioEpisodes = async (
       firestoreLimit(count),
     );
     const snap = await getDocs(q);
-    return snap.docs.map(d => ({ ...d.data(), id: d.id } as AudioEpisode));
+    return snap.docs.map(d => mapEpisode(d.id, d.data()));
   } catch (error) {
     console.error('Error fetching audio episodes:', error);
     return [];
@@ -66,7 +67,7 @@ export const fetchEpisodeForPost = async (
     const snap = await getDocs(q);
     if (snap.empty) return null;
     const doc = snap.docs[0];
-    return { ...doc.data(), id: doc.id } as AudioEpisode;
+    return mapEpisode(doc.id, doc.data());
   } catch (error) {
     // An audio-player failure must never break the article page.
     console.error('Error fetching audio version for post:', error);

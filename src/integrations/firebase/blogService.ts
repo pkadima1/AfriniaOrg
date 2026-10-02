@@ -16,10 +16,10 @@ import {
   BlogPost,
   getCollectionForLang,
   getCurrentTimestamp,
-  convertTimestamp,
 } from '@/integrations/firebase/types';
 import { type Lang, getPostUrl } from '@/utils/languageUtils';
 import { absoluteUrl } from '@/constants/site';
+import { mapPost } from '@/integrations/firebase/mappers';
 import { ownedStoragePath, uniqueFileName } from '@/integrations/firebase/storagePaths';
 import { cleanArticleHtml } from '@/utils/contentSanitizer';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
@@ -81,15 +81,7 @@ function invalidateCache(lang: Lang) {
  *  Content is sanitized here so every consumer (public pages, admin editor)
  *  sees clean HTML even when the stored document carries paste artifacts. */
 function toBlogPost(docSnap: { id: string; data: () => DocumentData }): BlogPost {
-  const d = docSnap.data();
-  return {
-    ...d,
-    id: docSnap.id,
-    content: typeof d?.content === 'string' ? cleanArticleHtml(d.content) : d?.content,
-    created_at: convertTimestamp(d?.created_at),
-    updated_at: convertTimestamp(d?.updated_at),
-    published_at: d?.published_at != null ? convertTimestamp(d.published_at) : undefined,
-  } as BlogPost;
+  return mapPost(docSnap.id, docSnap.data() ?? {}, cleanArticleHtml);
 }
 
 // ── Storage content fetcher ───────────────────────────────────────────────────
