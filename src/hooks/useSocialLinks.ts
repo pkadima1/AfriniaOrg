@@ -1,31 +1,26 @@
 import { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/integrations/firebase/config';
-import type { SocialLink } from '@/components/admin/SocialLinksSettings';
+import {
+  DEFAULT_SOCIAL_LINKS,
+  fetchSocialLinks,
+  type SocialLink,
+} from '@/integrations/firebase/socialLinksService';
 
-const FALLBACK: SocialLink[] = [
-  { id: 'facebook', label: 'Facebook', url: 'https://www.facebook.com/profile.php?id=61573268155274', enabled: true },
-];
+const enabledOnly = (links: SocialLink[]) => links.filter(l => l.enabled);
 
+/**
+ * The social links switched on in the admin panel (footer, Contact page).
+ * Starts with — and falls back to — the defaults, so the page never shows
+ * links that were not explicitly enabled, even while loading or offline.
+ */
 export function useSocialLinks(): { links: SocialLink[]; loading: boolean } {
-  const [links, setLinks] = useState<SocialLink[]>(FALLBACK);
+  const [links, setLinks] = useState<SocialLink[]>(enabledOnly(DEFAULT_SOCIAL_LINKS));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const snap = await getDoc(doc(db, 'site_settings', 'social_links'));
-        if (snap.exists()) {
-          const data = snap.data() as { links: SocialLink[] };
-          setLinks((data.links ?? FALLBACK).filter(l => l.enabled));
-        }
-      } catch {
-        /* use fallback */
-      } finally {
-        setLoading(false);
-      }
-    };
-    void load();
+    fetchSocialLinks()
+      .then(all => setLinks(enabledOnly(all)))
+      .catch(err => console.error('Error loading social links:', err))
+      .finally(() => setLoading(false));
   }, []);
 
   return { links, loading };
