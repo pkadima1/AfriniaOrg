@@ -782,5 +782,84 @@
       "terms": "Terms"
     },
     "copyright": "Afrinia. All rights reserved."
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "createAccount": "Create Account",
+    "forgotPassword": "Forgot your password?",
+    "close": "Close",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "titles": {
+      "login": "Welcome Back",
+      "register": "Create Account",
+      "reset": "Reset Password"
+    },
+    "subtitles": {
+      "login": "Sign in to your account",
+      "register": "Create a new account to get started",
+      "reset": "Enter your email to receive a password reset link"
+    },
+    "fields": {
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "newPasswordPlaceholder": "Create a strong password",
+      "passwordHint": "Minimum 6 characters",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name"
+    },
+    "reset": {
+      "hint": "We'll send you a link to reset your password",
+      "submit": "Send Reset Email",
+      "back": "Back to Sign In"
+    },
+    "errors": {
+      "missingCredentials": "Please enter both email and password",
+      "missingFields": "Please fill in all fields",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters long",
+      "invalidCredentials": "Incorrect email or password.",
+      "emailInUse": "An account already exists with this email address.",
+      "invalidEmail": "This email address is not valid.",
+      "tooManyRequests": "Too many attempts. Please wait a moment and try again.",
+      "network": "Network error. Check your connection and try again.",
+      "unexpected": "An unexpected error occurred. Please try again."
+    },
+    "toasts": {
+      "success": "Success",
+      "error": "Error",
+      "signedIn": "Signed in! Redirecting to your account…",
+      "registered": "Account created! Redirecting to your profile…",
+      "resetSent": "Password reset email sent! Check your inbox.",
+      "signedOut": "You are signed out.",
+      "signOutFailed": "Failed to sign out. Please try again."
+    },
+    "menu": {
+      "profile": "Profile",
+      "settings": "Settings",
+      "adminDashboard": "Admin Dashboard",
+      "manageBlog": "Manage Blog",
+      "logout": "Log out",
+      "userFallback": "User"
+    },
+    "guard": {
+      "checking": "Checking authentication…",
+      "requiredTitle": "Authentication Required",
+      "requiredBody": "You need to sign in to access this page.",
+      "deniedTitle": "Access Denied",
+      "deniedBody": "You don't have permission to access this page.",
+      "roleInfo": "Your current role is {{role}}. This page requires {{required}} access or higher.",
+      "goBack": "Go Back"
+    },
+    "roles": {
+      "admin": "admin",
+      "contributor": "contributor",
+      "viewer": "viewer"
+    }
   }
 }

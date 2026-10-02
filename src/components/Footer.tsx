@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getBlogUrl, getBuildersUrl, type Lang } from '@/utils/languageUtils';
+import { useSocialLinks } from '@/hooks/useSocialLinks';
 
 const A = {
   bg2:    '#131f35',
@@ -58,6 +59,7 @@ const Footer = () => {
   const { t, i18n } = useTranslation();
   const lang: Lang = i18n.language === 'fr' ? 'fr' : 'en';
   const blogUrl = getBlogUrl(lang);
+  const { links: socialLinks } = useSocialLinks();
 
   return (
     <footer style={{ background: A.bg2, borderTop: `1px solid ${A.border}`, padding: '60px 40px 32px' }}>
@@ -117,17 +119,17 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Follow */}
-        <div>
-          <div style={colTitle}>{t('afrinia_footer.follow')}</div>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            <FooterAnchor href="https://linkedin.com">LinkedIn</FooterAnchor>
-            <FooterAnchor href="https://spotify.com">Spotify</FooterAnchor>
-            <FooterAnchor href="https://podcasts.apple.com">Apple Podcasts</FooterAnchor>
-            <FooterAnchor href="https://twitter.com">Twitter / X</FooterAnchor>
-            <FooterAnchor href="https://youtube.com">YouTube</FooterAnchor>
-          </ul>
-        </div>
+        {/* Follow — only the platforms switched on in Admin → Social Links */}
+        {socialLinks.length > 0 && (
+          <div>
+            <div style={colTitle}>{t('afrinia_footer.follow')}</div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {socialLinks.map(link => (
+                <FooterAnchor key={link.id} href={link.url}>{link.label}</FooterAnchor>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Bottom bar */}

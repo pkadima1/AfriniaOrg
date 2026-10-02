@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '@/integrations/firebase/config';
+import {
+  DEFAULT_SOCIAL_LINKS,
+  fetchSocialLinks,
+  saveSocialLinks,
+  type SocialLink,
+} from '@/integrations/firebase/socialLinksService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,18 +14,6 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Loader2, Save, Globe, Facebook, Linkedin, Twitter } from 'lucide-react';
 
-export interface SocialLink {
-  id: string;
-  label: string;
-  url: string;
-  enabled: boolean;
-}
-
-const DEFAULT_LINKS: SocialLink[] = [
-  { id: 'linkedin',  label: 'LinkedIn',    url: 'https://linkedin.com/company/afrinia',                      enabled: false },
-  { id: 'twitter',   label: 'X / Twitter', url: 'https://x.com/afrinia_org',                                 enabled: false },
-  { id: 'facebook',  label: 'Facebook',    url: 'https://www.facebook.com/profile.php?id=61573268155274',    enabled: true  },
-];
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   linkedin: <Linkedin className="w-4 h-4" />,
@@ -29,10 +21,8 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   facebook: <Facebook className="w-4 h-4" />,
 };
 
-const DOC_REF = () => doc(db, 'site_settings', 'social_links');
-
 export function SocialLinksSettings() {
-  const [links, setLinks] = useState<SocialLink[]>(DEFAULT_LINKS);
+  const [links, setLinks] = useState<SocialLink[]>(DEFAULT_SOCIAL_LINKS);
   const [loading, setLoading] = useState(true);
   const [saving,  setSaving]  = useState(false);
 
@@ -40,17 +30,7 @@ export function SocialLinksSettings() {
   useEffect(() => {
     const load = async () => {
       try {
-        const snap = await getDoc(DOC_REF());
-        if (snap.exists()) {
-          const data = snap.data() as { links: SocialLink[] };
-          // Merge with defaults so new platforms appear automatically
-          const saved = data.links ?? [];
-          const merged = DEFAULT_LINKS.map(def => {
-            const found = saved.find(s => s.id === def.id);
-            return found ? { ...def, ...found } : def;
-          });
-          setLinks(merged);
-        }
+        setLinks(await fetchSocialLinks());
       } catch (e) {
         console.error(e);
       } finally {
@@ -66,7 +46,7 @@ export function SocialLinksSettings() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await setDoc(DOC_REF(), { links, updatedAt: new Date().toISOString() });
+      await saveSocialLinks(links);
       toast({ title: 'Saved', description: 'Social links updated successfully.' });
     } catch (e) {
       console.error(e);

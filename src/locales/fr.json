@@ -782,5 +782,84 @@
       "terms": "Mentions légales"
     },
     "copyright": "Afrinia. Tous droits réservés."
+  },
+  "auth": {
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "createAccount": "Créer un compte",
+    "forgotPassword": "Mot de passe oublié ?",
+    "close": "Fermer",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "titles": {
+      "login": "Bon retour parmi nous",
+      "register": "Créer un compte",
+      "reset": "Réinitialiser le mot de passe"
+    },
+    "subtitles": {
+      "login": "Connectez-vous à votre compte",
+      "register": "Créez un compte pour commencer",
+      "reset": "Saisissez votre e-mail pour recevoir un lien de réinitialisation"
+    },
+    "fields": {
+      "email": "Adresse e-mail",
+      "emailPlaceholder": "Saisissez votre adresse e-mail",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Saisissez votre mot de passe",
+      "newPasswordPlaceholder": "Choisissez un mot de passe robuste",
+      "passwordHint": "6 caractères minimum",
+      "confirmPassword": "Confirmer le mot de passe",
+      "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Saisissez votre nom complet"
+    },
+    "reset": {
+      "hint": "Nous vous enverrons un lien pour réinitialiser votre mot de passe",
+      "submit": "Envoyer l'e-mail de réinitialisation",
+      "back": "Retour à la connexion"
+    },
+    "errors": {
+      "missingCredentials": "Veuillez saisir votre e-mail et votre mot de passe",
+      "missingFields": "Veuillez remplir tous les champs",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+      "invalidCredentials": "E-mail ou mot de passe incorrect.",
+      "emailInUse": "Un compte existe déjà avec cette adresse e-mail.",
+      "invalidEmail": "Cette adresse e-mail n'est pas valide.",
+      "tooManyRequests": "Trop de tentatives. Patientez un instant puis réessayez.",
+      "network": "Erreur réseau. Vérifiez votre connexion et réessayez.",
+      "unexpected": "Une erreur inattendue s'est produite. Veuillez réessayer."
+    },
+    "toasts": {
+      "success": "Succès",
+      "error": "Erreur",
+      "signedIn": "Connexion réussie ! Redirection vers votre compte…",
+      "registered": "Compte créé ! Redirection vers votre profil…",
+      "resetSent": "E-mail de réinitialisation envoyé ! Vérifiez votre boîte de réception.",
+      "signedOut": "Vous êtes déconnecté.",
+      "signOutFailed": "La déconnexion a échoué. Veuillez réessayer."
+    },
+    "menu": {
+      "profile": "Profil",
+      "settings": "Paramètres",
+      "adminDashboard": "Tableau de bord admin",
+      "manageBlog": "Gérer le blog",
+      "logout": "Se déconnecter",
+      "userFallback": "Utilisateur"
+    },
+    "guard": {
+      "checking": "Vérification de la connexion…",
+      "requiredTitle": "Connexion requise",
+      "requiredBody": "Vous devez vous connecter pour accéder à cette page.",
+      "deniedTitle": "Accès refusé",
+      "deniedBody": "Vous n'avez pas l'autorisation d'accéder à cette page.",
+      "roleInfo": "Votre rôle actuel est {{role}}. Cette page requiert le niveau {{required}} ou supérieur.",
+      "goBack": "Retour"
+    },
+    "roles": {
+      "admin": "admin",
+      "contributor": "contributeur",
+      "viewer": "lecteur"
+    }
   }
 }

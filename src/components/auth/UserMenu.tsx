@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 /**
  * UserMenu component that displays authentication controls and user profile options
@@ -42,6 +43,7 @@ export function UserMenu() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   /**
    * Handle user sign out
@@ -51,21 +53,21 @@ export function UserMenu() {
       const { error } = await signOut();
       if (error) {
         toast({
-          title: 'Error',
-          description: 'Failed to sign out. Please try again.',
+          title: t('auth.toasts.error'),
+          description: t('auth.toasts.signOutFailed'),
           variant: 'destructive',
         });
       } else {
         toast({
-          title: 'Success',
-          description: 'Successfully signed out.',
+          title: t('auth.toasts.success'),
+          description: t('auth.toasts.signedOut'),
         });
         navigate('/');
       }
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'An unexpected error occurred.',
+        title: t('auth.toasts.error'),
+        description: t('auth.errors.unexpected'),
         variant: 'destructive',
       });
     }
@@ -142,7 +144,7 @@ export function UserMenu() {
           className="text-gray-300 hover:text-white"
         >
           <LogIn className="w-4 h-4 mr-2" />
-          Sign In
+          {t('auth.signIn')}
         </Button>
         
         <Button
@@ -154,7 +156,7 @@ export function UserMenu() {
           className="bg-accent-blue hover:bg-accent-blue/80"
         >
           <UserPlus className="w-4 h-4 mr-2" />
-          Sign Up
+          {t('auth.signUp')}
         </Button>
 
         <AuthModal
@@ -173,7 +175,7 @@ export function UserMenu() {
           <Avatar className="h-8 w-8">
             <AvatarImage 
               src={userProfile?.avatar_url} 
-              alt={userProfile?.full_name || userProfile?.email || 'User'} 
+              alt={userProfile?.full_name || userProfile?.email || t('auth.menu.userFallback')} 
             />
             <AvatarFallback className="bg-accent-blue text-white text-xs">
               {getUserInitials(userProfile?.full_name, userProfile?.email)}
@@ -187,12 +189,12 @@ export function UserMenu() {
           <div className="flex flex-col space-y-2">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-white">
-                {userProfile?.full_name || 'User'}
+                {userProfile?.full_name || t('auth.menu.userFallback')}
               </p>
               <Badge className={`text-xs ${getRoleColor(userProfile?.role)}`}>
                 <span className="flex items-center gap-1">
                   {getRoleIcon(userProfile?.role)}
-                  {userProfile?.role}
+                  {userProfile?.role ? t(`auth.roles.${userProfile.role}`, userProfile.role) : null}
                 </span>
               </Badge>
             </div>
@@ -210,7 +212,7 @@ export function UserMenu() {
             onClick={() => navigate('/profile')}
           >
             <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
+            <span>{t('auth.menu.profile')}</span>
           </DropdownMenuItem>
           
           <DropdownMenuItem 
@@ -218,7 +220,7 @@ export function UserMenu() {
             onClick={() => navigate('/settings')}
           >
             <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
+            <span>{t('auth.menu.settings')}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -233,7 +235,7 @@ export function UserMenu() {
                   onClick={() => navigate('/admin')}
                 >
                   <Shield className="mr-2 h-4 w-4" />
-                  <span>Admin Dashboard</span>
+                  <span>{t('auth.menu.adminDashboard')}</span>
                 </DropdownMenuItem>
               )}
               
@@ -243,7 +245,7 @@ export function UserMenu() {
                   onClick={() => navigate('/admin/blog')}
                 >
                   <Edit3 className="mr-2 h-4 w-4" />
-                  <span>Manage Blog</span>
+                  <span>{t('auth.menu.manageBlog')}</span>
                 </DropdownMenuItem>
               )}
             </DropdownMenuGroup>
@@ -257,7 +259,7 @@ export function UserMenu() {
           onClick={handleSignOut}
         >
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+          <span>{t('auth.menu.logout')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

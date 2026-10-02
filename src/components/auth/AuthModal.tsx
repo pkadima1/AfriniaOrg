@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Loader2, LogIn, UserPlus, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
+import { authErrorKey } from '@/components/auth/authErrorKey';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -20,6 +22,7 @@ interface AuthModalProps {
  */
 export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalProps) {
   const { signIn, signUp, resetPassword } = useAuth();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +58,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
     try {
       // Validate inputs
       if (!loginForm.email || !loginForm.password) {
-        setError('Please enter both email and password');
+        setError(t('auth.errors.missingCredentials'));
         setIsLoading(false);
         return;
       }
@@ -65,19 +68,19 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
       if (error) {
         console.error('[AuthModal] Login error:', error.message);
-        setError(error.message);
+        setError(t(authErrorKey(error)));
       } else {
         console.log('[AuthModal] Login successful, closing modal');
         toast({
-          title: 'Success',
-          description: 'Successfully signed in! Redirecting to your account...',
+          title: t('auth.toasts.success'),
+          description: t('auth.toasts.signedIn'),
         });
         // Give a moment for UI to update before closing
         setTimeout(() => onClose(), 500);
       }
     } catch (err) {
       console.error('[AuthModal] Unexpected login error:', err);
-      setError('An unexpected error occurred. Please try again.');
+      setError(t('auth.errors.unexpected'));
     } finally {
       setIsLoading(false);
     }
@@ -93,21 +96,21 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
     // Validate passwords match
     if (registerForm.password !== registerForm.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.errors.passwordMismatch'));
       setIsLoading(false);
       return;
     }
 
     // Validate password strength
     if (registerForm.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError(t('auth.errors.passwordTooShort'));
       setIsLoading(false);
       return;
     }
 
     // Validate required fields
     if (!registerForm.email || !registerForm.password || !registerForm.fullName) {
-      setError('Please fill in all fields');
+      setError(t('auth.errors.missingFields'));
       setIsLoading(false);
       return;
     }
@@ -122,19 +125,19 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
 
       if (error) {
         console.error('[AuthModal] Signup error:', error.message);
-        setError(error.message);
+        setError(t(authErrorKey(error)));
       } else {
         console.log('[AuthModal] Signup successful, closing modal');
         toast({
-          title: 'Success',
-          description: 'Account created! Redirecting to your profile...',
+          title: t('auth.toasts.success'),
+          description: t('auth.toasts.registered'),
         });
         // Give a moment for UI to update before closing
         setTimeout(() => onClose(), 500);
       }
     } catch (err) {
       console.error('[AuthModal] Unexpected signup error:', err);
-      setError('An unexpected error occurred. Please try again.');
+      setError(t('auth.errors.unexpected'));
     } finally {
       setIsLoading(false);
     }
@@ -152,16 +155,16 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
       const { error } = await resetPassword(resetForm.email);
 
       if (error) {
-        setError(error.message);
+        setError(t(authErrorKey(error)));
       } else {
         toast({
-          title: 'Success',
-          description: 'Password reset email sent! Check your inbox.',
+          title: t('auth.toasts.success'),
+          description: t('auth.toasts.resetSent'),
         });
         setShowResetForm(false);
       }
-    } catch (err) {
-      setError('An unexpected error occurred');
+    } catch {
+      setError(t('auth.errors.unexpected'));
     } finally {
       setIsLoading(false);
     }
@@ -178,20 +181,16 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
               variant="ghost"
               size="sm"
               onClick={onClose}
+              aria-label={t('auth.close')}
               className="absolute right-2 top-2 h-8 w-8 p-0 text-gray-400 hover:text-white"
             >
               <X className="h-4 w-4" />
             </Button>
             <CardTitle className="text-2xl text-white mb-2">
-              {showResetForm ? 'Reset Password' : activeTab === 'login' ? 'Welcome Back' : 'Create Account'}
+              {t(showResetForm ? 'auth.titles.reset' : activeTab === 'login' ? 'auth.titles.login' : 'auth.titles.register')}
             </CardTitle>
             <p className="text-sm text-gray-400">
-              {showResetForm 
-                ? 'Enter your email to receive a password reset link' 
-                : activeTab === 'login' 
-                  ? 'Sign in to your account' 
-                  : 'Create a new account to get started'
-              }
+              {t(showResetForm ? 'auth.subtitles.reset' : activeTab === 'login' ? 'auth.subtitles.login' : 'auth.subtitles.register')}
             </p>
           </CardHeader>
           
@@ -205,7 +204,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
             {showResetForm ? (
               <form onSubmit={handleResetPassword} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="reset-email" className="text-white text-sm font-medium">Email Address</Label>
+                  <Label htmlFor="reset-email" className="text-white text-sm font-medium">{t('auth.fields.email')}</Label>
                   <Input
                     id="reset-email"
                     type="email"
@@ -213,13 +212,13 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     onChange={(e) =>
                       setResetForm(prev => ({ ...prev, email: e.target.value }))
                     }
-                    placeholder="Enter your email address"
+                    placeholder={t('auth.fields.emailPlaceholder')}
                     required
                     disabled={isLoading}
                     className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 h-11"
                   />
                   <p className="text-xs text-gray-400">
-                    We'll send you a link to reset your password
+                    {t('auth.reset.hint')}
                   </p>
                 </div>
 
@@ -232,7 +231,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     {isLoading ? (
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     ) : null}
-                    Send Reset Email
+                    {t('auth.reset.submit')}
                   </Button>
 
                   <Button
@@ -242,7 +241,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     onClick={() => setShowResetForm(false)}
                     disabled={isLoading}
                   >
-                    Back to Sign In
+                    {t('auth.reset.back')}
                   </Button>
                 </div>
               </form>
@@ -260,7 +259,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     }`}
                   >
                     <LogIn className="w-4 h-4 mr-2" />
-                    Sign In
+                    {t('auth.signIn')}
                   </button>
                   <button
                     type="button"
@@ -272,7 +271,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     }`}
                   >
                     <UserPlus className="w-4 h-4 mr-2" />
-                    Sign Up
+                    {t('auth.signUp')}
                   </button>
                 </div>
 
@@ -280,7 +279,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                 {activeTab === 'login' && (
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="login-email" className="text-white text-sm font-medium">Email Address</Label>
+                      <Label htmlFor="login-email" className="text-white text-sm font-medium">{t('auth.fields.email')}</Label>
                       <Input
                         id="login-email"
                         type="email"
@@ -288,7 +287,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         onChange={(e) =>
                           setLoginForm(prev => ({ ...prev, email: e.target.value }))
                         }
-                        placeholder="Enter your email address"
+                        placeholder={t('auth.fields.emailPlaceholder')}
                         required
                         disabled={isLoading}
                         className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 h-11"
@@ -296,7 +295,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="login-password" className="text-white text-sm font-medium">Password</Label>
+                      <Label htmlFor="login-password" className="text-white text-sm font-medium">{t('auth.fields.password')}</Label>
                       <div className="relative">
                         <Input
                           id="login-password"
@@ -305,7 +304,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                           onChange={(e) =>
                             setLoginForm(prev => ({ ...prev, password: e.target.value }))
                           }
-                          placeholder="Enter your password"
+                          placeholder={t('auth.fields.passwordPlaceholder')}
                           required
                           disabled={isLoading}
                           className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 h-11 pr-10"
@@ -316,6 +315,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                           size="sm"
                           className="absolute right-0 top-0 h-full px-3 hover:bg-transparent text-gray-400 hover:text-white"
                           onClick={() => setShowPassword(!showPassword)}
+                          aria-label={t(showPassword ? 'auth.hidePassword' : 'auth.showPassword')}
                           disabled={isLoading}
                         >
                           {showPassword ? (
@@ -338,7 +338,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         ) : (
                           <LogIn className="w-4 h-4 mr-2" />
                         )}
-                        Sign In
+                        {t('auth.signIn')}
                       </Button>
 
                       <Button
@@ -348,7 +348,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         onClick={() => setShowResetForm(true)}
                         disabled={isLoading}
                       >
-                        Forgot your password?
+                        {t('auth.forgotPassword')}
                       </Button>
                     </div>
                   </form>
@@ -358,7 +358,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                 {activeTab === 'register' && (
                   <form onSubmit={handleRegister} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="register-name" className="text-white text-sm font-medium">Full Name</Label>
+                      <Label htmlFor="register-name" className="text-white text-sm font-medium">{t('auth.fields.fullName')}</Label>
                       <Input
                         id="register-name"
                         type="text"
@@ -366,14 +366,14 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         onChange={(e) =>
                           setRegisterForm(prev => ({ ...prev, fullName: e.target.value }))
                         }
-                        placeholder="Enter your full name"
+                        placeholder={t('auth.fields.fullNamePlaceholder')}
                         disabled={isLoading}
                         className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 h-11"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="register-email" className="text-white text-sm font-medium">Email Address</Label>
+                      <Label htmlFor="register-email" className="text-white text-sm font-medium">{t('auth.fields.email')}</Label>
                       <Input
                         id="register-email"
                         type="email"
@@ -381,7 +381,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         onChange={(e) =>
                           setRegisterForm(prev => ({ ...prev, email: e.target.value }))
                         }
-                        placeholder="Enter your email address"
+                        placeholder={t('auth.fields.emailPlaceholder')}
                         required
                         disabled={isLoading}
                         className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-blue-500 h-11"
@@ -389,7 +389,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="register-password" className="text-white text-sm font-medium">Password</Label>
+                      <Label htmlFor="register-password" className="text-white text-sm font-medium">{t('auth.fields.password')}</Label>
                       <div className="relative">
                         <Input
                           id="register-password"
@@ -398,7 +398,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                           onChange={(e) =>
                             setRegisterForm(prev => ({ ...prev, password: e.target.value }))
                           }
-                          placeholder="Create a strong password"
+                          placeholder={t('auth.fields.newPasswordPlaceholder')}
                           required
                           disabled={isLoading}
                           minLength={6}
@@ -410,6 +410,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                           size="sm"
                           className="absolute right-0 top-0 h-full px-3 hover:bg-transparent text-gray-400 hover:text-white"
                           onClick={() => setShowPassword(!showPassword)}
+                          aria-label={t(showPassword ? 'auth.hidePassword' : 'auth.showPassword')}
                           disabled={isLoading}
                         >
                           {showPassword ? (
@@ -419,11 +420,11 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                           )}
                         </Button>
                       </div>
-                      <p className="text-xs text-gray-400">Minimum 6 characters</p>
+                      <p className="text-xs text-gray-400">{t('auth.fields.passwordHint')}</p>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="register-confirm-password" className="text-white text-sm font-medium">Confirm Password</Label>
+                      <Label htmlFor="register-confirm-password" className="text-white text-sm font-medium">{t('auth.fields.confirmPassword')}</Label>
                       <Input
                         id="register-confirm-password"
                         type={showPassword ? 'text' : 'password'}
@@ -431,7 +432,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                         onChange={(e) =>
                           setRegisterForm(prev => ({ ...prev, confirmPassword: e.target.value }))
                         }
-                        placeholder="Confirm your password"
+                        placeholder={t('auth.fields.confirmPasswordPlaceholder')}
                         required
                         disabled={isLoading}
                         minLength={6}
@@ -449,7 +450,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                       ) : (
                         <UserPlus className="w-4 h-4 mr-2" />
                       )}
-                      Create Account
+                      {t('auth.createAccount')}
                     </Button>
                   </form>
                 )}
@@ -463,7 +464,7 @@ export function AuthModal({ isOpen, onClose, defaultTab = 'login' }: AuthModalPr
                 disabled={isLoading}
                 className="text-sm text-gray-400 hover:text-white"
               >
-                Close
+                {t('auth.close')}
               </Button>
             </div>
           </CardContent>
