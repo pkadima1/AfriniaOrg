@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, FileText, Settings, Users, Crown, Edit3, Mic, Mail, Share2, BellRing, MessageSquare, UserSquare2 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
+import { routes } from '@/routing/routes';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const AdminDashboard = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate('/')}>
+          <Button variant="ghost" onClick={() => navigate(routes.home())}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Site
           </Button>

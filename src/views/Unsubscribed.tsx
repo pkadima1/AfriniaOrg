@@ -12,6 +12,7 @@
 
 import { useSearchParams, Link } from 'react-router-dom';
 import Layout from '../components/Layout';
+import { routes } from '@/routing/routes';
 
 const A = {
   bg:    '#0f172a',
@@ -137,7 +138,7 @@ const Unsubscribed = () => {
           {/* Actions */}
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link
-              to="/"
+              to={routes.home(lang)}
               style={{
                 display: 'inline-block',
                 fontFamily: A.sans,

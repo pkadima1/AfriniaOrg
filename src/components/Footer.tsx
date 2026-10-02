@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getBlogUrl, getBuildersUrl, type Lang } from '@/utils/languageUtils';
 import { useSocialLinks } from '@/hooks/useSocialLinks';
+import { routes } from '@/routing/routes';
 
 const A = {
   bg2:    '#131f35',
@@ -111,11 +112,11 @@ const Footer = () => {
         <div>
           <div style={colTitle}>{t('afrinia_footer.platform')}</div>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            <FooterLink to="/about">{t('afrinia_footer.links.about')}</FooterLink>
-            <FooterLink to="/audio">{t('afrinia_footer.links.podcast')}</FooterLink>
+            <FooterLink to={routes.about(lang)}>{t('afrinia_footer.links.about')}</FooterLink>
+            <FooterLink to={routes.audio(lang)}>{t('afrinia_footer.links.podcast')}</FooterLink>
             <FooterLink to="/#newsletter">{t('afrinia_footer.links.subscribe')}</FooterLink>
-            <FooterLink to="/contact">{t('afrinia_footer.links.writeForUs')}</FooterLink>
-            <FooterLink to="/contact">{t('afrinia_footer.links.contact')}</FooterLink>
+            <FooterLink to={routes.contact(lang)}>{t('afrinia_footer.links.writeForUs')}</FooterLink>
+            <FooterLink to={routes.contact(lang)}>{t('afrinia_footer.links.contact')}</FooterLink>
           </ul>
         </div>
 
@@ -146,8 +147,8 @@ const Footer = () => {
         </span>
         <div style={{ display: 'flex', gap: 20 }}>
           {[
-            { label: t('afrinia_footer.links.privacy'), to: '/privacy' },
-            { label: t('afrinia_footer.links.terms'), to: '/terms' },
+            { label: t('afrinia_footer.links.privacy'), to: routes.privacy(lang) },
+            { label: t('afrinia_footer.links.terms'), to: routes.terms(lang) },
           ].map(l => (
             <Link
               key={l.to}

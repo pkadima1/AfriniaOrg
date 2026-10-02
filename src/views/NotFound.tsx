@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import Layout from "@/components/Layout";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+import { routes } from '@/routing/routes';
 
 const NotFound = () => {
   const location = useLocation();
@@ -20,7 +21,7 @@ const NotFound = () => {
     <Layout>
       <PageHeader title={t('notFound.title')} subtitle={t('notFound.subtitle')} />
       <div className="container mx-auto px-4 py-12 text-center">
-        <Link to="/">
+        <Link to={routes.home()}>
           <Button className="apple-button">
             {t('notFound.backHome')}
           </Button>

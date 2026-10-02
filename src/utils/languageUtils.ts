@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { routes } from '@/routing/routes';
 
 export type Lang = 'en' | 'fr';
 export const SUPPORTED_LANGS: readonly Lang[] = ['en', 'fr'] as const;
@@ -27,24 +28,20 @@ export function isSupportedLang(lang: string | undefined): lang is Lang {
   return lang === 'en' || lang === 'fr';
 }
 
-/** /en/blog or /fr/blog */
-export function getBlogUrl(lang: Lang): string {
-  return `/${lang}/blog`;
-}
+// Long-standing names for the route map's section URLs (src/routing/routes.ts
+// builds them; these only keep existing call sites readable).
+export const getBlogUrl = routes.blog;
+export const getPostUrl = routes.article;
+export const getBuildersUrl = routes.builders;
+export const getBuilderUrl = routes.builder;
 
-/** /en/blog/my-post or /fr/blog/mon-article */
-export function getPostUrl(lang: Lang, slug: string): string {
-  return `/${lang}/blog/${slug}`;
-}
-
-/** /en/builders or /fr/builders */
-export function getBuildersUrl(lang: Lang): string {
-  return `/${lang}/builders`;
-}
-
-/** /en/builders/aliko-dangote — a profile exists only in the languages it was written in. */
-export function getBuilderUrl(lang: Lang, slug: string): string {
-  return `/${lang}/builders/${slug}`;
+/**
+ * Language of the interface on pages WITHOUT a language prefix (/about,
+ * /audio…): the visitor's chosen language. Prefixed pages use useUrlLang().
+ */
+export function useUiLang(): Lang {
+  const { i18n } = useTranslation();
+  return i18n.language === 'fr' ? 'fr' : 'en';
 }
 
 /**

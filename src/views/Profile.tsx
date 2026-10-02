@@ -13,6 +13,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/integrations/firebase/config';
 import { COLLECTIONS } from '@/integrations/firebase/types';
 import { Loader2, Upload, User } from 'lucide-react';
+import { routes } from '@/routing/routes';
 
 const Profile = () => {
   const { user, userProfile, refreshProfile, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -25,7 +26,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      navigate('/');
+      navigate(routes.home());
       return;
     }
 

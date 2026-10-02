@@ -9,6 +9,7 @@ import { fetchAudioEpisodes, type AudioEpisode } from '@/integrations/firebase/a
 import { BlogPost } from '@/integrations/firebase/types';
 import { type Lang, getBlogUrl, getBuildersUrl, getPostUrl } from '@/utils/languageUtils';
 import { absoluteUrl } from '@/constants/site';
+import { routes } from '@/routing/routes';
 import { trackNewsletterSignup, trackAudioPlay, trackAudioPause } from '@/utils/analytics';
 import { useAudioPlayer, formatPlayerTime } from '@/hooks/useAudioPlayer';
 import { usePageMeta } from '@/utils/pageMeta';
@@ -178,7 +179,7 @@ const Index = () => {
     description: lang === 'fr'
       ? 'Idées, analyses et outils pour les entrepreneurs et innovateurs africains. Flux d\'intelligence bilingue en français et en anglais.'
       : 'Ideas, analysis and tools for entrepreneurs and innovators across Africa. Bilingual intelligence feed in English and French.',
-    ogUrl: absoluteUrl('/'),
+    ogUrl: absoluteUrl(routes.home(lang)),
   });
 
   const [email, setEmail] = useState('');
@@ -801,7 +802,7 @@ const Index = () => {
               fontFamily: A.sans, fontSize: 14, fontWeight: 300,
               color: A.muted, lineHeight: 1.8, marginBottom: 32, maxWidth: 420,
             }}>{t('home.audio.body')}</p>
-            <Link to="/audio" className="afrinia-btn-outline">{t('home.audio.cta')} →</Link>
+            <Link to={routes.audio(lang)} className="afrinia-btn-outline">{t('home.audio.cta')} →</Link>
           </div>
           {/* Right — episode list (live from Firestore, fallback to placeholders) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

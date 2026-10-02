@@ -19,6 +19,7 @@ import Settings from "./views/Settings";
 import { BlogAdmin } from "./views/admin/BlogAdmin";
 import { detectLanguage } from "@/utils/languageUtils";
 import GAPageTracker from "@/components/GAPageTracker";
+import { routes } from "@/routing/routes";
 
 import Builders from "./views/Builders";
 import BuilderProfile from "./views/BuilderProfile";
@@ -116,14 +117,14 @@ const App = () => (
             {/* Retired pages of the previous site. Netlify answers these with
                 HTTP 404 for crawlers (public/_redirects); visitors who follow an
                 old link are sent to the homepage instead of a dead end. */}
-            <Route path="/services" element={<Navigate to="/" replace />} />
-            <Route path="/products" element={<Navigate to="/" replace />} />
-            <Route path="/example-systems" element={<Navigate to="/" replace />} />
-            <Route path="/built-by" element={<Navigate to="/" replace />} />
-            <Route path="/solutions" element={<Navigate to="/" replace />} />
-            <Route path="/industrial-analytics" element={<Navigate to="/" replace />} />
-            <Route path="/outreachos" element={<Navigate to="/" replace />} />
-            <Route path="/pricing" element={<Navigate to="/" replace />} />
+            <Route path="/services" element={<Navigate to={routes.home()} replace />} />
+            <Route path="/products" element={<Navigate to={routes.home()} replace />} />
+            <Route path="/example-systems" element={<Navigate to={routes.home()} replace />} />
+            <Route path="/built-by" element={<Navigate to={routes.home()} replace />} />
+            <Route path="/solutions" element={<Navigate to={routes.home()} replace />} />
+            <Route path="/industrial-analytics" element={<Navigate to={routes.home()} replace />} />
+            <Route path="/outreachos" element={<Navigate to={routes.home()} replace />} />
+            <Route path="/pricing" element={<Navigate to={routes.home()} replace />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

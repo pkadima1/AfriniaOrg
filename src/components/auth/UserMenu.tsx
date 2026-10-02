@@ -27,6 +27,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
+import { routes } from '@/routing/routes';
 
 /**
  * UserMenu component that displays authentication controls and user profile options
@@ -62,7 +63,7 @@ export function UserMenu() {
           title: t('auth.toasts.success'),
           description: t('auth.toasts.signedOut'),
         });
-        navigate('/');
+        navigate(routes.home());
       }
     } catch (error) {
       toast({

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import { UserMenu } from './auth/UserMenu';
 import { getBlogUrl, getBuildersUrl, type Lang } from '@/utils/languageUtils';
+import { routes } from '@/routing/routes';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,9 +18,9 @@ const Header = () => {
   const navigation = [
     { name: t('navigation.ideas'), href: blogUrl },
     { name: t('navigation.builders'), href: getBuildersUrl(lang) },
-    { name: t('navigation.audio'), href: '/audio' },
-    { name: t('navigation.about'), href: '/about' },
-    { name: t('navigation.contact'), href: '/contact' },
+    { name: t('navigation.audio'), href: routes.audio(lang) },
+    { name: t('navigation.about'), href: routes.about(lang) },
+    { name: t('navigation.contact'), href: routes.contact(lang) },
   ];
 
   // Blog is active on any /en/blog or /fr/blog route (listing or post)
@@ -42,7 +43,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-[68px]">
 
           {/* Logo — Afrinia image */}
-          <Link to="/" className="flex items-center no-underline">
+          <Link to={routes.home(lang)} className="flex items-center no-underline">
             <img
               src="https://firebasestorage.googleapis.com/v0/b/modified-hull-203004-d8ktc/o/Media%2Fafrinia_logo_header_matched.jpg?alt=media&token=db801d74-8642-4bc8-b3e2-ed3ccd310561"
               alt="Afrinia"

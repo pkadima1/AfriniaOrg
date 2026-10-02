@@ -6,6 +6,7 @@ import { fetchAudioEpisodes } from '@/integrations/firebase/audioService';
 import type { AudioEpisode, PostCategory } from '@/integrations/firebase/types';
 import type { Lang } from '@/utils/languageUtils';
 import { ORGANIZATION_ID, absoluteUrl } from '@/constants/site';
+import { routes } from '@/routing/routes';
 import { getCategoryLabel, SIGNAL_CATEGORIES } from '@/constants/taxonomy';
 import { trackAudioPlay, trackAudioPause } from '@/utils/analytics';
 import { useAudioPlayer, formatPlayerTime } from '@/hooks/useAudioPlayer';
@@ -163,14 +164,14 @@ const AudioPage = () => {
   usePageMeta({
     title: t('audio_page.page_title'),
     description: t('audio_page.page_description'),
-    ogUrl: absoluteUrl('/audio'),
+    ogUrl: absoluteUrl(routes.audio(lang)),
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'PodcastSeries',
-      '@id': `${absoluteUrl('/audio')}#podcast`,
+      '@id': `${absoluteUrl(routes.audio(lang))}#podcast`,
       name: 'The Afrinia Brief',
       description: 'Ideas, analysis, and conversations for Africa\'s entrepreneurs and builders. Available in English and French.',
-      url: absoluteUrl('/audio'),
+      url: absoluteUrl(routes.audio(lang)),
       inLanguage: ['en', 'fr'],
       author: {
         '@type': 'Organization',
