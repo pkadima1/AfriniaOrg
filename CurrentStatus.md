@@ -11,12 +11,13 @@
 
 | | |
 |---|---|
-| **Live on afrinia.org** | `main` @ `3aebad8` — Vite app on **React 19**, with M0 SEO fixes, builder profiles, Storage owner folders, translated sign-in |
-| **Production health** | `npm run check:site -- --base https://afrinia.org` → **140/140** (2026-10-02). Sitemap: 40 URLs. Live Firestore/Storage rules == repo |
-| **Current phase** | Phase 1 — Authority Engine · Next.js migration **M1 — Foundation** (CLAUDE.md §10) |
-| **In progress** | 🟡 M1 step 3 — foundations (route map, metadata helper, server data readers, Vitest, Playwright, `seo:check`) on `migration/m1-foundations` |
-| **Next** | M2 — server-rendered public pages (the SEO core) |
-| **Migration branch** | `migration/nextjs` @ `d8c400f` — Next.js 16 serving the existing app (draft-verified 146/146); not in production until M7 |
+| **Live on afrinia.org** | `main` @ `c575f1e` — Vite app on **React 19**, with M0 SEO fixes, builder profiles, Storage owner folders, translated sign-in, article-cleaner security fix |
+| **Production health** | `npm run check:site -- --base https://afrinia.org` → **140/140** (2026-10-02, after the cleaner fix). Sitemap: 40 URLs. Live Firestore/Storage rules == repo |
+| **Current phase** | Phase 1 — Authority Engine · Next.js migration: **M1 ✅ done → M2 (server-rendered public pages) next** (CLAUDE.md §10) |
+| **In progress** | — (M1 closed; M2 starts in a new session — kickoff prompt in section 4) |
+| **Next** | **M2 step 1** — next-intl + `app/[locale]` layout, then the article page (CLAUDE.md §10 M2 build order) |
+| **Migration branch** | `migration/nextjs` @ `b040a87` — Next.js 16 serving the existing app + M1 foundations (route map, metadata helper, server readers, Vitest/integration/Playwright/seo:check); in sync with `main`; not in production until M7 |
+| **SEO baseline (raw HTML)** | `npm run seo:check -- --base https://afrinia.org` → **1/44 URLs pass** (2026-10-02): no canonical, H1, body text or unique title without JavaScript on 40 pages; English pages say `lang="fr"`; unknown slugs answer 200. **M2 target: 44/44.** |
 | **Search Console baseline** | 11 indexed / 52 not indexed (GSC data of 2026-09-21). "Validate fix" started by the owner on Soft 404 + Duplicate canonical (2026-10-02) |
 
 ### Waiting on the owner ⏸
@@ -40,6 +41,7 @@
 | TypeScript runs in non-strict mode (`strict: false`), unlike CLAUDE.md §9 | Turning it on is a large change of its own | M6 |
 | Security headers written twice (next.config for rendered pages, netlify.toml for static files) | Netlify applies neither mechanism to the other's responses; one list in `config/security-headers.json`, a unit test fails on drift | accepted |
 | `proxy.ts` sends every known path to one app shell (migration scaffolding) | Pages are still the client-side app | removed as pages move to server routes (M2) |
+| Player tooltip "Close player" is English-only | Small i18n gap | M3 |
 
 ---
 
@@ -52,7 +54,8 @@
 | Builders merge + Storage owner folders | ✅ 2026-10-02 | /fr\|en/builders; strangers can no longer delete media |
 | M1 step 1 — React 19 | ✅ 2026-10-02 | Released on the current app; + social links fix, sign-in EN/FR |
 | M1 step 2 — Next.js runs the existing site | ✅ 2026-10-02 | on `migration/nextjs` (not production) |
-| M1 step 3 — foundations (route map, metadata, data layer, tests) | 🟡 | |
+| M1 step 3 — foundations (route map, metadata, data layer, tests) | ✅ 2026-10-02 | on `migration/nextjs` · **M1 complete** |
+| Article-cleaner security fix (live) | ✅ 2026-10-02 | `<style>`/forms removed from article HTML; 29/29 articles unchanged |
 | M2 — Server-rendered public pages (SEO core) | 🔴 | |
 | M3 — Interactive islands | 🔴 | |
 | M4 — Auth & admin, publish → refresh | 🔴 | |
@@ -63,6 +66,18 @@
 ---
 
 ## 3. PROGRESS LOG (newest first)
+
+### 2026-10-02 — M1 closed ✅ · article-cleaner security fix released ✅
+- **Step 3 committed** (owner approved): 8 commits on `migration/m1-foundations` (Vitest + deps; route map; metadata helper; cleaner fix + shared cleaner; shared mappers/identifiers; server readers + integration tests; Playwright; seo:check), each verified alone (clean install, typecheck, build, unit tests 22 → 66), merged into `migration/nextjs` @ `bb40631`, pushed.
+- **Security fix released to production** (`fix/article-cleaner-forbid-tags` → `main` @ `c575f1e`): the cleaner no longer keeps `<style>`, `<form>` and form controls. Evidence: 6 new unit tests; draft check:site 137/137; **all 29 published articles render byte-identical bodies** on the draft and, after release, on production; production check:site **140/140**; the live bundle contains the new rule.
+- `main` merged into `migration/nextjs` (`368e242`) — the cleaner file is identical on both branches. **Mistake caught:** the merge kept `main`'s Node-runner test file (a failing file under Vitest) and listed jsdom twice; I had judged the unit run by its "Tests 66 passed" line, which hid "1 failed file". Fixed in `b040a87`; checks are now judged by exit code (rule added to CLAUDE.md §11). All suites exit 0: test, typecheck, lint, build, test:integration, test:rules.
+- Docs: CLAUDE.md M1 ☑ and a concrete M2 build order (6 steps, gate 44/44); verify skill updated; M2 kickoff prompt in section 4.
+
+### 2026-10-02 — M1 step 3 built and verified on a draft ⏸ (awaiting commit OK)
+- Where: `migration/m1-foundations` (worktree `../AfriniaOrg-nextjs`); not production.
+- Built: route map (`src/routing/routes.ts`, all ~25 hand-typed page URLs replaced; language parameter everywhere so D3 is a one-file change); metadata helper (`src/seo/metadata.ts`); shared mappers + Firebase identifiers for browser and server; server readers (`src/server/content/*`: anonymous Firestore REST, Storage bodies, cache tags for D5, `server-only`); the article cleaner made environment-independent (same code on jsdom for the server); Vitest, emulator integration tests, Playwright suite, `seo:check` (+ its rules unit-tested both ways).
+- Found and fixed: (1) **security** — the article cleaner kept `<style>`, `<form>`, `<input>`; now removed (no published article used them — 29 scanned). Live today → can ship to `main` separately. (2) Firebase rate-limited this machine after repeated deliberate wrong logins — automated tests no longer submit logins. (3) Playwright clicked placeholder episode rows before data loaded — tests wait for real ones. (4) Lint scanned generated `.netlify/` bundles.
+- Evidence: typecheck 0 errors; lint 0 errors (11 old warnings); unit **66/66**; integration **9/9** (drafts/archived never returned, languages never mix, Storage bodies cleaned, unfiltered or private-collection queries **refused by the rules** — D4 proven); rules 45/45; Playwright **25/25** locally and on the draft (desktop + 375px); draft `check:site` **146/146**; `seo:check` baseline **1/44** on production and draft (identical).
 
 ### 2026-10-02 — M1 step 2 committed ✅ · step 3 started 🟡
 - Owner approved. `migration/m1-nextjs-shell` (3 commits: rename `src/pages`→`src/views`; Next.js shell; header drift test + wider crawler checks) merged into `migration/nextjs`, then `main` merged in (docs) → `migration/nextjs` @ `d8c400f`, pushed. Each commit verified alone (clean install, typecheck, build, unit tests); the merged branch builds and passes.
@@ -99,9 +114,21 @@
 
 ---
 
-## 4. ARCHIVE — milestones before the Next.js migration (April–July 2026)
+## 4. NEXT SESSION — M2 kickoff prompt
 
-> Historical record, kept unchanged below. Its "current branch" and "next session" notes are **out of date** (those branches were deployed in July) — use sections 1–3 above for the current state.
+Paste this as the first message of a new chat session (Claude Code, in this repo):
+
+> We are starting **M2 — server-rendered public pages** of the Afrinia Next.js migration. Before doing anything, read `CLAUDE.md` (especially §2, §4, §6, §9, §10 M2 build order, §11) and `CurrentStatus.md` sections 1–3, and the verify skill (`.claude/skills/verify/SKILL.md`). Then re-verify the live state yourself before trusting the notes: `git fetch`, confirm `migration/nextjs` @ `b040a87` (or later) is in sync with `main`, the worktree `../AfriniaOrg-nextjs` is clean, and run on it `npm ci`, `npm test`, `npm run test:integration`, `npm run typecheck`, `npm run build` (judge every check by exit code). Record the `seo:check` baseline: `npm run seo:check -- --base https://afrinia.org --summary` (expected 1/44).
+>
+> Then carefully do **M2 step 1 only**: on a new branch `migration/m2-locale-layout` cut from `migration/nextjs` (in the worktree beside the repo, never in a scratch folder), install next-intl (decision D2) reading the existing `src/locales/en.json`/`fr.json`, add the `app/[locale]` segment with `<html lang={locale}>` and only `fr`/`en` as valid locales, and plan how Header/Footer render on the server with interactive parts as client islands. Keep every existing page working through the app shell (`proxy.ts`) — nothing visible may regress. Explain your plan (what / why / how / trade-offs) before writing code, and stop to ask if any choice is uncertain (CLAUDE.md §7).
+>
+> Done for step 1 = typecheck/lint/test/test:integration/test:rules/build all exit 0; Playwright 25/25 and check:site 146/146 on a Netlify draft deploy; seo:check not regressed (≥ 1/44) and `<html lang>` correct on any page served by the new layout. Then update `CurrentStatus.md` (section 1, 2, 3) and present what changed, why, the evidence, and what remains — and wait for my OK before committing. Next steps after approval: the article page `/[locale]/blog/[slug]` (step 2).
+
+---
+
+## 5. ARCHIVE — milestones before the Next.js migration (April–July 2026)
+
+> Historical record, kept unchanged below. Its "current branch" and "next session" notes are **out of date** (those branches were deployed in July) — use sections 1–4 above for the current state.
 
 #### MILESTONE LOG (archive)
 
